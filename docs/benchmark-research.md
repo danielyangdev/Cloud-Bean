@@ -4,6 +4,10 @@ Checked: 2026-09-12. Status: source audit and proposed benchmark design; no dete
 
 ## Recommendation
 
+**Superseded for core benchmark scope:** see [fleet benchmark direction](fleet-benchmark-direction.md). User clarified target is incidents spanning interacting agents. Single-agent sources below remain background; they are not recommended as core fleet benchmark.
+
+Earlier broad-safety proposal:
+
 Build **cloud-bean bench** from two separate suites:
 
 1. **Existing agent runs:** adapt AgentDojo's recorded tool interactions for cheap offline detection tests.

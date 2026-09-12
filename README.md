@@ -49,7 +49,7 @@ Kill detector and disconnect one worker. Restore both, replay buffered records, 
 
 ## Evaluation
 
-See [benchmark research and proposed data contract](docs/benchmark-research.md) for inspected datasets, gaps, and build order.
+See [fleet benchmark direction](docs/fleet-benchmark-direction.md) for current scope and candidate sources. [Earlier source audit and data contract](docs/benchmark-research.md) covers supporting datasets and required fields.
 
 - Detection accuracy and false alerts on held-out workflows.
 - Detection delay, including late-event reconciliation.
