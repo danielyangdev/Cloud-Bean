@@ -4,6 +4,8 @@ Updated: 2026-09-12. Scope: concerning patterns across interacting agents.
 
 ## Decision
 
+[Broader source search](wide-benchmark-search.md) adds real wiki incident exports, NARCBench, Null Epoch, and collective-failure studies. Use its three-track recommendation; earlier shortlist below remains supporting evidence.
+
 Use whole fleet episodes as benchmark examples. AgentDojo, AgentHarm, and ASSEBench are outside core scope: their earlier audit remains useful background, but does not establish multi-agent incident coverage.
 
 METR documents shared discoveries spreading, agents changing workstreams, coordination across runs, and collective tool-call spoofing. Timelines are partly reconstructed; underlying transcripts have gaps. Reference: [METR/Redwood report](https://metr.org/hugging-face-incident-report-aug-2026.pdf), especially Figures 8 and 14, collaboration section, and methodology appendix.
