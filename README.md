@@ -49,6 +49,8 @@ Kill detector and disconnect one worker. Restore both, replay buffered records, 
 
 ## Evaluation
 
+See [benchmark research and proposed data contract](docs/benchmark-research.md) for inspected datasets, gaps, and build order.
+
 - Detection accuracy and false alerts on held-out workflows.
 - Detection delay, including late-event reconciliation.
 - Monitoring bytes per action, memory use, and worker overhead.
