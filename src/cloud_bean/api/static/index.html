@@ -373,6 +373,7 @@
     let graphData = { nodes: [], edges: [] };
     let findingsData = [];
     let selectedNode = null;
+    let hoveredNode = null;
     let filterMode = 'all';
 
     // Simple physics simulation state
@@ -482,33 +483,55 @@
 
       stepPhysics();
 
+      const activeNode = selectedNode || hoveredNode;
+      const connectedNodeIds = new Set();
+      if (activeNode) {
+        connectedNodeIds.add(activeNode.id);
+        for (const link of simLinks) {
+          if (link.sourceNode.id === activeNode.id) connectedNodeIds.add(link.targetNode.id);
+          if (link.targetNode.id === activeNode.id) connectedNodeIds.add(link.sourceNode.id);
+        }
+      }
+
       // Draw edges
       for (const link of simLinks) {
+        const isConnected = activeNode && (link.sourceNode.id === activeNode.id || link.targetNode.id === activeNode.id);
+        const isFaded = activeNode && !isConnected;
+
+        ctx.save();
+        ctx.globalAlpha = isFaded ? 0.08 : (isConnected ? 1.0 : 0.4);
+
         ctx.beginPath();
         ctx.moveTo(link.sourceNode.x, link.sourceNode.y);
         ctx.lineTo(link.targetNode.x, link.targetNode.y);
 
         if (link.type === 'CONFLICTS') {
           ctx.strokeStyle = '#ef4444';
-          ctx.lineWidth = 2.5;
+          ctx.lineWidth = isConnected ? 3.5 : 2.5;
           ctx.setLineDash([4, 4]);
         } else if (link.type === 'SHARED_ARTIFACT') {
           ctx.strokeStyle = '#a855f7';
-          ctx.lineWidth = 2.5;
+          ctx.lineWidth = isConnected ? 3.5 : 2.5;
           ctx.setLineDash([2, 4]);
         } else {
-          ctx.strokeStyle = 'rgba(75, 85, 99, 0.4)';
-          ctx.lineWidth = 1.2;
+          ctx.strokeStyle = isConnected ? '#38bdf8' : 'rgba(100, 116, 139, 0.4)';
+          ctx.lineWidth = isConnected ? 2.5 : 1.2;
           ctx.setLineDash([]);
         }
         ctx.stroke();
-        ctx.setLineDash([]);
+        ctx.restore();
       }
 
       // Draw nodes
       for (const n of simNodes) {
         const isSelected = selectedNode && selectedNode.id === n.id;
+        const isHovered = hoveredNode && hoveredNode.id === n.id;
+        const isActive = isSelected || isHovered;
+        const isConnectedNeighbor = activeNode && !isActive && connectedNodeIds.has(n.id);
+        const isFaded = activeNode && !isActive && !isConnectedNeighbor;
+
         ctx.save();
+        ctx.globalAlpha = isFaded ? 0.20 : 1.0;
 
         let fillColor = '#10b981';
         if (n.type === 'agent') {
@@ -523,34 +546,160 @@
         ctx.fillStyle = fillColor;
 
         if (n.type === 'agent') {
+          // Expanded size on hover or selection
+          let r = 12;
+          if (isActive) r = 28;
+          else if (isConnectedNeighbor) r = 16;
+
+          // Glowing aura when active
+          if (isActive) {
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, r + 12, 0, 2 * Math.PI);
+            ctx.fillStyle = fillColor === '#ef4444' ? 'rgba(239, 68, 68, 0.25)' : 'rgba(6, 182, 212, 0.25)';
+            ctx.fill();
+
+            // Circular Work Profile Ring
+            const normPct = n.normal_percentage !== undefined ? n.normal_percentage : 85.0;
+            const normAngle = (normPct / 100) * 2 * Math.PI;
+
+            // Green normal work arc
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, r + 4, -Math.PI / 2, -Math.PI / 2 + normAngle);
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Red/amber shared work arc
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, r + 4, -Math.PI / 2 + normAngle, 3 * Math.PI / 2);
+            ctx.strokeStyle = n.status === 'concerning' ? '#ef4444' : '#f59e0b';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+          }
+
+          // Main node circle
           ctx.beginPath();
-          ctx.arc(n.x, n.y, isSelected ? 16 : 12, 0, 2 * Math.PI);
+          ctx.arc(n.x, n.y, r, 0, 2 * Math.PI);
+          ctx.fillStyle = fillColor;
           ctx.fill();
-          if (isSelected) {
-            ctx.lineWidth = 3;
+
+          if (isActive || isConnectedNeighbor) {
+            ctx.lineWidth = 2.5;
             ctx.strokeStyle = '#ffffff';
             ctx.stroke();
           }
+
+          // Center text when expanded
+          if (isActive) {
+            ctx.font = 'bold 10px sans-serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            const normPct = Math.round(n.normal_percentage !== undefined ? n.normal_percentage : 85);
+            ctx.fillText(`${normPct}%`, n.x, n.y);
+          }
+
         } else {
-          const sz = isSelected ? 24 : 18;
+          // Resource node (square)
+          let sz = 18;
+          if (isActive) sz = 38;
+          else if (isConnectedNeighbor) sz = 24;
+
+          // Glowing aura when active
+          if (isActive) {
+            ctx.fillStyle = 'rgba(6, 182, 212, 0.25)';
+            ctx.fillRect(n.x - (sz + 16) / 2, n.y - (sz + 16) / 2, sz + 16, sz + 16);
+          }
+
+          ctx.fillStyle = fillColor;
           ctx.fillRect(n.x - sz / 2, n.y - sz / 2, sz, sz);
-          if (isSelected) {
-            ctx.lineWidth = 3;
+
+          if (isActive || isConnectedNeighbor) {
+            ctx.lineWidth = 2.5;
             ctx.strokeStyle = '#ffffff';
             ctx.strokeRect(n.x - sz / 2, n.y - sz / 2, sz, sz);
           }
         }
 
-        // Label
-        ctx.font = '11px sans-serif';
-        ctx.fillStyle = isSelected ? '#ffffff' : '#94a3b8';
+        // Label under node
+        ctx.font = isActive ? 'bold 12px sans-serif' : '11px sans-serif';
+        ctx.fillStyle = isActive ? '#ffffff' : (isConnectedNeighbor ? '#e2e8f0' : '#94a3b8');
         ctx.textAlign = 'center';
-        ctx.fillText(n.label, n.x, n.y + 24);
+        ctx.textBaseline = 'top';
+        const labelOffset = isActive ? (n.type === 'agent' ? 36 : 28) : 18;
+        ctx.fillText(n.label, n.x, n.y + labelOffset);
 
         ctx.restore();
       }
 
+      // Draw Floating In-Canvas HUD Card for active node
+      if (activeNode) {
+        drawInCanvasCard(activeNode, connectedNodeIds);
+      }
+
       requestAnimationFrame(draw);
+    }
+
+    function drawInCanvasCard(n, connectedNodeIds) {
+      ctx.save();
+      const cardWidth = 240;
+      const cardHeight = 84;
+      let cardX = n.x + 40;
+      let cardY = n.y - 70;
+
+      // Keep inside canvas bounds
+      if (cardX + cardWidth > width - 20) cardX = n.x - cardWidth - 30;
+      if (cardY < 20) cardY = 20;
+      if (cardY + cardHeight > height - 20) cardY = height - cardHeight - 20;
+
+      // Card Background
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+      ctx.strokeStyle = n.status === 'concerning' ? '#ef4444' : (n.status === 'candidate' ? '#f59e0b' : '#38bdf8');
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(cardX, cardY, cardWidth, cardHeight, 8);
+      ctx.fill();
+      ctx.stroke();
+
+      // Card Header
+      ctx.font = 'bold 12px sans-serif';
+      ctx.fillStyle = '#f8fafc';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillText(n.label, cardX + 12, cardY + 10);
+
+      // Status Badge pill
+      const badgeText = n.status.toUpperCase();
+      ctx.font = 'bold 9px sans-serif';
+      const badgeW = ctx.measureText(badgeText).width + 10;
+      const badgeX = cardX + cardWidth - badgeW - 12;
+      ctx.fillStyle = n.status === 'concerning' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)';
+      ctx.fillRect(badgeX, cardY + 10, badgeW, 16);
+      ctx.fillStyle = n.status === 'concerning' ? '#fca5a5' : '#86efac';
+      ctx.fillText(badgeText, badgeX + 5, cardY + 14);
+
+      // Subtitle / Info
+      ctx.font = '10px sans-serif';
+      ctx.fillStyle = '#94a3b8';
+      if (n.type === 'agent') {
+        const norm = n.normal_percentage !== undefined ? n.normal_percentage : 85.0;
+        ctx.fillText(`Actions: ${n.event_count || 0}  |  Normal: ${norm}%`, cardX + 12, cardY + 32);
+        ctx.fillText(`Connected Peers/Tools: ${connectedNodeIds.size - 1}`, cardX + 12, cardY + 48);
+        if (n.patterns && n.patterns.length > 0) {
+          ctx.fillStyle = '#ef4444';
+          ctx.fillText(`Alert: ${n.patterns.join(', ')}`, cardX + 12, cardY + 64);
+        } else {
+          ctx.fillStyle = '#38bdf8';
+          ctx.fillText(`Routine execution active`, cardX + 12, cardY + 64);
+        }
+      } else {
+        ctx.fillText(`Type: ${n.resource_type || 'wiki'}  |  Actions: ${n.event_count || 0}`, cardX + 12, cardY + 32);
+        ctx.fillText(`Connected Agents: ${connectedNodeIds.size - 1}`, cardX + 12, cardY + 48);
+        ctx.fillStyle = n.status === 'conflict_hotspot' ? '#ef4444' : '#38bdf8';
+        ctx.fillText(n.status === 'conflict_hotspot' ? 'Status: Rapid overwrite hotspot' : 'Status: Shared fleet resource', cardX + 12, cardY + 64);
+      }
+
+      ctx.restore();
     }
 
     let draggingNode = null;
@@ -573,13 +722,33 @@
     });
 
     canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+
       if (isDragging && draggingNode) {
-        const rect = canvas.getBoundingClientRect();
-        draggingNode.x = e.clientX - rect.left;
-        draggingNode.y = e.clientY - rect.top;
+        draggingNode.x = mx;
+        draggingNode.y = my;
         draggingNode.vx = 0;
         draggingNode.vy = 0;
+      } else {
+        let found = null;
+        for (const n of simNodes) {
+          const dx = n.x - mx;
+          const dy = n.y - my;
+          const r = n.type === 'agent' ? 24 : 26;
+          if (Math.sqrt(dx * dx + dy * dy) < r) {
+            found = n;
+            break;
+          }
+        }
+        hoveredNode = found;
+        canvas.style.cursor = found ? 'pointer' : 'grab';
       }
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      hoveredNode = null;
     });
 
     window.addEventListener('mouseup', () => {
