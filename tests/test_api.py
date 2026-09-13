@@ -30,7 +30,7 @@ def test_dashboard_index_endpoint(client):
     res = client.get("/")
     assert res.status_code == 200
     assert "Cloud-Bean" in res.text
-    assert "Fleet Detection Observatory" in res.text
+    assert "Fleet Security Monitor" in res.text
 
 
 def test_budget_endpoint(client):
