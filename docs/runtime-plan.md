@@ -103,9 +103,12 @@ Local replacement later: evaluate Granite Guardian and small trained text classi
 ## Concrete Specifications
 
 This runtime plan is specified in detail across the following technical documents:
+- [Expansion Brief](expansion-brief.md)
 - [System Architecture](architecture.md)
 - [Data Models & Schemas](data-models.md)
 - [Fleet Signal Specifications](signals-spec.md)
+- [Token & Word Distribution Anomaly Specification](token-distribution-spec.md)
+- [Authentic Benchmark Retrieval Tasks](benchmark-retrieval-tasks.md)
 - [Interactive Visual UI Specification](interactive-ui-spec.md)
 - [Git History & Planned PR Roadmap](git-history-and-prs.md)
 - [Test Plan & Verification Matrix](test-plan.md)
