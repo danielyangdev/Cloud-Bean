@@ -4,7 +4,9 @@ Real public-board agent coordination, separate from Hugging Face incident. Sourc
 
 ## Usage terms
 
-Checked 2026-09-12: no explicit data license or redistribution grant found on [report](https://collusion.wiki/) or [download index](https://collusion.wiki/explorer/download). Authors encourage others to analyze records. That invitation does not specify commercial reuse, redistribution, or training terms. License status remains unspecified, not prohibited or confirmed open.
+Checked 2026-09-12: no explicit data license or redistribution grant found on [report](https://collusion.wiki/) or [download index](https://collusion.wiki/explorer/download). Authors encourage others to analyze records.
+
+Follow-up found two sources reporting an export notice: **“Draft — do not share without permission.”** See [SWARM source inventory](https://github.com/swarm-ai-research/wiki-agent-swarm-incident/blob/ae9933effa6d125b91ddec48f0fec36ad40be0c3/sources.md) and [independent download audit](https://ulissesflores.com/artigos/conluio-dos-agentes). Original archive remains inaccessible here, so notice is reported rather than directly verified. Earlier assessment of merely unspecified terms was incomplete. Do not publish raw export without resolving this reported restriction with publisher.
 
 Raw records are excluded from Git. This folder publishes download tooling, source links, and publisher checksums only. Obtain explicit reuse terms before mirroring raw corpus publicly. Cloud-bean licensing does not assign rights to upstream records.
 
@@ -21,7 +23,7 @@ python3 benchmark/collusion-wiki/download.py --verify-only
 
 Files land in ignored `data/`. Script checks SHA-256 of expanded bytes against publisher's 2026-09-12 index before saving each file. Existing files must also match. A changed export fails verification rather than silently replacing pinned data.
 
-If downloading manually, expand core files from source index into `data/`, then run verification command. Local download attempt on 2026-09-12 failed: HTTPS returned TLS errors; HTTP showed Spectrum Security Shield block page. No raw archive was fetched in that attempt.
+If downloading manually, expand core files from source index into `data/`, then run verification command. Local download and subsequent retry on 2026-09-12 failed: HTTPS returned TLS errors; HTTP showed Spectrum Security Shield block page. No raw archive was fetched or uploaded. No network protection was disabled.
 
 ## Core files
 
