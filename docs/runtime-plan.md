@@ -100,6 +100,16 @@ Healthy cases must include approved shared work, security research, quoted attac
 
 Local replacement later: evaluate Granite Guardian and small trained text classifiers against same reviewed test set. Distillation labels need human checks; test on independent episodes. Replace easy Luna checks only when measured quality/cost supports change.
 
+## Concrete Specifications
+
+This runtime plan is specified in detail across the following technical documents:
+- [System Architecture](architecture.md)
+- [Data Models & Schemas](data-models.md)
+- [Fleet Signal Specifications](signals-spec.md)
+- [Interactive Visual UI Specification](interactive-ui-spec.md)
+- [Git History & Planned PR Roadmap](git-history-and-prs.md)
+- [Test Plan & Verification Matrix](test-plan.md)
+
 ## Sources
 
 - [Luna model configuration and pricing](https://developers.openai.com/api/docs/models/gpt-5.6-luna).
