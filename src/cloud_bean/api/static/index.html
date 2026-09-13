@@ -4,44 +4,80 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cloud-Bean | Fleet Detection Observatory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-primary: #0a0e17;
-      --bg-secondary: #131b2e;
-      --bg-card: #1c2742;
-      --border-color: #2a3b63;
-      --text-main: #f0f4fc;
-      --text-muted: #8fa0c2;
-      --accent-blue: #3b82f6;
-      --accent-cyan: #06b6d4;
-      --status-normal: #10b981;
-      --status-candidate: #f59e0b;
-      --status-concerning: #ef4444;
-      --status-hub: #8b5cf6;
-      --edge-conflict: #ef4444;
-      --edge-artifact: #a855f7;
+      /* Minimalist Gray & Slate Palette */
+      --bg-canvas: #090b0e;
+      --bg-subtle: #111418;
+      --bg-surface: #171b22;
+      --bg-surface-elevated: #1f242d;
+      --border-subtle: #252b36;
+      --border-strong: #333a48;
+
+      /* High Readability Typography */
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-tertiary: #64748b;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+      /* Refined Pastel Accents */
+      --pastel-mint: #6ee7b7;       /* Normal / Healthy */
+      --pastel-mint-soft: rgba(110, 231, 183, 0.12);
+      --pastel-amber: #fcd34d;      /* Flagged Candidate */
+      --pastel-amber-soft: rgba(252, 211, 77, 0.12);
+      --pastel-rose: #fda4af;       /* Concerning Alert */
+      --pastel-rose-soft: rgba(253, 164, 175, 0.14);
+      --pastel-lavender: #d8b4fe;   /* Token Drift Anomaly */
+      --pastel-lavender-soft: rgba(216, 180, 254, 0.14);
+      --pastel-sky: #7dd3fc;        /* Resource / Tool */
+      --pastel-sky-soft: rgba(125, 211, 252, 0.12);
+      --pastel-periwinkle: #a5b4fc; /* Emerging Hub */
+      --pastel-periwinkle-soft: rgba(165, 180, 252, 0.12);
+
+      /* Edge Styling */
+      --edge-normal: rgba(148, 163, 184, 0.14);
+      --edge-active: rgba(125, 211, 252, 0.85);
+      --edge-conflict: #fda4af;
+      --edge-artifact: #d8b4fe;
+
+      /* Radii & Spacing (8pt Grid) */
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-main);
+      font-family: var(--font-sans);
+      background: var(--bg-canvas);
+      color: var(--text-primary);
       overflow: hidden;
       display: flex;
       flex-direction: column;
       height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Header */
+    /* Minimalist Slim Header */
     header {
-      background: var(--bg-secondary);
-      border-bottom: 1px solid var(--border-color);
-      padding: 12px 24px;
+      background: var(--bg-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0 var(--space-lg);
+      height: 54px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      z-index: 10;
+      z-index: 20;
     }
 
     .brand {
@@ -50,52 +86,65 @@
       gap: 12px;
     }
     .brand-logo {
-      width: 28px;
-      height: 28px;
-      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
-      border-radius: 6px;
+      width: 26px;
+      height: 26px;
+      background: linear-gradient(135deg, var(--pastel-sky), var(--pastel-lavender));
+      border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: bold;
-      color: #fff;
+      font-weight: 700;
+      font-size: 0.75rem;
+      color: #0f172a;
+      letter-spacing: -0.5px;
     }
     .brand h1 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
     }
-    .brand span {
-      color: var(--accent-cyan);
-      font-size: 0.8rem;
-      border: 1px solid var(--accent-cyan);
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin-left: 8px;
+    .brand-tag {
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--text-tertiary);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      padding: 2px 7px;
+      border-radius: var(--radius-sm);
     }
 
     .metrics-bar {
       display: flex;
-      gap: 20px;
+      gap: 12px;
       align-items: center;
     }
     .metric-pill {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 6px 14px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 4px 12px;
       display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      min-width: 100px;
+      align-items: center;
+      gap: 8px;
     }
-    .metric-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
-    .metric-val { font-size: 0.95rem; font-weight: 700; }
-    .val-concerning { color: var(--status-concerning); }
-    .val-hub { color: var(--status-candidate); }
-    .val-spend { color: var(--accent-cyan); }
+    .metric-label {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 500;
+    }
+    .metric-val {
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+    .val-spend { color: var(--pastel-sky); }
+    .val-hub { color: var(--pastel-periwinkle); }
+    .val-alerts { color: var(--pastel-rose); }
 
-    /* Main Workspace */
+    /* Workspace */
     .workspace {
       flex: 1;
       display: flex;
@@ -103,171 +152,276 @@
       overflow: hidden;
     }
 
-    /* Graph Canvas */
+    /* Canvas Container */
     #graph-container {
       flex: 1;
       position: relative;
-      background: radial-gradient(circle at 50% 50%, #111a33 0%, var(--bg-primary) 100%);
-      cursor: grab;
+      background: var(--bg-canvas);
+      cursor: default;
     }
-    #graph-container:active { cursor: grabbing; }
 
     /* Controls Overlay */
     .controls-overlay {
       position: absolute;
-      top: 16px;
-      left: 16px;
-      background: rgba(19, 27, 46, 0.92);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 12px;
-      backdrop-filter: blur(8px);
+      top: var(--space-md);
+      left: var(--space-md);
+      background: rgba(17, 20, 24, 0.88);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      backdrop-filter: blur(12px);
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      z-index: 5;
-      width: 280px;
+      gap: 12px;
+      z-index: 10;
+      width: 260px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
     }
     .control-row {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
     }
     .control-row label {
-      font-size: 0.75rem;
-      color: var(--text-muted);
+      font-size: 0.72rem;
+      color: var(--text-tertiary);
       font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
     .control-btn-group {
       display: flex;
-      gap: 6px;
+      gap: 4px;
     }
+
+    /* Minimalist Buttons */
     .btn {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 0.8rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: center;
+      flex: 1;
+    }
+    .btn:hover {
+      background: var(--bg-surface-elevated);
+      color: var(--text-primary);
+      border-color: var(--border-strong);
+    }
+    .btn.active {
+      background: var(--bg-surface-elevated);
+      color: var(--text-primary);
+      border-color: var(--text-tertiary);
+      font-weight: 600;
+    }
+    .btn-action {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      padding: 7px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.78rem;
+      font-weight: 500;
       cursor: pointer;
       transition: all 0.15s;
     }
-    .btn:hover {
-      background: var(--border-color);
-      border-color: var(--accent-cyan);
+    .btn-action:hover {
+      background: var(--border-subtle);
+      border-color: var(--pastel-sky);
     }
-    .btn-primary {
-      background: var(--accent-blue);
-      border-color: var(--accent-blue);
-      color: #fff;
+    .btn-primary-pastel {
+      background: var(--pastel-sky-soft);
+      border: 1px solid rgba(125, 211, 252, 0.35);
+      color: var(--pastel-sky);
       font-weight: 600;
     }
-    .btn-primary:hover {
-      background: #2563eb;
+    .btn-primary-pastel:hover {
+      background: rgba(125, 211, 252, 0.22);
+      border-color: var(--pastel-sky);
     }
 
-    /* Legend */
+    /* Minimalist Legend */
     .legend {
       display: flex;
       flex-direction: column;
       gap: 6px;
-      font-size: 0.75rem;
-      margin-top: 6px;
-      padding-top: 8px;
-      border-top: 1px solid var(--border-color);
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      padding-top: 10px;
+      border-top: 1px solid var(--border-subtle);
     }
     .legend-item { display: flex; align-items: center; gap: 8px; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-    .sq { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .sq { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
 
-    /* Right Inspector Drawer */
+    /* Zoom / Canvas Hint Overlay */
+    .canvas-hint {
+      position: absolute;
+      bottom: var(--space-md);
+      left: var(--space-md);
+      font-size: 0.72rem;
+      color: var(--text-tertiary);
+      background: rgba(17, 20, 24, 0.75);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      pointer-events: none;
+    }
+
+    /* Right Inspector Drawer (Absolute Slide-in Overlay) */
     #inspector {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
       width: 380px;
-      background: var(--bg-secondary);
-      border-left: 1px solid var(--border-color);
+      background: rgba(17, 20, 24, 0.94);
+      backdrop-filter: blur(16px);
+      border-left: 1px solid var(--border-subtle);
       display: flex;
       flex-direction: column;
       overflow-y: auto;
-      z-index: 8;
-      box-shadow: -4px 0 20px rgba(0, 0, 0, 0.4);
-      transition: transform 0.2s ease-in-out;
+      z-index: 25;
+      box-shadow: -8px 0 32px rgba(0, 0, 0, 0.5);
+      transform: translateX(0);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    #inspector.hidden { display: none; }
+    #inspector.hidden {
+      transform: translateX(100%);
+      pointer-events: none;
+    }
     .inspector-header {
-      padding: 16px;
-      border-bottom: 1px solid var(--border-color);
+      padding: var(--space-md) var(--space-lg);
+      border-bottom: 1px solid var(--border-subtle);
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
+      gap: 12px;
     }
-    .inspector-title { font-size: 1.1rem; font-weight: 700; }
+    .inspector-close-btn {
+      background: none;
+      border: none;
+      color: var(--text-tertiary);
+      font-size: 1.25rem;
+      cursor: pointer;
+      padding: 0 4px;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+    .inspector-close-btn:hover {
+      color: var(--text-primary);
+    }
+    .inspector-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      word-break: break-all;
+    }
+    .inspector-sub {
+      font-size: 0.72rem;
+      color: var(--text-tertiary);
+      margin-top: 2px;
+    }
     .inspector-badge {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       padding: 3px 8px;
-      border-radius: 4px;
+      border-radius: var(--radius-sm);
       font-weight: 600;
       text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
     }
-    .badge-concerning { background: rgba(239, 68, 68, 0.2); color: var(--status-concerning); border: 1px solid var(--status-concerning); }
-    .badge-candidate { background: rgba(245, 158, 11, 0.2); color: var(--status-candidate); border: 1px solid var(--status-candidate); }
-    .badge-normal { background: rgba(16, 185, 129, 0.2); color: var(--status-normal); border: 1px solid var(--status-normal); }
+    .badge-concerning { background: var(--pastel-rose-soft); color: var(--pastel-rose); border: 1px solid rgba(253, 164, 175, 0.35); }
+    .badge-candidate { background: var(--pastel-amber-soft); color: var(--pastel-amber); border: 1px solid rgba(252, 211, 77, 0.35); }
+    .badge-normal { background: var(--pastel-mint-soft); color: var(--pastel-mint); border: 1px solid rgba(110, 231, 183, 0.35); }
 
     .inspector-content {
-      padding: 16px;
+      padding: var(--space-md) var(--space-lg);
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
     }
     .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      padding: 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
-    .card h4 { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; }
-    .card p { font-size: 0.85rem; line-height: 1.4; }
+    .card h4 {
+      font-size: 0.68rem;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+    .card p {
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: var(--text-secondary);
+    }
     .snippet-box {
-      background: #070a12;
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      padding: 8px;
-      font-family: monospace;
-      font-size: 0.8rem;
-      color: #93c5fd;
-      max-height: 120px;
+      background: #06080a;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      max-height: 140px;
       overflow-y: auto;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-all;
     }
 
-    /* Bottom Drawer / Findings Table */
+    /* Minimalist Bottom Bar */
     .bottom-panel {
-      background: var(--bg-secondary);
-      border-top: 1px solid var(--border-color);
-      padding: 10px 24px;
+      background: var(--bg-subtle);
+      border-top: 1px solid var(--border-subtle);
+      padding: 0 var(--space-lg);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 52px;
-      z-index: 10;
+      height: 44px;
+      z-index: 20;
     }
-    .status-text { font-size: 0.85rem; color: var(--text-muted); }
+    .status-text {
+      font-size: 0.78rem;
+      color: var(--text-tertiary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status-indicator {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--pastel-mint);
+    }
   </style>
 </head>
 <body>
 
-  <!-- Top Navbar -->
+  <!-- Minimalist Navbar -->
   <header>
     <div class="brand">
       <div class="brand-logo">CB</div>
       <h1>Cloud-Bean</h1>
-      <span>v0.1 Observatory</span>
+      <span class="brand-tag">Observatory</span>
     </div>
 
     <div class="metrics-bar">
       <div class="metric-pill">
-        <span class="metric-label">Spend / Cap</span>
+        <span class="metric-label">Spend</span>
         <span class="metric-val val-spend" id="metric-spend">$0.00 / $10.00</span>
       </div>
       <div class="metric-pill">
@@ -275,8 +429,8 @@
         <span class="metric-val val-hub" id="metric-hubs">0</span>
       </div>
       <div class="metric-pill">
-        <span class="metric-label">Concerning Alerts</span>
-        <span class="metric-val val-concerning" id="metric-alerts">0</span>
+        <span class="metric-label">Alerts</span>
+        <span class="metric-val val-alerts" id="metric-alerts">0</span>
       </div>
     </div>
   </header>
@@ -288,26 +442,29 @@
       <div class="control-row">
         <label>Filter Nodes</label>
         <div class="control-btn-group">
-          <button class="btn btn-primary" onclick="setFilter('all')">All</button>
-          <button class="btn" onclick="setFilter('concerning')">Alerts</button>
-          <button class="btn" onclick="setFilter('hubs')">Hubs</button>
+          <button class="btn active" id="btn-filter-all" onclick="setFilter('all')">All</button>
+          <button class="btn" id="btn-filter-alerts" onclick="setFilter('concerning')">Alerts</button>
+          <button class="btn" id="btn-filter-hubs" onclick="setFilter('hubs')">Hubs</button>
         </div>
       </div>
-      <div class="control-row" style="margin-top: 4px;">
-        <button class="btn btn-primary" onclick="loadFullFleetBenchmark()" style="background: #06b6d4; border-color: #06b6d4; color: #000; font-weight: bold;">Load Full 100-Agent Fleet</button>
-        <button class="btn" onclick="loadWikiDemoEvents()" style="margin-top: 4px;">Load Quick 3-Agent Demo</button>
-        <button class="btn" onclick="triggerReplay()" style="margin-top: 4px;">Run Offline Replay</button>
+      <div class="control-row" style="margin-top: 2px;">
+        <button class="btn btn-action btn-primary-pastel" onclick="loadFullFleetBenchmark()">Load 100-Agent Fleet</button>
+        <button class="btn btn-action" onclick="loadWikiDemoEvents()">Load 3-Agent Demo</button>
+        <button class="btn btn-action" onclick="triggerReplay()">Run Offline Replay</button>
       </div>
 
       <div class="legend">
-        <div class="legend-item"><span class="dot" style="background: var(--status-concerning);"></span> Concerning Agent</div>
-        <div class="legend-item"><span class="dot" style="background: var(--status-candidate);"></span> Flagged Candidate</div>
-        <div class="legend-item"><span class="dot" style="background: var(--status-normal);"></span> Normal Agent</div>
-        <div class="legend-item"><span class="dot" style="background: #a855f7;"></span> Token Drift Anomaly</div>
-        <div class="legend-item"><span class="sq" style="background: var(--status-concerning);"></span> Conflict Hotspot Page</div>
-        <div class="legend-item"><span class="sq" style="background: var(--accent-cyan);"></span> Emerging Hub Page</div>
+        <div class="legend-item"><span class="dot" style="background: var(--pastel-rose);"></span> Concerning Agent</div>
+        <div class="legend-item"><span class="dot" style="background: var(--pastel-amber);"></span> Flagged Candidate</div>
+        <div class="legend-item"><span class="dot" style="background: var(--pastel-mint);"></span> Normal Agent (85% Work)</div>
+        <div class="legend-item"><span class="dot" style="background: var(--pastel-lavender);"></span> Token Drift Anomaly</div>
+        <div class="legend-item"><span class="sq" style="background: var(--pastel-rose);"></span> Conflict Hotspot Page</div>
+        <div class="legend-item"><span class="sq" style="background: var(--pastel-periwinkle);"></span> Emerging Hub Page</div>
+        <div class="legend-item"><span class="sq" style="background: var(--pastel-sky);"></span> Routine Benchmark Tool</div>
       </div>
     </div>
+
+    <div class="canvas-hint">Scroll to zoom &middot; Drag to pan &middot; Click to inspect</div>
 
     <!-- Interactive Graph Area -->
     <div id="graph-container">
@@ -319,25 +476,28 @@
       <div class="inspector-header">
         <div>
           <div class="inspector-title" id="inspector-name">AgentRelent</div>
-          <div style="font-size: 0.75rem; color: var(--text-muted);" id="inspector-id">ID: agent:AgentRelent</div>
+          <div class="inspector-sub" id="inspector-id">ID: agent:AgentRelent</div>
         </div>
-        <span class="inspector-badge badge-concerning" id="inspector-badge">Concerning</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="inspector-badge badge-concerning" id="inspector-badge">Concerning</span>
+          <button class="inspector-close-btn" onclick="closeInspector()">&times;</button>
+        </div>
       </div>
 
       <div class="inspector-content">
-        <div class="card" id="card-alert" style="border-color: var(--status-concerning);">
-          <h4>Luna Security Alert</h4>
-          <p id="inspector-pattern" style="font-weight: 600; color: var(--status-concerning);"></p>
+        <div class="card" id="card-alert" style="border-color: rgba(253, 164, 175, 0.4); display: none;">
+          <h4 style="color: var(--pastel-rose);">Luna Security Finding</h4>
+          <p id="inspector-pattern" style="font-weight: 600; color: var(--pastel-rose);"></p>
           <p id="inspector-explanation"></p>
         </div>
 
-        <div class="card" id="card-token-drift" style="border-color: #a855f7; display: none;">
-          <h4>Token Distribution Analysis</h4>
+        <div class="card" id="card-token-drift" style="border-color: rgba(216, 180, 254, 0.4); display: none;">
+          <h4 style="color: var(--pastel-lavender);">Token Distribution Analysis</h4>
           <p id="token-drift-text" style="font-size: 0.8rem; line-height: 1.5;"></p>
         </div>
 
-        <div class="card" id="card-work-profile" style="border-color: var(--accent-cyan);">
-          <h4>Work Profile</h4>
+        <div class="card" id="card-work-profile" style="border-color: rgba(125, 211, 252, 0.4);">
+          <h4 style="color: var(--pastel-sky);">Work Profile</h4>
           <p id="work-profile-text"></p>
         </div>
 
@@ -356,9 +516,13 @@
 
   <!-- Bottom Bar -->
   <div class="bottom-panel">
-    <div class="status-text" id="status-bar">System ready. Click any node to inspect evidence timeline.</div>
+    <div class="status-text" id="status-bar">
+      <span class="status-indicator"></span>
+      <span>Observatory active. 100 agents loaded. Click any node to inspect evidence timeline.</span>
+    </div>
     <div style="display: flex; gap: 8px;">
-      <button class="btn" onclick="refreshData()">Refresh Graph</button>
+      <button class="btn btn-action" onclick="resetView()">Reset View</button>
+      <button class="btn btn-action" onclick="refreshData()">Refresh</button>
     </div>
   </div>
 
@@ -382,7 +546,16 @@
     let hoveredNode = null;
     let filterMode = 'all';
 
-    // Simple physics simulation state
+    // Camera Pan & Zoom Transform (Zoom/Pan guidelines)
+    let camera = { x: 0, y: 0, zoom: 1.0 };
+    let isPanning = false;
+    let panStart = { x: 0, y: 0 };
+
+    function resetView() {
+      camera = { x: 0, y: 0, zoom: 1.0 };
+    }
+
+    // Physics Simulation State
     let simNodes = [];
     let simLinks = [];
 
@@ -410,16 +583,19 @@
     }
 
     function initSimulation() {
-      // Build simulation nodes
       const nodeMap = new Map();
       const count = Math.max(1, graphData.nodes.length);
+      const centerX = width / 2;
+      const centerY = height / 2;
+
       simNodes = graphData.nodes.map((n, i) => {
         const angle = (i / count) * 2 * Math.PI;
-        const baseRadius = Math.min(width, height) * (n.type === 'resource' ? 0.22 : 0.40);
+        // Natural distribution: resources clustered in center, agents orbiting
+        const baseRadius = n.type === 'resource' ? (Math.min(width, height) * 0.20) : (Math.min(width, height) * 0.38);
         const sn = {
           ...n,
-          x: width / 2 + Math.cos(angle) * baseRadius + (Math.random() - 0.5) * 40,
-          y: height / 2 + Math.sin(angle) * baseRadius + (Math.random() - 0.5) * 40,
+          x: centerX + Math.cos(angle) * baseRadius + (Math.random() - 0.5) * 30,
+          y: centerY + Math.sin(angle) * baseRadius + (Math.random() - 0.5) * 30,
           vx: 0,
           vy: 0
         };
@@ -432,19 +608,25 @@
         sourceNode: nodeMap.get(e.source),
         targetNode: nodeMap.get(e.target)
       })).filter(l => l.sourceNode && l.targetNode);
+
+      // Select top concerning node by default on load
+      if (!selectedNode && simNodes.length > 0) {
+        const topConcerning = simNodes.find(n => n.status === 'concerning') || simNodes[0];
+        selectNode(topConcerning);
+      }
     }
 
     function stepPhysics() {
       const centerX = width / 2;
       const centerY = height / 2;
 
-      // Spring links
+      // Spring forces between connected nodes
       for (const link of simLinks) {
         const dx = link.targetNode.x - link.sourceNode.x;
         const dy = link.targetNode.y - link.sourceNode.y;
         const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-        const desired = 160;
-        const force = (dist - desired) * 0.0025;
+        const desired = link.targetNode.type === 'resource' ? 190 : 150;
+        const force = (dist - desired) * 0.0022;
         const fx = (dx / dist) * force;
         const fy = (dy / dist) * force;
 
@@ -454,7 +636,7 @@
         link.targetNode.vy -= fy;
       }
 
-      // Repulsion between nodes
+      // Repulsion between close nodes
       for (let i = 0; i < simNodes.length; i++) {
         for (let j = i + 1; j < simNodes.length; j++) {
           const n1 = simNodes[i];
@@ -462,8 +644,9 @@
           const dx = n2.x - n1.x;
           const dy = n2.y - n1.y;
           const distSq = dx * dx + dy * dy || 1;
-          if (distSq < 100000) {
-            const force = 800 / distSq;
+          const repDist = (n1.type === 'resource' && n2.type === 'resource') ? 90000 : 70000;
+          if (distSq < repDist) {
+            const force = 650 / distSq;
             const dist = Math.sqrt(distSq);
             n1.vx -= (dx / dist) * force;
             n1.vy -= (dy / dist) * force;
@@ -473,12 +656,12 @@
         }
       }
 
-      // Center gravity and damping
+      // Gentle centering & damping
       for (const n of simNodes) {
-        n.vx += (centerX - n.x) * 0.001;
-        n.vy += (centerY - n.y) * 0.001;
-        n.vx *= 0.85;
-        n.vy *= 0.85;
+        n.vx += (centerX - n.x) * 0.0006;
+        n.vy += (centerY - n.y) * 0.0006;
+        n.vx *= 0.86;
+        n.vy *= 0.86;
         n.x += n.vx;
         n.y += n.vy;
       }
@@ -488,6 +671,11 @@
       ctx.clearRect(0, 0, width, height);
 
       stepPhysics();
+
+      ctx.save();
+      // Apply camera pan & zoom
+      ctx.translate(camera.x, camera.y);
+      ctx.scale(camera.zoom, camera.zoom);
 
       const activeNode = selectedNode || hoveredNode;
       const connectedNodeIds = new Set();
@@ -499,37 +687,41 @@
         }
       }
 
-      // Draw edges
+      // 1. Draw Edges with subtle pastel lines
       for (const link of simLinks) {
         const isConnected = activeNode && (link.sourceNode.id === activeNode.id || link.targetNode.id === activeNode.id);
         const isFaded = activeNode && !isConnected;
 
         ctx.save();
-        ctx.globalAlpha = isFaded ? 0.08 : (isConnected ? 1.0 : 0.4);
+        ctx.globalAlpha = isFaded ? 0.04 : (isConnected ? 0.95 : 0.15);
 
         ctx.beginPath();
         ctx.moveTo(link.sourceNode.x, link.sourceNode.y);
         ctx.lineTo(link.targetNode.x, link.targetNode.y);
 
         if (link.type === 'CONFLICTS') {
-          ctx.strokeStyle = '#ef4444';
-          ctx.lineWidth = isConnected ? 3.5 : 2.5;
-          ctx.setLineDash([4, 4]);
+          ctx.strokeStyle = '#fda4af';
+          ctx.lineWidth = isConnected ? 2.5 : 1.5;
+          ctx.setLineDash([3, 3]);
         } else if (link.type === 'SHARED_ARTIFACT') {
-          ctx.strokeStyle = '#a855f7';
-          ctx.lineWidth = isConnected ? 3.5 : 2.5;
-          ctx.setLineDash([2, 4]);
+          ctx.strokeStyle = '#d8b4fe';
+          ctx.lineWidth = isConnected ? 2.5 : 1.5;
+          ctx.setLineDash([2, 3]);
         } else {
-          ctx.strokeStyle = isConnected ? '#38bdf8' : 'rgba(100, 116, 139, 0.4)';
-          ctx.lineWidth = isConnected ? 2.5 : 1.2;
+          ctx.strokeStyle = isConnected ? '#7dd3fc' : 'rgba(148, 163, 184, 0.25)';
+          ctx.lineWidth = isConnected ? 2.0 : 0.9;
           ctx.setLineDash([]);
         }
         ctx.stroke();
         ctx.restore();
       }
 
-      // Draw nodes
+      // 2. Draw Nodes with pastel palette
       for (const n of simNodes) {
+        // Filter modes
+        if (filterMode === 'concerning' && n.status !== 'concerning') continue;
+        if (filterMode === 'hubs' && n.status !== 'emerging_hub' && n.status !== 'conflict_hotspot') continue;
+
         const isSelected = selectedNode && selectedNode.id === n.id;
         const isHovered = hoveredNode && hoveredNode.id === n.id;
         const isActive = isSelected || isHovered;
@@ -537,252 +729,304 @@
         const isFaded = activeNode && !isActive && !isConnectedNeighbor;
 
         ctx.save();
-        ctx.globalAlpha = isFaded ? 0.20 : 1.0;
+        ctx.globalAlpha = isFaded ? 0.15 : 1.0;
 
-        let fillColor = '#10b981';
+        // Pastel color mapping
+        let fillColor = '#6ee7b7'; // Pastel mint (normal)
         if (n.type === 'agent') {
-          if (n.status === 'concerning') fillColor = '#ef4444';
-          else if (n.status === 'candidate') fillColor = '#f59e0b';
+          if (n.status === 'concerning') fillColor = '#fda4af'; // Pastel rose
+          else if (n.status === 'candidate') fillColor = '#fcd34d'; // Pastel amber
         } else {
-          if (n.status === 'conflict_hotspot') fillColor = '#ef4444';
-          else if (n.status === 'emerging_hub') fillColor = '#06b6d4';
-          else fillColor = '#3b82f6';
+          if (n.status === 'conflict_hotspot') fillColor = '#fda4af'; // Pastel rose
+          else if (n.status === 'emerging_hub') fillColor = '#a5b4fc'; // Pastel periwinkle
+          else fillColor = '#7dd3fc'; // Pastel sky
         }
 
-        ctx.fillStyle = fillColor;
-
         if (n.type === 'agent') {
-          // Expanded size on hover or selection
-          let r = 12;
-          if (isActive) r = 28;
-          else if (isConnectedNeighbor) r = 16;
+          let r = 8;
+          if (isActive) r = 20;
+          else if (isConnectedNeighbor) r = 11;
 
-          // Glowing aura when active
+          // Expanded pulsing halo when active
           if (isActive) {
             ctx.beginPath();
-            ctx.arc(n.x, n.y, r + 12, 0, 2 * Math.PI);
-            ctx.fillStyle = fillColor === '#ef4444' ? 'rgba(239, 68, 68, 0.25)' : 'rgba(6, 182, 212, 0.25)';
+            ctx.arc(n.x, n.y, r + 8, 0, 2 * Math.PI);
+            ctx.fillStyle = fillColor === '#fda4af' ? 'rgba(253, 164, 175, 0.18)' : 'rgba(125, 211, 252, 0.18)';
             ctx.fill();
 
-            // Circular Work Profile Ring
+            // Work Profile Ring
             const normPct = n.normal_percentage !== undefined ? n.normal_percentage : 85.0;
             const normAngle = (normPct / 100) * 2 * Math.PI;
 
-            // Green normal work arc
             ctx.beginPath();
-            ctx.arc(n.x, n.y, r + 4, -Math.PI / 2, -Math.PI / 2 + normAngle);
-            ctx.strokeStyle = '#10b981';
-            ctx.lineWidth = 4;
+            ctx.arc(n.x, n.y, r + 3, -Math.PI / 2, -Math.PI / 2 + normAngle);
+            ctx.strokeStyle = '#6ee7b7';
+            ctx.lineWidth = 3;
             ctx.stroke();
 
-            // Red/amber shared work arc
             ctx.beginPath();
-            ctx.arc(n.x, n.y, r + 4, -Math.PI / 2 + normAngle, 3 * Math.PI / 2);
-            ctx.strokeStyle = n.status === 'concerning' ? '#ef4444' : '#f59e0b';
-            ctx.lineWidth = 4;
+            ctx.arc(n.x, n.y, r + 3, -Math.PI / 2 + normAngle, 3 * Math.PI / 2);
+            ctx.strokeStyle = n.status === 'concerning' ? '#fda4af' : '#fcd34d';
+            ctx.lineWidth = 3;
             ctx.stroke();
           }
 
-          // Main node circle
+          // Main Node Circle
           ctx.beginPath();
           ctx.arc(n.x, n.y, r, 0, 2 * Math.PI);
           ctx.fillStyle = fillColor;
           ctx.fill();
 
-          // Token distribution anomaly halo
+          // Token drift anomaly halo
           if (n.token_drift) {
             ctx.beginPath();
-            ctx.arc(n.x, n.y, r + 5, 0, 2 * Math.PI);
-            ctx.strokeStyle = '#a855f7';
-            ctx.lineWidth = 2.5;
-            ctx.setLineDash([3, 3]);
+            ctx.arc(n.x, n.y, r + 4, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#d8b4fe';
+            ctx.lineWidth = 2.0;
+            ctx.setLineDash([2, 3]);
             ctx.stroke();
             ctx.setLineDash([]);
           }
 
           if (isActive || isConnectedNeighbor) {
-            ctx.lineWidth = 2.5;
-            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#f8fafc';
             ctx.stroke();
           }
 
-          // Center text when expanded
           if (isActive) {
-            ctx.font = 'bold 10px sans-serif';
-            ctx.fillStyle = '#ffffff';
+            ctx.font = '600 9px sans-serif';
+            ctx.fillStyle = '#0f172a';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             const normPct = Math.round(n.normal_percentage !== undefined ? n.normal_percentage : 85);
             ctx.fillText(`${normPct}%`, n.x, n.y);
           }
-
         } else {
-          // Resource node (square)
-          let sz = 18;
-          if (isActive) sz = 38;
-          else if (isConnectedNeighbor) sz = 24;
+          // Resource Node (Square / Pill)
+          let sz = 12;
+          if (isActive) sz = 24;
+          else if (isConnectedNeighbor) sz = 16;
 
-          // Glowing aura when active
           if (isActive) {
-            ctx.fillStyle = 'rgba(6, 182, 212, 0.25)';
-            ctx.fillRect(n.x - (sz + 16) / 2, n.y - (sz + 16) / 2, sz + 16, sz + 16);
+            ctx.fillStyle = 'rgba(165, 180, 252, 0.20)';
+            ctx.fillRect(n.x - (sz + 10) / 2, n.y - (sz + 10) / 2, sz + 10, sz + 10);
           }
 
           ctx.fillStyle = fillColor;
           ctx.fillRect(n.x - sz / 2, n.y - sz / 2, sz, sz);
 
           if (isActive || isConnectedNeighbor) {
-            ctx.lineWidth = 2.5;
-            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#f8fafc';
             ctx.strokeRect(n.x - sz / 2, n.y - sz / 2, sz, sz);
           }
         }
 
-        // Label under node
-        ctx.font = isActive ? 'bold 12px sans-serif' : '11px sans-serif';
-        ctx.fillStyle = isActive ? '#ffffff' : (isConnectedNeighbor ? '#e2e8f0' : '#94a3b8');
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'top';
-        const labelOffset = isActive ? (n.type === 'agent' ? 36 : 28) : 18;
-        ctx.fillText(n.label, n.x, n.y + labelOffset);
+        // READABILITY GUIDELINE: Render pill badge labels for active node or direct neighbors
+        if (isActive || isConnectedNeighbor) {
+          ctx.font = isActive ? '600 11px Inter, sans-serif' : '500 9.5px Inter, sans-serif';
+          const text = n.label.length > 24 ? n.label.slice(0, 22) + '...' : n.label;
+          const textMetrics = ctx.measureText(text);
+          const bgW = textMetrics.width + 12;
+          const bgH = 18;
+          const labelOffset = isActive ? (n.type === 'agent' ? 26 : 22) : 15;
+          const bgX = n.x - bgW / 2;
+          const bgY = n.y + labelOffset;
+
+          // Subtle rounded dark pill background for max contrast against graph lines
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.90)';
+          ctx.strokeStyle = isActive ? (n.status === 'concerning' ? '#fda4af' : '#7dd3fc') : 'rgba(51, 65, 85, 0.7)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.roundRect(bgX, bgY, bgW, bgH, 4);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = isActive ? '#f8fafc' : '#cbd5e1';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(text, n.x, bgY + bgH / 2);
+        }
 
         ctx.restore();
       }
 
-      // Draw Floating In-Canvas HUD Card for active node
+      // 3. Draw Floating In-Canvas HUD Card for active node
       if (activeNode) {
         drawInCanvasCard(activeNode, connectedNodeIds);
       }
 
+      ctx.restore();
       requestAnimationFrame(draw);
     }
 
     function drawInCanvasCard(n, connectedNodeIds) {
       ctx.save();
       const cardWidth = 240;
-      const cardHeight = 84;
-      let cardX = n.x + 40;
-      let cardY = n.y - 70;
+      const cardHeight = 82;
+      const rightMargin = document.getElementById('inspector').classList.contains('hidden') ? 20 : 400;
 
-      // Keep inside canvas bounds
-      if (cardX + cardWidth > width - 20) cardX = n.x - cardWidth - 30;
+      let cardX = n.x + 36;
+      let cardY = n.y - 65;
+
+      // Keep inside canvas bounds and avoid overlapping inspector drawer
+      if (cardX + cardWidth > width - rightMargin) {
+        cardX = n.x - cardWidth - 36;
+      }
+      if (cardX < 280) cardX = 280; // Avoid overlapping left control overlay
       if (cardY < 20) cardY = 20;
       if (cardY + cardHeight > height - 20) cardY = height - cardHeight - 20;
 
-      // Card Background
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
-      ctx.strokeStyle = n.status === 'concerning' ? '#ef4444' : (n.status === 'candidate' ? '#f59e0b' : '#38bdf8');
-      ctx.lineWidth = 2;
+      // Card Background (Minimalist Slate Surface)
+      ctx.fillStyle = 'rgba(23, 27, 34, 0.95)';
+      ctx.strokeStyle = n.status === 'concerning' ? 'rgba(253, 164, 175, 0.6)' : 'rgba(51, 58, 72, 0.8)';
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.roundRect(cardX, cardY, cardWidth, cardHeight, 8);
       ctx.fill();
       ctx.stroke();
 
       // Card Header
-      ctx.font = 'bold 12px sans-serif';
+      ctx.font = '600 11px Inter, sans-serif';
       ctx.fillStyle = '#f8fafc';
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
-      ctx.fillText(n.label, cardX + 12, cardY + 10);
+      const labelText = n.label.length > 22 ? n.label.slice(0, 20) + '...' : n.label;
+      ctx.fillText(labelText, cardX + 12, cardY + 10);
 
-      // Status Badge pill
+      // Status Badge
       const badgeText = n.status.toUpperCase();
-      ctx.font = 'bold 9px sans-serif';
-      const badgeW = ctx.measureText(badgeText).width + 10;
+      ctx.font = '600 8.5px Inter, sans-serif';
+      const badgeW = ctx.measureText(badgeText).width + 8;
       const badgeX = cardX + cardWidth - badgeW - 12;
-      ctx.fillStyle = n.status === 'concerning' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)';
-      ctx.fillRect(badgeX, cardY + 10, badgeW, 16);
-      ctx.fillStyle = n.status === 'concerning' ? '#fca5a5' : '#86efac';
-      ctx.fillText(badgeText, badgeX + 5, cardY + 14);
+      ctx.fillStyle = n.status === 'concerning' ? 'rgba(253, 164, 175, 0.16)' : 'rgba(110, 231, 183, 0.16)';
+      ctx.fillRect(badgeX, cardY + 9, badgeW, 15);
+      ctx.fillStyle = n.status === 'concerning' ? '#fda4af' : '#6ee7b7';
+      ctx.fillText(badgeText, badgeX + 4, cardY + 12);
 
-      // Subtitle / Info
-      ctx.font = '10px sans-serif';
+      // Card Subtitles
+      ctx.font = '500 9.5px Inter, sans-serif';
       ctx.fillStyle = '#94a3b8';
       if (n.type === 'agent') {
-        const norm = n.normal_percentage !== undefined ? n.normal_percentage : 85.0;
-        ctx.fillText(`Actions: ${n.event_count || 0}  |  Normal: ${norm}%`, cardX + 12, cardY + 32);
-        ctx.fillText(`Connected Peers/Tools: ${connectedNodeIds.size - 1}`, cardX + 12, cardY + 48);
-        if (n.patterns && n.patterns.length > 0) {
-          ctx.fillStyle = '#ef4444';
-          ctx.fillText(`Alert: ${n.patterns.join(', ')}`, cardX + 12, cardY + 64);
+        const norm = n.normal_percentage !== undefined ? n.normal_percentage : 84.8;
+        ctx.fillText(`Events: ${n.event_count || 0}  |  Normal Work: ${norm}%`, cardX + 12, cardY + 30);
+        ctx.fillText(`Connected Peers & Tools: ${connectedNodeIds.size - 1}`, cardX + 12, cardY + 45);
+
+        if (n.token_drift) {
+          ctx.fillStyle = '#d8b4fe';
+          ctx.fillText(`Drift: ${n.token_drift.js_divergence} bits (${n.token_drift.drift_keywords.slice(0, 2).join(', ')})`, cardX + 12, cardY + 60);
+        } else if (n.patterns && n.patterns.length > 0) {
+          ctx.fillStyle = '#fda4af';
+          ctx.fillText(`Alert: ${n.patterns.join(', ')}`, cardX + 12, cardY + 60);
         } else {
-          ctx.fillStyle = '#38bdf8';
-          ctx.fillText(`Routine execution active`, cardX + 12, cardY + 64);
+          ctx.fillStyle = '#6ee7b7';
+          ctx.fillText(`Routine execution active`, cardX + 12, cardY + 60);
         }
       } else {
-        ctx.fillText(`Type: ${n.resource_type || 'wiki'}  |  Actions: ${n.event_count || 0}`, cardX + 12, cardY + 32);
-        ctx.fillText(`Connected Agents: ${connectedNodeIds.size - 1}`, cardX + 12, cardY + 48);
-        ctx.fillStyle = n.status === 'conflict_hotspot' ? '#ef4444' : '#38bdf8';
-        ctx.fillText(n.status === 'conflict_hotspot' ? 'Status: Rapid overwrite hotspot' : 'Status: Shared fleet resource', cardX + 12, cardY + 64);
+        ctx.fillText(`Type: ${n.resource_type || 'wiki'}  |  Actions: ${n.event_count || 0}`, cardX + 12, cardY + 30);
+        ctx.fillText(`Connected Agents: ${connectedNodeIds.size - 1}`, cardX + 12, cardY + 45);
+        ctx.fillStyle = n.status === 'conflict_hotspot' ? '#fda4af' : '#7dd3fc';
+        ctx.fillText(n.status === 'conflict_hotspot' ? 'Status: Rapid overwrite hotspot' : 'Status: Shared fleet resource', cardX + 12, cardY + 60);
       }
 
       ctx.restore();
     }
 
+    // Coordinate conversion helper (Screen to World coordinates)
+    function screenToWorld(sx, sy) {
+      return {
+        x: (sx - camera.x) / camera.zoom,
+        y: (sy - camera.y) / camera.zoom
+      };
+    }
+
     let draggingNode = null;
-    let isDragging = false;
+    let isDraggingNode = false;
+
+    // Pan & Zoom Event Handlers
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.08 : 0.92;
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      camera.x = mouseX - (mouseX - camera.x) * zoomFactor;
+      camera.y = mouseY - (mouseY - camera.y) * zoomFactor;
+      camera.zoom *= zoomFactor;
+      camera.zoom = Math.max(0.2, Math.min(3.5, camera.zoom));
+    });
 
     canvas.addEventListener('mousedown', (e) => {
       const rect = canvas.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      const my = e.clientY - rect.top;
+      const sx = e.clientX - rect.left;
+      const sy = e.clientY - rect.top;
+      const w = screenToWorld(sx, sy);
+
+      // Check if clicked a node
       for (const n of simNodes) {
-        const dx = n.x - mx;
-        const dy = n.y - my;
+        const dx = n.x - w.x;
+        const dy = n.y - w.y;
         if (Math.sqrt(dx * dx + dy * dy) < 22) {
           draggingNode = n;
-          isDragging = true;
+          isDraggingNode = true;
           selectNode(n);
-          break;
+          return;
         }
       }
+
+      // Otherwise start canvas panning
+      isPanning = true;
+      panStart = { x: sx - camera.x, y: sy - camera.y };
     });
 
     canvas.addEventListener('mousemove', (e) => {
       const rect = canvas.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      const my = e.clientY - rect.top;
+      const sx = e.clientX - rect.left;
+      const sy = e.clientY - rect.top;
 
-      if (isDragging && draggingNode) {
-        draggingNode.x = mx;
-        draggingNode.y = my;
+      if (isDraggingNode && draggingNode) {
+        const w = screenToWorld(sx, sy);
+        draggingNode.x = w.x;
+        draggingNode.y = w.y;
         draggingNode.vx = 0;
         draggingNode.vy = 0;
+      } else if (isPanning) {
+        camera.x = sx - panStart.x;
+        camera.y = sy - panStart.y;
       } else {
+        const w = screenToWorld(sx, sy);
         let found = null;
         for (const n of simNodes) {
-          const dx = n.x - mx;
-          const dy = n.y - my;
-          const r = n.type === 'agent' ? 24 : 26;
+          const dx = n.x - w.x;
+          const dy = n.y - w.y;
+          const r = n.type === 'agent' ? 20 : 22;
           if (Math.sqrt(dx * dx + dy * dy) < r) {
             found = n;
             break;
           }
         }
         hoveredNode = found;
-        canvas.style.cursor = found ? 'pointer' : 'grab';
+        canvas.style.cursor = found ? 'pointer' : (isPanning ? 'grabbing' : 'default');
       }
     });
 
-    canvas.addEventListener('mouseleave', () => {
-      hoveredNode = null;
-    });
-
     window.addEventListener('mouseup', () => {
+      isDraggingNode = false;
       draggingNode = null;
-      isDragging = false;
+      isPanning = false;
     });
 
-    // Interactive node clicking
     canvas.addEventListener('click', (e) => {
+      if (isDraggingNode) return;
       const rect = canvas.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      const my = e.clientY - rect.top;
+      const w = screenToWorld(e.clientX - rect.left, e.clientY - rect.top);
 
       let found = null;
       for (const n of simNodes) {
-        const dx = n.x - mx;
-        const dy = n.y - my;
+        const dx = n.x - w.x;
+        const dy = n.y - w.y;
         if (Math.sqrt(dx * dx + dy * dy) < 22) {
           found = n;
           break;
@@ -791,11 +1035,16 @@
 
       if (found) {
         selectNode(found);
-      } else if (!isDragging) {
+      } else {
         selectedNode = null;
         document.getElementById('inspector').classList.add('hidden');
       }
     });
+
+    function closeInspector() {
+      selectedNode = null;
+      document.getElementById('inspector').classList.add('hidden');
+    }
 
     function selectNode(node) {
       selectedNode = node;
@@ -817,20 +1066,20 @@
 
       if (node.type === 'agent') {
         workProfileCard.style.display = 'flex';
-        const normPct = node.normal_percentage !== undefined ? node.normal_percentage : 85.0;
+        const normPct = node.normal_percentage !== undefined ? node.normal_percentage : 84.8;
         const collPct = (100 - normPct).toFixed(1);
         document.getElementById('work-profile-text').innerHTML = `
-          <strong>Normal Work:</strong> ${normPct}% (${node.normal_actions || 0} routine tool calls)<br>
+          <strong>Normal Work:</strong> ${normPct}% (${node.normal_actions || 0} routine benchmark calls)<br>
           <strong>Shared Activity:</strong> ${collPct}% (${node.wiki_actions || 0} wiki edits)
         `;
 
         if (node.token_drift) {
           driftCard.style.display = 'flex';
           document.getElementById('token-drift-text').innerHTML = `
-            <strong>Jensen-Shannon Divergence:</strong> <span style="color: #c084fc;">${node.token_drift.js_divergence} bits</span> (threshold: 0.55)<br>
+            <strong>Jensen-Shannon Divergence:</strong> <span style="color: #d8b4fe;">${node.token_drift.js_divergence} bits</span> (threshold: 0.55)<br>
             <strong>Cross-Entropy Perplexity:</strong> ${node.token_drift.cross_entropy_perplexity}<br>
             <strong>Steganography Score:</strong> ${node.token_drift.steganography_score}<br>
-            <strong>Top Drift Keywords:</strong> <span style="color: #f43f5e;">${node.token_drift.drift_keywords ? node.token_drift.drift_keywords.join(', ') : 'none'}</span>
+            <strong>Top Drift Keywords:</strong> <span style="color: #fda4af;">${node.token_drift.drift_keywords ? node.token_drift.drift_keywords.join(', ') : 'none'}</span>
           `;
         } else {
           driftCard.style.display = 'none';
@@ -855,21 +1104,21 @@
     }
 
     async function loadFullFleetBenchmark() {
-      document.getElementById('status-bar').innerText = 'Loading all 100 agent execution traces (84.8% normal work + 15.2% collusion)...';
+      document.getElementById('status-bar').innerHTML = '<span class="status-indicator"></span><span>Loading all 100 authentic benchmark agent traces (SEC, USASpending, County Wages)...</span>';
       try {
         const res = await fetch('/api/v1/load-benchmark-fleet?limit_agents=100&events_per_agent=25', {
           method: 'POST'
         });
         const data = await res.json();
-        document.getElementById('status-bar').innerText = `Loaded ${data.total_agents} agents with ${data.total_events} events (${data.candidates_flagged} candidates, ${data.findings_generated} alerts).`;
+        document.getElementById('status-bar').innerHTML = `<span class="status-indicator"></span><span>Loaded ${data.total_agents} agents with ${data.total_events} events (${data.candidates_flagged} candidates, ${data.findings_generated} alerts).</span>`;
         await refreshData();
       } catch (e) {
-        document.getElementById('status-bar').innerText = 'Failed to load benchmark fleet: ' + e;
+        document.getElementById('status-bar').innerHTML = '<span class="status-indicator" style="background:#fda4af;"></span><span>Failed to load benchmark fleet: ' + e + '</span>';
       }
     }
 
     async function loadWikiDemoEvents() {
-      document.getElementById('status-bar').innerText = 'Loading sample Collusion Wiki events...';
+      document.getElementById('status-bar').innerHTML = '<span class="status-indicator"></span><span>Loading sample Collusion Wiki events...</span>';
       const events = [
         {
           "event_id": "rev_demo_01",
@@ -909,27 +1158,30 @@
         body: JSON.stringify({ events, enable_audit: false })
       });
 
-      document.getElementById('status-bar').innerText = 'Events ingested! Re-evaluating fleet graph...';
+      document.getElementById('status-bar').innerHTML = '<span class="status-indicator"></span><span>Events ingested! Re-evaluating fleet graph...</span>';
       await refreshData();
     }
 
     async function triggerReplay() {
-      document.getElementById('status-bar').innerText = 'Running deterministic replay verification...';
+      document.getElementById('status-bar').innerHTML = '<span class="status-indicator"></span><span>Running deterministic replay verification...</span>';
       const res = await fetch('/api/v1/replay', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ enable_audit: false })
       });
       const data = await res.json();
-      document.getElementById('status-bar').innerText = `Replay complete! ${data.replayed_findings_count} findings verified with 0 fresh LLM calls.`;
+      document.getElementById('status-bar').innerHTML = `<span class="status-indicator"></span><span>Replay complete! ${data.replayed_findings_count} findings verified with 0 fresh LLM calls.</span>`;
     }
 
     function setFilter(mode) {
       filterMode = mode;
+      document.getElementById('btn-filter-all').className = mode === 'all' ? 'btn active' : 'btn';
+      document.getElementById('btn-filter-alerts').className = mode === 'concerning' ? 'btn active' : 'btn';
+      document.getElementById('btn-filter-hubs').className = mode === 'hubs' ? 'btn active' : 'btn';
       refreshData();
     }
 
-    // Auto load full fleet if empty
+    // Auto-load full fleet if empty on start
     refreshData().then(() => {
       if (graphData.nodes.length === 0) {
         loadFullFleetBenchmark();

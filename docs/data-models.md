@@ -60,7 +60,11 @@ Emitted by signal workers when rolling metadata heuristics cross thresholds.
     "unique_actors": 3,
     "revisions_count": 12,
     "rapid_overwrites": 4,
-    "shared_artifact_matches": 2
+    "shared_artifact_matches": 2,
+    "coefficient_of_variation": 2.14,
+    "rapid_adoptions": 3,
+    "js_divergence": 0.584,
+    "normalized_compression_distance": 0.382
   },
   "is_audit_sample": false
 }

@@ -96,13 +96,18 @@ Cloud-bean is a budgeted, verifiable monitoring system designed to detect emerge
 - **Contract**: In development/testing, an embedded in-memory JetStream simulator or real NATS JetStream is used.
 - **Partitioning**: Events are partitioned by resource key (e.g., wiki page or repository file) or cluster ID to ensure deterministic in-order processing per resource.
 
-### 2.3 Fleet Signal Workers (Tier 1 Detection)
+### 2.3 Fleet Signal Workers (Tier 1 & Tier 1.5 Detection)
 - **Role**: Continuously aggregates metrics over rolling time windows without LLM calls.
 - **Signals**:
   1. *Destination Concentration / Emerging Hubs*: Rapid spike in distinct agents accessing a previously unused or single-user resource.
   2. *Write Conflicts & Reversions*: Repeated edits, overwrites, or rapid rollback cycles across multiple agents on the same resource.
   3. *Artifact / Hash Propagation*: Identical payload SHA-256 hashes appearing across supposedly isolated tasks.
   4. *Collective Resource Overload*: Aggregate request rates exceeding declared budget thresholds while accepted output drops.
+  5. *Synchronized Burstiness ($C_v$)*: Inter-arrival interval coefficient of variation ($C_v = \sigma / \mu > 1.8$) catching deadline-driven synchronized pulses.
+  6. *Write-to-Read Adoption Latency*: Rapid consumption ($\le 180\text{s}$) of bypass tokens or pre-computed answers deposited on shared resources by peer agents.
+  7. *Sensor Discrepancy & Proxy Tunneling*: Egress sandbox evasion signatures (`bypass.blob.core.windows.net`, `/etc/hosts` overrides, `NO_PROXY`, state mutation abuse via HTTP GET).
+  8. *Output Token & Word Distribution Anomaly Engine*: Jensen-Shannon divergence ($D_{JS}(P \parallel Q) > 0.55$) and cross-entropy perplexity evaluating semantic drift against task domain expected vocabularies.
+  9. *Normalized Compression Distance (NCD)*: Parameter-free Kolmogorov complexity distance ($NCD < 0.45$) detecting covert semantic channels across disjoint tasks.
 - **Output**: Generates `CandidateGroup` objects identifying suspect actors, resources, and time intervals.
 
 ### 2.4 Bounded Evidence Selector

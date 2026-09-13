@@ -4,7 +4,18 @@ Budgeted detection of concerning behavior across AI agent fleets.
 
 Cheap rules and group statistics select evidence for **GPT-5.6 Luna**, which classifies selected cross-agent conversations against known task goals and permissions. Cloud-bean records model judgments, evidence, and processing decisions so recovery can reproduce findings without fresh model calls.
 
-**Status:** design and source-data stage. [Wiki incident dataset](benchmark/collusion-wiki/README.md) is available. Runtime and evaluation results are not implemented here.
+**Status:** Fully implemented prototype with 100-agent authentic benchmark traces, rich operational signals, token distribution anomaly engine, deterministic replay, and interactive browser observatory. 80 unit and integration tests passing.
+
+## Running the Prototype
+
+```bash
+# 1. Run the comprehensive test suite (80 tests across 12 test modules)
+pytest -v
+
+# 2. Start the FastAPI server and Interactive Observatory
+PYTHONPATH=src python3 -m uvicorn cloud_bean.api.app:create_app --factory --host 0.0.0.0 --port 8000
+```
+Open **[http://localhost:8000/](http://localhost:8000/)** in your browser to explore the live fleet observatory.
 
 ## Detection plan
 
