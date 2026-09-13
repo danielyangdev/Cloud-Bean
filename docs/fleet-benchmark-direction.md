@@ -4,6 +4,8 @@ Updated: 2026-09-12. Scope: concerning patterns across interacting agents.
 
 ## Decision
 
+Current runtime: [budgeted GPT-5.6 Luna plan](runtime-plan.md). Metadata selects candidate groups; Luna classifies selected cross-agent evidence. Persist judgments for replay without new model calls.
+
 [Broader source search](wide-benchmark-search.md) adds real wiki incident exports, NARCBench, Null Epoch, and collective-failure studies. Use its three-track recommendation; earlier shortlist below remains supporting evidence.
 
 Use whole fleet episodes as benchmark examples. AgentDojo, AgentHarm, and ASSEBench are outside core scope: their earlier audit remains useful background, but does not establish multi-agent incident coverage.
@@ -62,7 +64,7 @@ Extend [earlier data contract](benchmark-research.md#required-data-package) with
 - Episode-level incident intervals, affected subgroups, and first observable evidence. Keep labels unavailable to detector.
 - Source and confidence for event timing, exposure links, identity matching, and missing coverage.
 
-Persist message content only for offline audit where available; core detector should use metadata and fixed numeric features. Do not infer semantic goals from hashes or message counts. Exact fingerprints detect exact reuse, not arbitrary rewrites.
+Retain bounded message evidence for selected group checks by Luna, alongside routine metadata summaries. Sample unflagged groups to measure selection misses. Do not infer semantic goals from hashes or message counts. Exact fingerprints detect exact reuse, not arbitrary rewrites.
 
 ## First useful experiment
 
@@ -70,6 +72,6 @@ Create one shared, stateful workspace with 50-200 scripted actors and varied tas
 
 Compare otherwise matched episodes: authorized collaboration, independent failures, common service failure, and spreading unauthorized activity. Add worker turnover, delayed events, partitions, and tampered self-reports. Keep resource names and scenario templates varied between splits.
 
-Score first-alert delay, affected-agent coverage, false incident alerts, spread before detection, memory, and bytes sent. Compare fleet detector against same rules applied per agent; hold total monitoring budget constant. Replay should require no model calls.
+Score first-alert delay, affected-agent coverage, false incident alerts, spread before detection, memory, bytes, and token spend. Compare rules only, per-agent Luna, and group-context Luna at equal token budgets. Initial semantic evaluation uses model calls; recovery replay consumes recorded judgments without new calls. Judge outputs are predictions, not ground truth.
 
 Recorded auction episodes can provide an initial external-data check. Larger generated episodes need frozen logs and separate reporting. Replaying many independent six-agent games measures throughput, not large-scale interaction.

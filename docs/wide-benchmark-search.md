@@ -1,6 +1,6 @@
 # Broad fleet benchmark search
 
-Checked 2026-09-12. Goal: concerning patterns across interacting agents, with cheap replay and no model calls during monitoring.
+Checked 2026-09-12. Original goal: concerning patterns across interacting agents, with cheap replay and no model calls during monitoring. Superseded runtime choice: [budgeted GPT-5.6 Luna checks](runtime-plan.md) over selected group conversations; recovery replay reuses recorded judgments. Source audit below remains relevant.
 
 ## Finding
 
