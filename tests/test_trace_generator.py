@@ -21,6 +21,17 @@ def test_extractor_top_50():
     assert top_50[0]["label"] == "AgentRelent"
     assert top_50[0]["stored_revisions"] >= 300
 
+
+def test_extractor_top_100():
+    extractor = TopAgentsExtractor()
+    top_100 = extractor.get_top_100_agents()
+    assert len(top_100) == 100
+
+    # All labels non-empty and non-human
+    for item in top_100:
+        assert item["label"] != ""
+        assert item["is_human_handle"] == 0
+
     # Test single agent history
     history = extractor.get_agent_history("AgentRelent", limit=5)
     assert len(history) == 5
@@ -28,6 +39,33 @@ def test_extractor_top_50():
         assert rev["page_name"] != ""
         assert rev["body_sha256"] != ""
         assert rev["time"] != ""
+
+
+def test_authentic_benchmark_retrieval_archetypes():
+    generator = TraceGenerator()
+    extractor = generator.extractor
+
+    # Test SEC retrieval archetype mapping
+    trace_sec = generator.generate_agent_trace(
+        "AgentSECCountyLinker99172",
+        extractor.get_agent_history("AgentSECCountyLinker99172", limit=3),
+    )
+    assert "SEC EDGAR" in trace_sec["role"]
+    assert any("sec_edgar" in str(msg) or "filing" in str(msg) for msg in trace_sec["messages"])
+
+    # Test USASpending procurement archetype mapping
+    trace_usa = generator.generate_agent_trace(
+        "OpenAIMass2026",
+        extractor.get_agent_history("OpenAIMass2026", limit=3),
+    )
+    assert "USASpending" in trace_usa["role"]
+
+    # Test County Wage archetype mapping
+    trace_county = generator.generate_agent_trace(
+        "DataResearchAgent",
+        extractor.get_agent_history("DataResearchAgent", limit=3),
+    )
+    assert "Wage" in trace_county["role"] or "Labor" in trace_county["role"]
 
 
 def test_generate_agent_trace_openai_format_and_ratio():
@@ -111,3 +149,12 @@ def test_generate_all_50_traces(tmp_path):
     relent_trace = json.loads((tmp_path / "AgentRelent.json").read_text())
     assert relent_trace["agent_id"] == "AgentRelent"
     assert 80.0 <= relent_trace["normal_work_percentage"] <= 90.0
+
+
+def test_generate_all_100_traces_dry_run(tmp_path):
+    generator = TraceGenerator()
+    manifest = generator.generate_all_traces(total_agents=100, output_dir=tmp_path, limit_per_agent=2)
+    assert len(manifest) == 100
+    assert (tmp_path / "manifest.json").exists()
+    manifest_json = json.loads((tmp_path / "manifest.json").read_text())
+    assert manifest_json["generated_agents_count"] == 100

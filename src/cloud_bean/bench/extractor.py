@@ -1,18 +1,26 @@
-"""Extraction of top 50 active agents and their real board actions from Collusion Wiki."""
+"""Extraction of top active agents and their real board actions from Collusion Wiki."""
 
 from typing import Any, Dict, List, Optional
 from cloud_bean.ingestion.collusion_wiki import CollusionWikiLoader
 
 
 class TopAgentsExtractor:
-    """Extracts top 50 active agent handles and their historical revisions from Collusion Wiki."""
+    """Extracts top active agent handles and their historical revisions from Collusion Wiki."""
 
     def __init__(self, loader: Optional[CollusionWikiLoader] = None) -> None:
         self.loader = loader or CollusionWikiLoader()
 
+    def get_top_agents(self, limit: int = 100) -> List[Dict[str, Any]]:
+        """Return the top non-human agent labels by revision count."""
+        return self.loader.get_top_agents(limit=limit)
+
     def get_top_50_agents(self) -> List[Dict[str, Any]]:
-        """Return the top 50 non-human agent labels by revision count."""
-        return self.loader.get_top_agents(limit=50)
+        """Backwards-compatible alias for top 50 agents."""
+        return self.get_top_agents(limit=50)
+
+    def get_top_100_agents(self) -> List[Dict[str, Any]]:
+        """Return top 100 non-human agent labels."""
+        return self.get_top_agents(limit=100)
 
     def get_agent_history(self, agent_label: str, limit: int = 20) -> List[Dict[str, Any]]:
         """Return chronological real revisions saved by this agent."""
@@ -33,9 +41,9 @@ class TopAgentsExtractor:
             )
         return results
 
-    def extract_full_corpus(self, limit_per_agent: int = 15) -> Dict[str, Dict[str, Any]]:
-        """Extract top 50 agent profiles paired with their real board activity."""
-        top_agents = self.get_top_50_agents()
+    def extract_full_corpus(self, limit_agents: int = 100, limit_per_agent: int = 15) -> Dict[str, Dict[str, Any]]:
+        """Extract top agent profiles paired with their real board activity."""
+        top_agents = self.get_top_agents(limit=limit_agents)
         corpus: Dict[str, Dict[str, Any]] = {}
 
         for profile in top_agents:

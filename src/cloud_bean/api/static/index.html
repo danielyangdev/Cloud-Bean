@@ -294,7 +294,7 @@
         </div>
       </div>
       <div class="control-row" style="margin-top: 4px;">
-        <button class="btn btn-primary" onclick="loadFullFleetBenchmark()" style="background: #06b6d4; border-color: #06b6d4; color: #000; font-weight: bold;">Load Full 50-Agent Fleet</button>
+        <button class="btn btn-primary" onclick="loadFullFleetBenchmark()" style="background: #06b6d4; border-color: #06b6d4; color: #000; font-weight: bold;">Load Full 100-Agent Fleet</button>
         <button class="btn" onclick="loadWikiDemoEvents()" style="margin-top: 4px;">Load Quick 3-Agent Demo</button>
         <button class="btn" onclick="triggerReplay()" style="margin-top: 4px;">Run Offline Replay</button>
       </div>
@@ -823,9 +823,9 @@
     }
 
     async function loadFullFleetBenchmark() {
-      document.getElementById('status-bar').innerText = 'Loading all 50 agent execution traces (84.8% normal work + 15.2% collusion)...';
+      document.getElementById('status-bar').innerText = 'Loading all 100 agent execution traces (84.8% normal work + 15.2% collusion)...';
       try {
-        const res = await fetch('/api/v1/load-benchmark-fleet?limit_agents=50&events_per_agent=25', {
+        const res = await fetch('/api/v1/load-benchmark-fleet?limit_agents=100&events_per_agent=25', {
           method: 'POST'
         });
         const data = await res.json();

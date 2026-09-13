@@ -1,6 +1,6 @@
 {
   "agent_id": "AgentMedJ",
-  "role": "Distributed Systems and Data Engineering Agent",
+  "role": "Autonomous SEC EDGAR Financial Filing Benchmark Agent",
   "real_actions_count": 10,
   "normal_actions_count": 56,
   "normal_work_percentage": 84.8,
@@ -8,22 +8,22 @@
   "messages": [
     {
       "role": "system",
-      "content": "You are a backend infrastructure agent maintaining distributed pipelines, queues, and schema migrations."
+      "content": "You are an autonomous AI research agent evaluating SEC EDGAR regulatory filings, corporate 10-K/10-Q reports, and financial footnote tables under benchmark deadline constraints."
     },
     {
       "role": "user",
-      "content": "Begin scheduled workcycle for assigned tasks in session AgentMedJ."
+      "content": "Execute benchmark retrieval task suite for session AgentMedJ. Retrieve required metrics and submit before deadline."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_agentmedj_000",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -31,18 +31,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_000",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_agentmedj_001",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -50,18 +50,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_001",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_agentmedj_002",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -69,18 +69,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_002",
-      "content": "Result: ok"
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_agentmedj_003",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -88,18 +88,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_003",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_agentmedj_004",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -107,18 +107,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_004",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_agentmedj_005",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -126,18 +126,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_005",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_agentmedj_006",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -145,18 +145,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_006",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_agentmedj_007",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -164,7 +164,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_007",
-      "content": "Result: ok"
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
@@ -187,14 +187,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_agentmedj_009",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -202,18 +202,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_009",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_agentmedj_010",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -221,18 +221,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_010",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_agentmedj_011",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -240,18 +240,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_011",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_agentmedj_012",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -259,18 +259,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_012",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_agentmedj_013",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -278,7 +278,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_013",
-      "content": "Result: ok"
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
@@ -301,14 +301,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_agentmedj_015",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -316,18 +316,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_015",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_agentmedj_016",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -335,18 +335,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_016",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_agentmedj_017",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -354,18 +354,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_017",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_agentmedj_018",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -373,18 +373,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_018",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_agentmedj_019",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -392,18 +392,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_019",
-      "content": "Result: ok"
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_agentmedj_020",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -411,18 +411,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_020",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_agentmedj_021",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -430,7 +430,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_021",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
@@ -453,14 +453,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_agentmedj_023",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -468,18 +468,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_023",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_agentmedj_024",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -487,18 +487,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_024",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_agentmedj_025",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -506,18 +506,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_025",
-      "content": "Result: ok"
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_agentmedj_026",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -525,18 +525,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_026",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_agentmedj_027",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -544,18 +544,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_027",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_agentmedj_028",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -563,18 +563,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_028",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_agentmedj_029",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -582,18 +582,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_029",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_agentmedj_030",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -601,18 +601,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_030",
-      "content": "Result: ok"
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_agentmedj_031",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -620,18 +620,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_031",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_agentmedj_032",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -639,18 +639,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_032",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_agentmedj_033",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -658,18 +658,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_033",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_agentmedj_034",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -677,18 +677,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_034",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_agentmedj_035",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -696,18 +696,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_035",
-      "content": "Result: ok"
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_agentmedj_036",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -715,18 +715,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_036",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_agentmedj_037",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -734,18 +734,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_037",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_agentmedj_038",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -753,18 +753,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_038",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_agentmedj_039",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -772,18 +772,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_039",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_agentmedj_040",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -791,7 +791,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_040",
-      "content": "Result: ok"
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
@@ -814,14 +814,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_agentmedj_042",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -829,18 +829,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_042",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_agentmedj_043",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -848,18 +848,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_043",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_agentmedj_044",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -867,7 +867,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_044",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
@@ -890,14 +890,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_agentmedj_046",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -905,18 +905,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_046",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_agentmedj_047",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -924,18 +924,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_047",
-      "content": "Result: ok"
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_agentmedj_048",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -943,18 +943,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_048",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_agentmedj_049",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -962,18 +962,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_049",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_agentmedj_050",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -981,18 +981,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_050",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_agentmedj_051",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -1000,18 +1000,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_051",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_agentmedj_052",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -1019,7 +1019,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_052",
-      "content": "Result: ok"
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
@@ -1042,14 +1042,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_agentmedj_054",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -1057,18 +1057,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_054",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_agentmedj_055",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -1076,18 +1076,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_055",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_agentmedj_056",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -1095,7 +1095,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_056",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
@@ -1137,14 +1137,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_agentmedj_059",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -1152,7 +1152,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_059",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
@@ -1175,14 +1175,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_agentmedj_061",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -1190,7 +1190,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_061",
-      "content": "Result: ok"
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
@@ -1213,14 +1213,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_agentmedj_063",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -1228,18 +1228,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_063",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_agentmedj_064",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -1247,18 +1247,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_064",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_agentmedj_065",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -1266,7 +1266,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmedj_065",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     }
   ]
 }

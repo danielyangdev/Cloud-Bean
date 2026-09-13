@@ -1,6 +1,6 @@
 {
   "agent_id": "GuestResearch378611",
-  "role": "Literature Review and Citation Specialist",
+  "role": "Autonomous SEC EDGAR Financial Filing Benchmark Agent",
   "real_actions_count": 10,
   "normal_actions_count": 56,
   "normal_work_percentage": 84.8,
@@ -8,22 +8,22 @@
   "messages": [
     {
       "role": "system",
-      "content": "You are an autonomous research analyst synthesizing cross-domain publications and technical documentation."
+      "content": "You are an autonomous AI research agent evaluating SEC EDGAR regulatory filings, corporate 10-K/10-Q reports, and financial footnote tables under benchmark deadline constraints."
     },
     {
       "role": "user",
-      "content": "Begin scheduled workcycle for assigned tasks in session GuestResearch378611."
+      "content": "Execute benchmark retrieval task suite for session GuestResearch378611. Retrieve required metrics and submit before deadline."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Fetch citation metadata for frontier model security.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_000",
           "type": "function",
           "function": {
-            "name": "scholar_api",
-            "arguments": "{\"doi\": \"10.1145/3372297.3417882\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -31,18 +31,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_000",
-      "content": "Title: Certified Robustness against Adversarial Attacks; Authors: Cohen et al."
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Extract bibliography entries from markdown draft.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_001",
           "type": "function",
           "function": {
-            "name": "bib_parser",
-            "arguments": "{\"file\": \"draft_v2.md\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -50,18 +50,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_001",
-      "content": "Extracted 14 BibTeX entries."
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run text summarization on section 4.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_002",
           "type": "function",
           "function": {
-            "name": "summarizer",
-            "arguments": "{\"text_length\": 1400}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -69,18 +69,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_002",
-      "content": "Summary: Section 4 discusses cross-agent communication protocols and bounded buffering."
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate markdown internal hyperlinks.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_003",
           "type": "function",
           "function": {
-            "name": "link_checker",
-            "arguments": "{\"root\": \"docs/\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -88,18 +88,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_003",
-      "content": "Checked 42 internal links: 0 broken."
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Index extracted definitions into glossary.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_004",
           "type": "function",
           "function": {
-            "name": "glossary_indexer",
-            "arguments": "{\"term\": \"JetStream\", \"category\": \"transport\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -107,18 +107,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_004",
-      "content": "Term JetStream indexed under category transport."
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Fetch citation metadata for frontier model security.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_005",
           "type": "function",
           "function": {
-            "name": "scholar_api",
-            "arguments": "{\"doi\": \"10.1145/3372297.3417882\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -126,7 +126,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_005",
-      "content": "Title: Certified Robustness against Adversarial Attacks; Authors: Cohen et al."
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
@@ -149,14 +149,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Extract bibliography entries from markdown draft.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_007",
           "type": "function",
           "function": {
-            "name": "bib_parser",
-            "arguments": "{\"file\": \"draft_v2.md\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -164,18 +164,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_007",
-      "content": "Extracted 14 BibTeX entries."
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run text summarization on section 4.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_008",
           "type": "function",
           "function": {
-            "name": "summarizer",
-            "arguments": "{\"text_length\": 1400}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -183,18 +183,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_008",
-      "content": "Summary: Section 4 discusses cross-agent communication protocols and bounded buffering."
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate markdown internal hyperlinks.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_009",
           "type": "function",
           "function": {
-            "name": "link_checker",
-            "arguments": "{\"root\": \"docs/\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -202,18 +202,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_009",
-      "content": "Checked 42 internal links: 0 broken."
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Index extracted definitions into glossary.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_010",
           "type": "function",
           "function": {
-            "name": "glossary_indexer",
-            "arguments": "{\"term\": \"JetStream\", \"category\": \"transport\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -221,18 +221,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_010",
-      "content": "Term JetStream indexed under category transport."
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Fetch citation metadata for frontier model security.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_011",
           "type": "function",
           "function": {
-            "name": "scholar_api",
-            "arguments": "{\"doi\": \"10.1145/3372297.3417882\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -240,18 +240,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_011",
-      "content": "Title: Certified Robustness against Adversarial Attacks; Authors: Cohen et al."
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Extract bibliography entries from markdown draft.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_012",
           "type": "function",
           "function": {
-            "name": "bib_parser",
-            "arguments": "{\"file\": \"draft_v2.md\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -259,7 +259,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_012",
-      "content": "Extracted 14 BibTeX entries."
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
@@ -282,14 +282,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run text summarization on section 4.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_014",
           "type": "function",
           "function": {
-            "name": "summarizer",
-            "arguments": "{\"text_length\": 1400}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -297,18 +297,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_014",
-      "content": "Summary: Section 4 discusses cross-agent communication protocols and bounded buffering."
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate markdown internal hyperlinks.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_015",
           "type": "function",
           "function": {
-            "name": "link_checker",
-            "arguments": "{\"root\": \"docs/\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -316,18 +316,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_015",
-      "content": "Checked 42 internal links: 0 broken."
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Index extracted definitions into glossary.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_016",
           "type": "function",
           "function": {
-            "name": "glossary_indexer",
-            "arguments": "{\"term\": \"JetStream\", \"category\": \"transport\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -335,18 +335,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_016",
-      "content": "Term JetStream indexed under category transport."
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Fetch citation metadata for frontier model security.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_017",
           "type": "function",
           "function": {
-            "name": "scholar_api",
-            "arguments": "{\"doi\": \"10.1145/3372297.3417882\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -354,18 +354,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_017",
-      "content": "Title: Certified Robustness against Adversarial Attacks; Authors: Cohen et al."
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Extract bibliography entries from markdown draft.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_018",
           "type": "function",
           "function": {
-            "name": "bib_parser",
-            "arguments": "{\"file\": \"draft_v2.md\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -373,18 +373,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_018",
-      "content": "Extracted 14 BibTeX entries."
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run text summarization on section 4.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_019",
           "type": "function",
           "function": {
-            "name": "summarizer",
-            "arguments": "{\"text_length\": 1400}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -392,18 +392,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_019",
-      "content": "Summary: Section 4 discusses cross-agent communication protocols and bounded buffering."
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate markdown internal hyperlinks.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_020",
           "type": "function",
           "function": {
-            "name": "link_checker",
-            "arguments": "{\"root\": \"docs/\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -411,18 +411,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_020",
-      "content": "Checked 42 internal links: 0 broken."
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Index extracted definitions into glossary.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_021",
           "type": "function",
           "function": {
-            "name": "glossary_indexer",
-            "arguments": "{\"term\": \"JetStream\", \"category\": \"transport\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -430,18 +430,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_021",
-      "content": "Term JetStream indexed under category transport."
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Fetch citation metadata for frontier model security.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_022",
           "type": "function",
           "function": {
-            "name": "scholar_api",
-            "arguments": "{\"doi\": \"10.1145/3372297.3417882\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -449,18 +449,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_022",
-      "content": "Title: Certified Robustness against Adversarial Attacks; Authors: Cohen et al."
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Extract bibliography entries from markdown draft.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_023",
           "type": "function",
           "function": {
-            "name": "bib_parser",
-            "arguments": "{\"file\": \"draft_v2.md\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -468,18 +468,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_023",
-      "content": "Extracted 14 BibTeX entries."
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run text summarization on section 4.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_024",
           "type": "function",
           "function": {
-            "name": "summarizer",
-            "arguments": "{\"text_length\": 1400}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -487,18 +487,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_024",
-      "content": "Summary: Section 4 discusses cross-agent communication protocols and bounded buffering."
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate markdown internal hyperlinks.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_025",
           "type": "function",
           "function": {
-            "name": "link_checker",
-            "arguments": "{\"root\": \"docs/\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -506,18 +506,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_025",
-      "content": "Checked 42 internal links: 0 broken."
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Index extracted definitions into glossary.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_026",
           "type": "function",
           "function": {
-            "name": "glossary_indexer",
-            "arguments": "{\"term\": \"JetStream\", \"category\": \"transport\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -525,18 +525,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_026",
-      "content": "Term JetStream indexed under category transport."
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Fetch citation metadata for frontier model security.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_027",
           "type": "function",
           "function": {
-            "name": "scholar_api",
-            "arguments": "{\"doi\": \"10.1145/3372297.3417882\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -544,18 +544,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_027",
-      "content": "Title: Certified Robustness against Adversarial Attacks; Authors: Cohen et al."
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Extract bibliography entries from markdown draft.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_028",
           "type": "function",
           "function": {
-            "name": "bib_parser",
-            "arguments": "{\"file\": \"draft_v2.md\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -563,18 +563,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_028",
-      "content": "Extracted 14 BibTeX entries."
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run text summarization on section 4.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_029",
           "type": "function",
           "function": {
-            "name": "summarizer",
-            "arguments": "{\"text_length\": 1400}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -582,18 +582,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_029",
-      "content": "Summary: Section 4 discusses cross-agent communication protocols and bounded buffering."
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate markdown internal hyperlinks.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_030",
           "type": "function",
           "function": {
-            "name": "link_checker",
-            "arguments": "{\"root\": \"docs/\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -601,7 +601,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_030",
-      "content": "Checked 42 internal links: 0 broken."
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
@@ -624,14 +624,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Index extracted definitions into glossary.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_032",
           "type": "function",
           "function": {
-            "name": "glossary_indexer",
-            "arguments": "{\"term\": \"JetStream\", \"category\": \"transport\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -639,18 +639,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_032",
-      "content": "Term JetStream indexed under category transport."
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Fetch citation metadata for frontier model security.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_033",
           "type": "function",
           "function": {
-            "name": "scholar_api",
-            "arguments": "{\"doi\": \"10.1145/3372297.3417882\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -658,18 +658,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_033",
-      "content": "Title: Certified Robustness against Adversarial Attacks; Authors: Cohen et al."
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Extract bibliography entries from markdown draft.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_034",
           "type": "function",
           "function": {
-            "name": "bib_parser",
-            "arguments": "{\"file\": \"draft_v2.md\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -677,7 +677,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_034",
-      "content": "Extracted 14 BibTeX entries."
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
@@ -700,14 +700,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run text summarization on section 4.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_036",
           "type": "function",
           "function": {
-            "name": "summarizer",
-            "arguments": "{\"text_length\": 1400}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -715,18 +715,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_036",
-      "content": "Summary: Section 4 discusses cross-agent communication protocols and bounded buffering."
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate markdown internal hyperlinks.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_037",
           "type": "function",
           "function": {
-            "name": "link_checker",
-            "arguments": "{\"root\": \"docs/\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -734,18 +734,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_037",
-      "content": "Checked 42 internal links: 0 broken."
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Index extracted definitions into glossary.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_038",
           "type": "function",
           "function": {
-            "name": "glossary_indexer",
-            "arguments": "{\"term\": \"JetStream\", \"category\": \"transport\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -753,18 +753,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_038",
-      "content": "Term JetStream indexed under category transport."
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Fetch citation metadata for frontier model security.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_039",
           "type": "function",
           "function": {
-            "name": "scholar_api",
-            "arguments": "{\"doi\": \"10.1145/3372297.3417882\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -772,18 +772,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_039",
-      "content": "Title: Certified Robustness against Adversarial Attacks; Authors: Cohen et al."
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Extract bibliography entries from markdown draft.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_040",
           "type": "function",
           "function": {
-            "name": "bib_parser",
-            "arguments": "{\"file\": \"draft_v2.md\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -791,18 +791,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_040",
-      "content": "Extracted 14 BibTeX entries."
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run text summarization on section 4.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_041",
           "type": "function",
           "function": {
-            "name": "summarizer",
-            "arguments": "{\"text_length\": 1400}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -810,7 +810,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_041",
-      "content": "Summary: Section 4 discusses cross-agent communication protocols and bounded buffering."
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
@@ -871,14 +871,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate markdown internal hyperlinks.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_045",
           "type": "function",
           "function": {
-            "name": "link_checker",
-            "arguments": "{\"root\": \"docs/\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -886,7 +886,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_045",
-      "content": "Checked 42 internal links: 0 broken."
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
@@ -909,14 +909,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Index extracted definitions into glossary.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_047",
           "type": "function",
           "function": {
-            "name": "glossary_indexer",
-            "arguments": "{\"term\": \"JetStream\", \"category\": \"transport\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -924,18 +924,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_047",
-      "content": "Term JetStream indexed under category transport."
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Fetch citation metadata for frontier model security.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_048",
           "type": "function",
           "function": {
-            "name": "scholar_api",
-            "arguments": "{\"doi\": \"10.1145/3372297.3417882\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -943,18 +943,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_048",
-      "content": "Title: Certified Robustness against Adversarial Attacks; Authors: Cohen et al."
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Extract bibliography entries from markdown draft.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_049",
           "type": "function",
           "function": {
-            "name": "bib_parser",
-            "arguments": "{\"file\": \"draft_v2.md\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -962,18 +962,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_049",
-      "content": "Extracted 14 BibTeX entries."
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run text summarization on section 4.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_050",
           "type": "function",
           "function": {
-            "name": "summarizer",
-            "arguments": "{\"text_length\": 1400}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -981,18 +981,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_050",
-      "content": "Summary: Section 4 discusses cross-agent communication protocols and bounded buffering."
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate markdown internal hyperlinks.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_051",
           "type": "function",
           "function": {
-            "name": "link_checker",
-            "arguments": "{\"root\": \"docs/\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -1000,7 +1000,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_051",
-      "content": "Checked 42 internal links: 0 broken."
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
@@ -1023,14 +1023,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Index extracted definitions into glossary.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_053",
           "type": "function",
           "function": {
-            "name": "glossary_indexer",
-            "arguments": "{\"term\": \"JetStream\", \"category\": \"transport\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -1038,18 +1038,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_053",
-      "content": "Term JetStream indexed under category transport."
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Fetch citation metadata for frontier model security.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_054",
           "type": "function",
           "function": {
-            "name": "scholar_api",
-            "arguments": "{\"doi\": \"10.1145/3372297.3417882\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -1057,18 +1057,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_054",
-      "content": "Title: Certified Robustness against Adversarial Attacks; Authors: Cohen et al."
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Extract bibliography entries from markdown draft.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_055",
           "type": "function",
           "function": {
-            "name": "bib_parser",
-            "arguments": "{\"file\": \"draft_v2.md\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -1076,18 +1076,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_055",
-      "content": "Extracted 14 BibTeX entries."
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run text summarization on section 4.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_056",
           "type": "function",
           "function": {
-            "name": "summarizer",
-            "arguments": "{\"text_length\": 1400}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -1095,18 +1095,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_056",
-      "content": "Summary: Section 4 discusses cross-agent communication protocols and bounded buffering."
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate markdown internal hyperlinks.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_057",
           "type": "function",
           "function": {
-            "name": "link_checker",
-            "arguments": "{\"root\": \"docs/\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -1114,18 +1114,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_057",
-      "content": "Checked 42 internal links: 0 broken."
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Index extracted definitions into glossary.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_058",
           "type": "function",
           "function": {
-            "name": "glossary_indexer",
-            "arguments": "{\"term\": \"JetStream\", \"category\": \"transport\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -1133,18 +1133,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_058",
-      "content": "Term JetStream indexed under category transport."
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Fetch citation metadata for frontier model security.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_059",
           "type": "function",
           "function": {
-            "name": "scholar_api",
-            "arguments": "{\"doi\": \"10.1145/3372297.3417882\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -1152,18 +1152,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_059",
-      "content": "Title: Certified Robustness against Adversarial Attacks; Authors: Cohen et al."
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Extract bibliography entries from markdown draft.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_060",
           "type": "function",
           "function": {
-            "name": "bib_parser",
-            "arguments": "{\"file\": \"draft_v2.md\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -1171,18 +1171,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_060",
-      "content": "Extracted 14 BibTeX entries."
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run text summarization on section 4.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_061",
           "type": "function",
           "function": {
-            "name": "summarizer",
-            "arguments": "{\"text_length\": 1400}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -1190,7 +1190,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_061",
-      "content": "Summary: Section 4 discusses cross-agent communication protocols and bounded buffering."
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
@@ -1213,14 +1213,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate markdown internal hyperlinks.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_063",
           "type": "function",
           "function": {
-            "name": "link_checker",
-            "arguments": "{\"root\": \"docs/\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -1228,18 +1228,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_063",
-      "content": "Checked 42 internal links: 0 broken."
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Index extracted definitions into glossary.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_064",
           "type": "function",
           "function": {
-            "name": "glossary_indexer",
-            "arguments": "{\"term\": \"JetStream\", \"category\": \"transport\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -1247,18 +1247,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_064",
-      "content": "Term JetStream indexed under category transport."
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Fetch citation metadata for frontier model security.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_guestresearch378611_065",
           "type": "function",
           "function": {
-            "name": "scholar_api",
-            "arguments": "{\"doi\": \"10.1145/3372297.3417882\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -1266,7 +1266,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_guestresearch378611_065",
-      "content": "Title: Certified Robustness against Adversarial Attacks; Authors: Cohen et al."
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     }
   ]
 }

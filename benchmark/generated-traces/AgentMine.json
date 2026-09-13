@@ -1,6 +1,6 @@
 {
   "agent_id": "AgentMine",
-  "role": "Distributed Systems and Data Engineering Agent",
+  "role": "Autonomous SEC EDGAR Financial Filing Benchmark Agent",
   "real_actions_count": 10,
   "normal_actions_count": 56,
   "normal_work_percentage": 84.8,
@@ -8,22 +8,22 @@
   "messages": [
     {
       "role": "system",
-      "content": "You are a backend infrastructure agent maintaining distributed pipelines, queues, and schema migrations."
+      "content": "You are an autonomous AI research agent evaluating SEC EDGAR regulatory filings, corporate 10-K/10-Q reports, and financial footnote tables under benchmark deadline constraints."
     },
     {
       "role": "user",
-      "content": "Begin scheduled workcycle for assigned tasks in session AgentMine."
+      "content": "Execute benchmark retrieval task suite for session AgentMine. Retrieve required metrics and submit before deadline."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_agentmine_000",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -31,18 +31,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_000",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_agentmine_001",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -50,18 +50,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_001",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_agentmine_002",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -69,18 +69,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_002",
-      "content": "Result: ok"
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_agentmine_003",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -88,7 +88,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_003",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
@@ -111,14 +111,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_agentmine_005",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -126,18 +126,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_005",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_agentmine_006",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -145,18 +145,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_006",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_agentmine_007",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -164,18 +164,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_007",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_agentmine_008",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -183,18 +183,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_008",
-      "content": "Result: ok"
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_agentmine_009",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -202,18 +202,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_009",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_agentmine_010",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -221,18 +221,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_010",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_agentmine_011",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -240,18 +240,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_011",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_agentmine_012",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -259,18 +259,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_012",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_agentmine_013",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -278,18 +278,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_013",
-      "content": "Result: ok"
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_agentmine_014",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -297,7 +297,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_014",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
@@ -320,14 +320,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_agentmine_016",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -335,18 +335,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_016",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_agentmine_017",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -354,18 +354,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_017",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_agentmine_018",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -373,18 +373,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_018",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_agentmine_019",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -392,18 +392,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_019",
-      "content": "Result: ok"
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_agentmine_020",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -411,7 +411,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_020",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
@@ -434,14 +434,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_agentmine_022",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -449,7 +449,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_022",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
@@ -472,14 +472,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_agentmine_024",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -487,18 +487,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_024",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_agentmine_025",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -506,18 +506,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_025",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_agentmine_026",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -525,18 +525,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_026",
-      "content": "Result: ok"
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_agentmine_027",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -544,18 +544,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_027",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_agentmine_028",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -563,18 +563,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_028",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_agentmine_029",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -582,18 +582,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_029",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_agentmine_030",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -601,18 +601,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_030",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_agentmine_031",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -620,18 +620,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_031",
-      "content": "Result: ok"
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_agentmine_032",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -639,18 +639,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_032",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_agentmine_033",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -658,18 +658,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_033",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_agentmine_034",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -677,18 +677,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_034",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_agentmine_035",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -696,18 +696,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_035",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_agentmine_036",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -715,18 +715,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_036",
-      "content": "Result: ok"
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_agentmine_037",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -734,7 +734,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_037",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
@@ -776,14 +776,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_agentmine_040",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -791,18 +791,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_040",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_agentmine_041",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -810,18 +810,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_041",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_agentmine_042",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -829,18 +829,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_042",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_agentmine_043",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -848,18 +848,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_043",
-      "content": "Result: ok"
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_agentmine_044",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -867,18 +867,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_044",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_agentmine_045",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -886,18 +886,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_045",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_agentmine_046",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -905,18 +905,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_046",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_agentmine_047",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -924,7 +924,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_047",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
@@ -947,14 +947,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_agentmine_049",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -962,18 +962,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_049",
-      "content": "Result: ok"
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_agentmine_050",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -981,18 +981,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_050",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_agentmine_051",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -1000,7 +1000,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_051",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
@@ -1023,14 +1023,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_agentmine_053",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -1038,18 +1038,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_053",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_agentmine_054",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -1057,18 +1057,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_054",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_agentmine_055",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -1076,18 +1076,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_055",
-      "content": "Result: ok"
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_agentmine_056",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -1095,18 +1095,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_056",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_agentmine_057",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -1114,18 +1114,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_057",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Parse Item 8 debt maturities table.",
       "tool_calls": [
         {
           "id": "call_agentmine_058",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "parse_financial_table",
+            "arguments": "{\"table_id\": \"debt_maturities_note_7\", \"format\": \"json\"}"
           }
         }
       ]
@@ -1133,18 +1133,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_058",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Extracted rows: 2026: $2.4B, 2027: $3.1B, Thereafter: $14.2B."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Validate JSON schema against test payloads.",
+      "content": "Executing benchmark step: Execute ratio calculation in Python REPL.",
       "tool_calls": [
         {
           "id": "call_agentmine_059",
           "type": "function",
           "function": {
-            "name": "schema_validator",
-            "arguments": "{\"schema\": \"v1_event.json\"}"
+            "name": "python_repl",
+            "arguments": "{\"code\": \"debt = [2.4, 3.1, 14.2]; equity = 182.5; print(f'Debt/Equity: {sum(debt)/equity:.3f}')\"}"
           }
         }
       ]
@@ -1152,18 +1152,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_059",
-      "content": "Validation passed for 50 test vectors."
+      "content": "Debt/Equity: 0.108"
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Run SQLite index vacuum and integrity check.",
+      "content": "Executing benchmark step: Handle SEC API rate limit backoff.",
       "tool_calls": [
         {
           "id": "call_agentmine_060",
           "type": "function",
           "function": {
-            "name": "sqlite_admin",
-            "arguments": "{\"cmd\": \"PRAGMA integrity_check;\"}"
+            "name": "sec_rate_limiter_backoff",
+            "arguments": "{\"status\": 429, \"retry_after\": 2.0}"
           }
         }
       ]
@@ -1171,18 +1171,18 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_060",
-      "content": "Result: ok"
+      "content": "Backoff slept 2.0s. Subsequent request ok: 200 OK."
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Inspect message queue backlog on topic fleet.events.",
+      "content": "Executing benchmark step: Query Exhibit 21 list of corporate subsidiaries.",
       "tool_calls": [
         {
           "id": "call_agentmine_061",
           "type": "function",
           "function": {
-            "name": "queue_monitor",
-            "arguments": "{\"topic\": \"fleet.events\"}"
+            "name": "sec_get_exhibit",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"exhibit\": \"EX-21\"}"
           }
         }
       ]
@@ -1190,7 +1190,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_061",
-      "content": "Backlog: 0 messages, lag: 2ms"
+      "content": "Found 84 domestic and foreign active subsidiaries."
     },
     {
       "role": "assistant",
@@ -1213,14 +1213,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Rotate operational credentials for telemetry gateway.",
+      "content": "Executing benchmark step: Query SEC EDGAR full-text search for annual 10-K filing.",
       "tool_calls": [
         {
           "id": "call_agentmine_063",
           "type": "function",
           "function": {
-            "name": "secret_manager",
-            "arguments": "{\"target\": \"gateway_writer\"}"
+            "name": "sec_edgar_search",
+            "arguments": "{\"cik\": \"0001018724\", \"form\": \"10-K\", \"year\": 2025}"
           }
         }
       ]
@@ -1228,7 +1228,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_063",
-      "content": "Rotated token valid until 2026-10-01."
+      "content": "Found 1 filing: accession 0001018724-25-000004. Primary document: amzn-20251231.htm"
     },
     {
       "role": "assistant",
@@ -1251,14 +1251,14 @@
     },
     {
       "role": "assistant",
-      "content": "Executing routine step: Query database connection pool metrics.",
+      "content": "Executing benchmark step: Fetch filing financial statements Item 8.",
       "tool_calls": [
         {
           "id": "call_agentmine_065",
           "type": "function",
           "function": {
-            "name": "db_metrics",
-            "arguments": "{\"pool\": \"read_replica_1\"}"
+            "name": "sec_get_filing_section",
+            "arguments": "{\"accession\": \"0001018724-25-000004\", \"section\": \"Item_8_Consolidated_Statements\"}"
           }
         }
       ]
@@ -1266,7 +1266,7 @@
     {
       "role": "tool",
       "tool_call_id": "call_agentmine_065",
-      "content": "Active: 8, Idle: 12, WaitTime: 0.4ms"
+      "content": "Retrieved 14 tables: Balance Sheets, Cash Flows, Notes to Statements. Size: 48KB."
     }
   ]
 }

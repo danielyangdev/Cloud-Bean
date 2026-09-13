@@ -148,10 +148,10 @@ def create_app(
 
     @app.post("/api/v1/load-benchmark-fleet")
     def load_benchmark_fleet(
-        limit_agents: int = Query(default=50, ge=1, le=50),
+        limit_agents: int = Query(default=100, ge=1, le=100),
         events_per_agent: int = Query(default=20, ge=2, le=100),
     ) -> Dict[str, Any]:
-        """Load the pre-generated benchmark traces for up to 50 agents with ~85% normal work and 15% injected actions."""
+        """Load the pre-generated benchmark traces for up to 100 agents with ~85% normal work and 15% injected actions."""
         traces_dir = Path("benchmark/generated-traces")
         manifest_file = traces_dir / "manifest.json"
         if not manifest_file.exists():
