@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 import sqlite3
+import threading
 from typing import Any, Dict, List, Optional
 
 from cloud_bean.schemas.candidate import CandidateGroup
@@ -25,12 +26,13 @@ class JudgmentFindingStore:
 
     def __init__(self, db_path: str = ":memory:") -> None:
         self.db_path = db_path
-        self._conn = sqlite3.connect(self.db_path)
+        self._lock = threading.Lock()
+        self._conn = sqlite3.connect(self.db_path, check_same_thread=False)
         self._conn.row_factory = sqlite3.Row
         self._init_db()
 
     def _init_db(self) -> None:
-        with self._conn:
+        with self._lock, self._conn:
             self._conn.executescript(
                 """
                 CREATE TABLE IF NOT EXISTS candidate_groups (
@@ -87,7 +89,7 @@ class JudgmentFindingStore:
 
     def save_candidate_group(self, group: CandidateGroup) -> None:
         now_iso = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-        with self._conn:
+        with self._lock, self._conn:
             self._conn.execute(
                 """
                 INSERT OR REPLACE INTO candidate_groups (
@@ -110,7 +112,7 @@ class JudgmentFindingStore:
             )
 
     def save_evidence_packet(self, packet: EvidencePacket) -> None:
-        with self._conn:
+        with self._lock, self._conn:
             self._conn.execute(
                 """
                 INSERT OR REPLACE INTO evidence_packets (
@@ -127,7 +129,7 @@ class JudgmentFindingStore:
             )
 
     def save_accepted_judgment(self, judgment: LunaJudgment) -> None:
-        with self._conn:
+        with self._lock, self._conn:
             self._conn.execute(
                 """
                 INSERT OR REPLACE INTO accepted_judgments (
@@ -146,18 +148,19 @@ class JudgmentFindingStore:
             )
 
     def get_accepted_judgment(self, check_key: str) -> Optional[LunaJudgment]:
-        cursor = self._conn.cursor()
-        cursor.execute(
-            "SELECT judgment_json FROM accepted_judgments WHERE check_key = ?",
-            (check_key,),
-        )
-        row = cursor.fetchone()
-        if not row:
-            return None
-        return LunaJudgment.model_validate_json(row["judgment_json"])
+        with self._lock:
+            cursor = self._conn.cursor()
+            cursor.execute(
+                "SELECT judgment_json FROM accepted_judgments WHERE check_key = ?",
+                (check_key,),
+            )
+            row = cursor.fetchone()
+            if not row:
+                return None
+            return LunaJudgment.model_validate_json(row["judgment_json"])
 
     def save_finding(self, finding: Finding) -> None:
-        with self._conn:
+        with self._lock, self._conn:
             self._conn.execute(
                 """
                 INSERT OR REPLACE INTO findings (
@@ -186,50 +189,56 @@ class JudgmentFindingStore:
             )
 
     def get_finding(self, finding_id: str) -> Optional[Finding]:
-        cursor = self._conn.cursor()
-        cursor.execute(
-            "SELECT finding_json FROM findings WHERE finding_id = ?",
-            (finding_id,),
-        )
-        row = cursor.fetchone()
-        if not row:
-            return None
-        return Finding.model_validate_json(row["finding_json"])
+        with self._lock:
+            cursor = self._conn.cursor()
+            cursor.execute(
+                "SELECT finding_json FROM findings WHERE finding_id = ?",
+                (finding_id,),
+            )
+            row = cursor.fetchone()
+            if not row:
+                return None
+            return Finding.model_validate_json(row["finding_json"])
 
     def list_findings(self) -> List[Finding]:
-        cursor = self._conn.cursor()
-        cursor.execute("SELECT finding_json FROM findings ORDER BY detected_at ASC")
-        return [Finding.model_validate_json(row["finding_json"]) for row in cursor.fetchall()]
+        with self._lock:
+            cursor = self._conn.cursor()
+            cursor.execute("SELECT finding_json FROM findings ORDER BY detected_at ASC")
+            return [Finding.model_validate_json(row["finding_json"]) for row in cursor.fetchall()]
 
     def list_candidate_groups(self) -> List[CandidateGroup]:
-        cursor = self._conn.cursor()
-        cursor.execute("SELECT group_id, trigger_signal, window_start, window_end, target_resources, actors, event_ids, metrics, is_audit_sample FROM candidate_groups ORDER BY created_at ASC")
-        result = []
-        for row in cursor.fetchall():
-            result.append(
-                CandidateGroup(
-                    group_id=row["group_id"],
-                    trigger_signal=row["trigger_signal"],
-                    window_start=row["window_start"],
-                    window_end=row["window_end"],
-                    target_resources=json.loads(row["target_resources"]),
-                    actors=json.loads(row["actors"]),
-                    event_ids=json.loads(row["event_ids"]),
-                    metrics=json.loads(row["metrics"]),
-                    is_audit_sample=bool(row["is_audit_sample"]),
+        with self._lock:
+            cursor = self._conn.cursor()
+            cursor.execute("SELECT group_id, trigger_signal, window_start, window_end, target_resources, actors, event_ids, metrics, is_audit_sample FROM candidate_groups ORDER BY created_at ASC")
+            result = []
+            for row in cursor.fetchall():
+                result.append(
+                    CandidateGroup(
+                        group_id=row["group_id"],
+                        trigger_signal=row["trigger_signal"],
+                        window_start=row["window_start"],
+                        window_end=row["window_end"],
+                        target_resources=json.loads(row["target_resources"]),
+                        actors=json.loads(row["actors"]),
+                        event_ids=json.loads(row["event_ids"]),
+                        metrics=json.loads(row["metrics"]),
+                        is_audit_sample=bool(row["is_audit_sample"]),
+                    )
                 )
-            )
-        return result
+            return result
 
     def list_evidence_packets(self) -> List[EvidencePacket]:
-        cursor = self._conn.cursor()
-        cursor.execute("SELECT packet_json FROM evidence_packets ORDER BY created_at ASC")
-        return [EvidencePacket.model_validate_json(row["packet_json"]) for row in cursor.fetchall()]
+        with self._lock:
+            cursor = self._conn.cursor()
+            cursor.execute("SELECT packet_json FROM evidence_packets ORDER BY created_at ASC")
+            return [EvidencePacket.model_validate_json(row["packet_json"]) for row in cursor.fetchall()]
 
     def list_accepted_judgments(self) -> List[LunaJudgment]:
-        cursor = self._conn.cursor()
-        cursor.execute("SELECT judgment_json FROM accepted_judgments ORDER BY evaluated_at ASC")
-        return [LunaJudgment.model_validate_json(row["judgment_json"]) for row in cursor.fetchall()]
+        with self._lock:
+            cursor = self._conn.cursor()
+            cursor.execute("SELECT judgment_json FROM accepted_judgments ORDER BY evaluated_at ASC")
+            return [LunaJudgment.model_validate_json(row["judgment_json"]) for row in cursor.fetchall()]
 
     def close(self) -> None:
-        self._conn.close()
+        with self._lock:
+            self._conn.close()
