@@ -1,5 +1,6 @@
 """FastAPI REST application for Cloud-Bean monitoring and interactive UI backend."""
 
+from collections import deque
 from datetime import datetime, timezone
 import json
 from pathlib import Path
@@ -61,9 +62,9 @@ def create_app(
         store=db_store,
     )
 
-    # In-memory working buffer of recent events with thread lock
+    # In-memory working buffer of recent events with thread lock and bounded deque
     recent_events_lock = threading.Lock()
-    recent_events: List[FleetEvent] = []
+    recent_events: deque[FleetEvent] = deque(maxlen=10000)
 
     @app.get("/", response_class=FileResponse)
     @app.get("/dashboard", response_class=FileResponse)
@@ -178,11 +179,18 @@ def create_app(
         with recent_events_lock:
             recent_events.extend(all_fleet_events)
 
-        # Process window through detection pipeline
+        # Process window through detection pipeline with dynamic timestamps
+        if all_fleet_events:
+            w_start = min(e.timestamp for e in all_fleet_events)
+            w_end = max(e.timestamp for e in all_fleet_events)
+        else:
+            now_iso = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+            w_start, w_end = now_iso, now_iso
+
         candidates, packets, findings = det_pipeline.process_window(
             events=all_fleet_events,
-            window_start="2026-06-18T18:00:00Z",
-            window_end="2026-06-18T22:00:00Z",
+            window_start=w_start,
+            window_end=w_end,
             enable_audit=True,
         )
 

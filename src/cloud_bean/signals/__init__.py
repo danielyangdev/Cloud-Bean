@@ -7,6 +7,7 @@ from cloud_bean.signals.conflict import ConflictingWritesDetector
 from cloud_bean.signals.detector import FleetSignalEngine
 from cloud_bean.signals.hub import EmergingHubDetector
 from cloud_bean.signals.latency import AdoptionLatencyDetector
+from cloud_bean.signals.ncd import CrossAgentNCDDetector, compute_ncd
 from cloud_bean.signals.overload import CollectiveOverloadDetector
 from cloud_bean.signals.token_distribution import (
     TaskVocabularyProfiler,
@@ -24,6 +25,8 @@ __all__ = [
     "ProxyTunnelingDetector",
     "TaskVocabularyProfiler",
     "TokenDistributionAnalyzer",
+    "CrossAgentNCDDetector",
+    "compute_ncd",
     "AuditSampler",
     "FleetSignalEngine",
 ]

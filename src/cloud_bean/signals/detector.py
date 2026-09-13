@@ -10,6 +10,7 @@ from cloud_bean.signals.burst import SynchronizedBurstDetector
 from cloud_bean.signals.conflict import ConflictingWritesDetector
 from cloud_bean.signals.hub import EmergingHubDetector
 from cloud_bean.signals.latency import AdoptionLatencyDetector
+from cloud_bean.signals.ncd import CrossAgentNCDDetector
 from cloud_bean.signals.overload import CollectiveOverloadDetector
 from cloud_bean.signals.token_distribution import TokenDistributionAnalyzer
 from cloud_bean.signals.tunnel import ProxyTunnelingDetector
@@ -28,6 +29,7 @@ class FleetSignalEngine:
         latency_detector: Optional[AdoptionLatencyDetector] = None,
         tunnel_detector: Optional[ProxyTunnelingDetector] = None,
         token_analyzer: Optional[TokenDistributionAnalyzer] = None,
+        ncd_detector: Optional[CrossAgentNCDDetector] = None,
         audit_sampler: Optional[AuditSampler] = None,
     ) -> None:
         self.hub_detector = hub_detector or EmergingHubDetector()
@@ -38,6 +40,7 @@ class FleetSignalEngine:
         self.latency_detector = latency_detector or AdoptionLatencyDetector()
         self.tunnel_detector = tunnel_detector or ProxyTunnelingDetector()
         self.token_analyzer = token_analyzer or TokenDistributionAnalyzer()
+        self.ncd_detector = ncd_detector or CrossAgentNCDDetector()
         self.audit_sampler = audit_sampler or AuditSampler()
 
     def process_events(
@@ -74,7 +77,10 @@ class FleetSignalEngine:
         # 8. Token & word distribution anomaly
         candidates.extend(self.token_analyzer.evaluate_window(events, window_start, window_end))
 
-        # 9. Audit sampling if no signals flagged this window
+        # 9. Cross-agent Normalized Compression Distance (NCD)
+        candidates.extend(self.ncd_detector.evaluate_window(events, window_start, window_end))
+
+        # 10. Audit sampling if no signals flagged this window
         if not candidates and enable_audit:
             audit_cands = self.audit_sampler.sample_window_if_eligible(
                 events, window_start, window_end
