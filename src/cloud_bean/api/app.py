@@ -1,9 +1,11 @@
 """FastAPI REST application for Cloud-Bean monitoring and interactive UI backend."""
 
 from datetime import datetime, timezone
+from pathlib import Path
 import threading
 from typing import Any, Dict, List, Optional
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel
 
 from cloud_bean.api.graph import build_interaction_graph
@@ -60,6 +62,14 @@ def create_app(
     # In-memory working buffer of recent events with thread lock
     recent_events_lock = threading.Lock()
     recent_events: List[FleetEvent] = []
+
+    @app.get("/", response_class=FileResponse)
+    @app.get("/dashboard", response_class=FileResponse)
+    def index():
+        static_file = Path(__file__).parent / "static" / "index.html"
+        if not static_file.exists():
+            return HTMLResponse("<h1>Cloud-Bean Observatory</h1><p>Static dashboard not found.</p>")
+        return FileResponse(static_file)
 
     @app.get("/api/v1/health")
     def health() -> Dict[str, str]:

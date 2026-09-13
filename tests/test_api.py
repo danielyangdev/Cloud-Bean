@@ -26,6 +26,13 @@ def test_health_endpoint(client):
     assert res.json() == {"status": "ok", "version": "0.1.0"}
 
 
+def test_dashboard_index_endpoint(client):
+    res = client.get("/")
+    assert res.status_code == 200
+    assert "Cloud-Bean" in res.text
+    assert "Fleet Detection Observatory" in res.text
+
+
 def test_budget_endpoint(client):
     res = client.get("/api/v1/budget")
     assert res.status_code == 200
