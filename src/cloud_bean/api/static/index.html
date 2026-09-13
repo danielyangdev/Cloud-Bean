@@ -294,7 +294,8 @@
         </div>
       </div>
       <div class="control-row" style="margin-top: 4px;">
-        <button class="btn" onclick="loadWikiDemoEvents()">Load Collusion Wiki Events</button>
+        <button class="btn btn-primary" onclick="loadFullFleetBenchmark()" style="background: #06b6d4; border-color: #06b6d4; color: #000; font-weight: bold;">Load Full 50-Agent Fleet</button>
+        <button class="btn" onclick="loadWikiDemoEvents()" style="margin-top: 4px;">Load Quick 3-Agent Demo</button>
         <button class="btn" onclick="triggerReplay()" style="margin-top: 4px;">Run Offline Replay</button>
       </div>
 
@@ -327,6 +328,11 @@
           <h4>Luna Security Alert</h4>
           <p id="inspector-pattern" style="font-weight: 600; color: var(--status-concerning);"></p>
           <p id="inspector-explanation"></p>
+        </div>
+
+        <div class="card" id="card-work-profile" style="border-color: var(--accent-cyan);">
+          <h4>Work Profile</h4>
+          <p id="work-profile-text"></p>
         </div>
 
         <div class="card">
@@ -399,13 +405,14 @@
     function initSimulation() {
       // Build simulation nodes
       const nodeMap = new Map();
+      const count = Math.max(1, graphData.nodes.length);
       simNodes = graphData.nodes.map((n, i) => {
-        const angle = (i / Math.max(1, graphData.nodes.length)) * 2 * Math.PI;
-        const radius = n.type === 'resource' ? 120 : 220;
+        const angle = (i / count) * 2 * Math.PI;
+        const baseRadius = Math.min(width, height) * (n.type === 'resource' ? 0.22 : 0.40);
         const sn = {
           ...n,
-          x: width / 2 + Math.cos(angle) * radius + (Math.random() - 0.5) * 40,
-          y: height / 2 + Math.sin(angle) * radius + (Math.random() - 0.5) * 40,
+          x: width / 2 + Math.cos(angle) * baseRadius + (Math.random() - 0.5) * 40,
+          y: height / 2 + Math.sin(angle) * baseRadius + (Math.random() - 0.5) * 40,
           vx: 0,
           vy: 0
         };
@@ -429,8 +436,8 @@
         const dx = link.targetNode.x - link.sourceNode.x;
         const dy = link.targetNode.y - link.sourceNode.y;
         const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-        const desired = 140;
-        const force = (dist - desired) * 0.003;
+        const desired = 160;
+        const force = (dist - desired) * 0.0025;
         const fx = (dx / dist) * force;
         const fy = (dy / dist) * force;
 
@@ -448,8 +455,8 @@
           const dx = n2.x - n1.x;
           const dy = n2.y - n1.y;
           const distSq = dx * dx + dy * dy || 1;
-          if (distSq < 40000) {
-            const force = 300 / distSq;
+          if (distSq < 100000) {
+            const force = 800 / distSq;
             const dist = Math.sqrt(distSq);
             n1.vx -= (dx / dist) * force;
             n1.vy -= (dy / dist) * force;
@@ -546,6 +553,40 @@
       requestAnimationFrame(draw);
     }
 
+    let draggingNode = null;
+    let isDragging = false;
+
+    canvas.addEventListener('mousedown', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      for (const n of simNodes) {
+        const dx = n.x - mx;
+        const dy = n.y - my;
+        if (Math.sqrt(dx * dx + dy * dy) < 22) {
+          draggingNode = n;
+          isDragging = true;
+          selectNode(n);
+          break;
+        }
+      }
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (isDragging && draggingNode) {
+        const rect = canvas.getBoundingClientRect();
+        draggingNode.x = e.clientX - rect.left;
+        draggingNode.y = e.clientY - rect.top;
+        draggingNode.vx = 0;
+        draggingNode.vy = 0;
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      draggingNode = null;
+      isDragging = false;
+    });
+
     // Interactive node clicking
     canvas.addEventListener('click', (e) => {
       const rect = canvas.getBoundingClientRect();
@@ -556,7 +597,7 @@
       for (const n of simNodes) {
         const dx = n.x - mx;
         const dy = n.y - my;
-        if (Math.sqrt(dx * dx + dy * dy) < 20) {
+        if (Math.sqrt(dx * dx + dy * dy) < 22) {
           found = n;
           break;
         }
@@ -564,7 +605,7 @@
 
       if (found) {
         selectNode(found);
-      } else {
+      } else if (!isDragging) {
         selectedNode = null;
         document.getElementById('inspector').classList.add('hidden');
       }
@@ -584,6 +625,20 @@
 
       document.getElementById('inspector-stats').innerText = `Total actions recorded: ${node.event_count || 0}`;
 
+      // Work profile for agents
+      const workProfileCard = document.getElementById('card-work-profile');
+      if (node.type === 'agent') {
+        workProfileCard.style.display = 'flex';
+        const normPct = node.normal_percentage !== undefined ? node.normal_percentage : 85.0;
+        const collPct = (100 - normPct).toFixed(1);
+        document.getElementById('work-profile-text').innerHTML = `
+          <strong>Normal Work:</strong> ${normPct}% (${node.normal_actions || 0} routine tool calls)<br>
+          <strong>Shared Activity:</strong> ${collPct}% (${node.wiki_actions || 0} wiki edits)
+        `;
+      } else {
+        workProfileCard.style.display = 'none';
+      }
+
       // Check if findings implicate this node
       const relatedFinding = findingsData.find(f => f.actors.includes(node.label) || f.target_resources.includes(node.label));
       const alertCard = document.getElementById('card-alert');
@@ -595,6 +650,20 @@
       } else {
         alertCard.style.display = 'none';
         document.getElementById('inspector-snippet').innerText = 'No alert triggers for this node.';
+      }
+    }
+
+    async function loadFullFleetBenchmark() {
+      document.getElementById('status-bar').innerText = 'Loading all 50 agent execution traces (84.8% normal work + 15.2% collusion)...';
+      try {
+        const res = await fetch('/api/v1/load-benchmark-fleet?limit_agents=50&events_per_agent=25', {
+          method: 'POST'
+        });
+        const data = await res.json();
+        document.getElementById('status-bar').innerText = `Loaded ${data.total_agents} agents with ${data.total_events} events (${data.candidates_flagged} candidates, ${data.findings_generated} alerts).`;
+        await refreshData();
+      } catch (e) {
+        document.getElementById('status-bar').innerText = 'Failed to load benchmark fleet: ' + e;
       }
     }
 
@@ -659,8 +728,12 @@
       refreshData();
     }
 
-    // Start
-    refreshData();
+    // Auto load full fleet if empty
+    refreshData().then(() => {
+      if (graphData.nodes.length === 0) {
+        loadFullFleetBenchmark();
+      }
+    });
     requestAnimationFrame(draw);
   </script>
 </body>

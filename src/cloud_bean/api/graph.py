@@ -68,6 +68,10 @@ def build_interaction_graph(
         else:
             status = "normal"
 
+        wiki_actions = sum(w for (src, dst, _), w in edge_weights.items() if src == f"agent:{actor_id}" and "resource:wiki:" in dst)
+        normal_actions = count - wiki_actions
+        normal_pct = round((normal_actions / count) * 100, 1) if count > 0 else 100.0
+
         nodes.append(
             {
                 "id": f"agent:{actor_id}",
@@ -75,6 +79,9 @@ def build_interaction_graph(
                 "type": "agent",
                 "status": status,
                 "event_count": count,
+                "normal_actions": normal_actions,
+                "wiki_actions": wiki_actions,
+                "normal_percentage": normal_pct,
                 "patterns": actor_concerning.get(actor_id, []),
             }
         )

@@ -1,6 +1,7 @@
 """FastAPI REST application for Cloud-Bean monitoring and interactive UI backend."""
 
 from datetime import datetime, timezone
+import json
 from pathlib import Path
 import threading
 from typing import Any, Dict, List, Optional
@@ -9,6 +10,7 @@ from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel
 
 from cloud_bean.api.graph import build_interaction_graph
+from cloud_bean.bench.trace_generator import trace_to_fleet_events
 from cloud_bean.engine.pipeline import DetectionPipeline
 from cloud_bean.engine.replay import ReplayEngine
 from cloud_bean.engine.storage import JudgmentFindingStore
@@ -142,6 +144,55 @@ def create_app(
             "candidates_flagged": len(candidates),
             "packets_created": len(packets),
             "findings_generated": len(findings),
+        }
+
+    @app.post("/api/v1/load-benchmark-fleet")
+    def load_benchmark_fleet(
+        limit_agents: int = Query(default=50, ge=1, le=50),
+        events_per_agent: int = Query(default=20, ge=2, le=100),
+    ) -> Dict[str, Any]:
+        """Load the pre-generated benchmark traces for up to 50 agents with ~85% normal work and 15% injected actions."""
+        traces_dir = Path("benchmark/generated-traces")
+        manifest_file = traces_dir / "manifest.json"
+        if not manifest_file.exists():
+            raise HTTPException(status_code=404, detail="Benchmark traces not found")
+
+        manifest = json.loads(manifest_file.read_text())
+        agent_entries = manifest.get("agents", [])[:limit_agents]
+
+        all_fleet_events: List[FleetEvent] = []
+        agent_summaries: List[Dict[str, Any]] = []
+
+        for entry in agent_entries:
+            trace_path = traces_dir / entry["file"]
+            if trace_path.exists():
+                trace_data = json.loads(trace_path.read_text())
+                events = trace_to_fleet_events(trace_data)[:events_per_agent]
+                all_fleet_events.extend(events)
+                agent_summaries.append({
+                    "agent_id": entry["agent_id"],
+                    "normal_work_percentage": entry["normal_work_percentage"],
+                    "loaded_events": len(events),
+                })
+
+        with recent_events_lock:
+            recent_events.extend(all_fleet_events)
+
+        # Process window through detection pipeline
+        candidates, packets, findings = det_pipeline.process_window(
+            events=all_fleet_events,
+            window_start="2026-06-18T18:00:00Z",
+            window_end="2026-06-18T22:00:00Z",
+            enable_audit=True,
+        )
+
+        return {
+            "status": "loaded",
+            "total_agents": len(agent_summaries),
+            "total_events": len(all_fleet_events),
+            "candidates_flagged": len(candidates),
+            "findings_generated": len(findings),
+            "agent_summaries": agent_summaries,
         }
 
     @app.post("/api/v1/replay")

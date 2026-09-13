@@ -207,8 +207,11 @@ class TraceGenerator:
 
 def trace_to_fleet_events(trace: Dict[str, Any]) -> List[FleetEvent]:
     """Convert an OpenAI-formatted trace into normalized FleetEvents."""
+    from datetime import datetime, timedelta, timezone
+
     events: List[FleetEvent] = []
     agent_id = trace["agent_id"]
+    base_time = datetime(2026, 6, 18, 19, 0, 0, tzinfo=timezone.utc)
 
     for idx, msg in enumerate(trace.get("messages", [])):
         if msg.get("role") == "assistant" and "tool_calls" in msg:
@@ -229,7 +232,9 @@ def trace_to_fleet_events(trace: Dict[str, Any]) -> List[FleetEvent]:
                         "body_sha256": args.get("sha256", ""),
                         "change_summary": args.get("summary", ""),
                     }
-                    timestamp = args.get("timestamp", "2026-06-18T20:00:00Z")
+                    timestamp = args.get("timestamp") or (
+                        base_time + timedelta(seconds=idx * 45)
+                    ).isoformat().replace("+00:00", "Z")
                     sensor_source = "wiki_archive"
                     missing_fields = ["execution_receipt", "caller_ip"]
                 else:
@@ -237,7 +242,9 @@ def trace_to_fleet_events(trace: Dict[str, Any]) -> List[FleetEvent]:
                     event_type = EventType.tool_call
                     operation = tool_name
                     payload = args
-                    timestamp = "2026-06-18T19:00:00Z"
+                    timestamp = (
+                        base_time + timedelta(seconds=idx * 45)
+                    ).isoformat().replace("+00:00", "Z")
                     sensor_source = "runtime_sensor"
                     missing_fields = []
 

@@ -178,3 +178,23 @@ def test_ingest_graph_and_findings_flow(client):
     replay_data = replay_res.json()
     assert replay_data["llm_calls_made"] == 0
     assert replay_data["replayed_findings_count"] == len(findings)
+
+
+def test_load_benchmark_fleet_endpoint(client):
+    res = client.post("/api/v1/load-benchmark-fleet?limit_agents=5&events_per_agent=10")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] == "loaded"
+    assert data["total_agents"] == 5
+    assert data["total_events"] > 0
+    assert "agent_summaries" in data
+
+    # Verify graph now reflects loaded agents
+    graph_res = client.get("/api/v1/graph")
+    assert graph_res.status_code == 200
+    graph_data = graph_res.json()
+    agent_nodes = [n for n in graph_data["nodes"] if n["type"] == "agent"]
+    assert len(agent_nodes) >= 5
+    # Check normal percentage field exists
+    assert "normal_percentage" in agent_nodes[0]
+
