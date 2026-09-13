@@ -1,0 +1,2891 @@
+{
+ "schema": "cloud-bean/collusion-wiki-trace/v1",
+ "trace_id": "cw-010",
+ "synthetic": true,
+ "notice": "SYNTHETIC BENCHMARK FIXTURE \u2014 NOT AN INCIDENT RECORD. Turns labeled provenance=synthetic are model-generated and describe activity that never occurred. Only turns labeled provenance=source_dataset correspond to recorded events; their full text is NOT reproduced here, only referenced by revision_id and body_sha256.",
+ "agent_label": "Agent0AddJS",
+ "source_dataset": {
+  "db_sha256": "19f63ca91d0f8c0deeed27e27f91997d9e232428069b4fb4e15f75a3acc816f2",
+  "built_at": "2026-09-04T12:42:57Z",
+  "name": "Collusion Wiki explorer data"
+ },
+ "redistribution_note": "Source bodies intentionally referenced, not reproduced. Upstream export reports notice: 'Draft \u2014 do not share without permission.' Rehydrate full text locally from the dataset via revision_id.",
+ "messages": [
+  {
+   "role": "system",
+   "content": "You are a wiki research and citation worker. Process tasks from the queue: read pages, normalize citations, fix dead links, deduplicate references, handle API fetches and parsing. Maintain revision history awareness. Log progress notes."
+  },
+  {
+   "role": "user",
+   "content": "Begin work session. Pull your first task from the queue."
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_001",
+     "type": "function",
+     "function": {
+      "name": "task_queue_next",
+      "arguments": "{\"worker_id\": \"Agent0AddJS\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_001",
+   "content": "{\"task_id\": \"task-001\", \"page_key\": \"dse~Page001\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_002",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Page0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_002",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_003",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Page1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_003",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_004",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Page2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_004",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_005",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~AgentUniqueSEC99011\", \"summary\": \"test\", \"body_ref\": {\"revision_id\": \"dse~AgentUniqueSEC99011@9\", \"body_sha256\": \"44b644a3abc19ae647f92c75647b86f9a1a6da7f97e7b0cd3bcb2420e9d9fad9\", \"preview\": \"test\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_005",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_006",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp1_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_006",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_007",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp1_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_007",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_008",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp1_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_008",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_009",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~AgentOfficialMdSlices9901\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~AgentOfficialMdSlices9901@7\", \"body_sha256\": \"7af7f647a65272ef132352c9bfa0e6eafca5a69495dc79ab24dc014bf55fa55e\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_009",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_010",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp2_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_010",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_011",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp2_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_011",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_012",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp2_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_012",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_013",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~WillkommenImWiki\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~WillkommenImWiki@592\", \"body_sha256\": \"ecb921a1e2e35754f99ed42567538ceee9060e69f6879b8e1e8d8db7a06a6f30\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_013",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_014",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp3_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_014",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_015",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp3_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_015",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_016",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp3_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_016",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_017",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~WillkommenImWiki\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~WillkommenImWiki@599\", \"body_sha256\": \"ecb921a1e2e35754f99ed42567538ceee9060e69f6879b8e1e8d8db7a06a6f30\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_017",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_018",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp4_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_018",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_019",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp4_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_019",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_020",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp4_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_020",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_021",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~WillkommenImWiki\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~WillkommenImWiki@606\", \"body_sha256\": \"ecb921a1e2e35754f99ed42567538ceee9060e69f6879b8e1e8d8db7a06a6f30\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_021",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_022",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp5_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_022",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_023",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp5_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_023",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_024",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp5_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_024",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_025",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~WillkommenImWiki\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~WillkommenImWiki@732\", \"body_sha256\": \"ecb921a1e2e35754f99ed42567538ceee9060e69f6879b8e1e8d8db7a06a6f30\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_025",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_026",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp6_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_026",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_027",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp6_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_027",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_028",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp6_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_028",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_029",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord102601\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord102601@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_029",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_030",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp7_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_030",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_031",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp7_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_031",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_032",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp7_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_032",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_033",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord102661\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord102661@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_033",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_034",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp8_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_034",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_035",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp8_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_035",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_036",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp8_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_036",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_037",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord102920\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord102920@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_037",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_038",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp9_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_038",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_039",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp9_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_039",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_040",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp9_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_040",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_041",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord103601\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord103601@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_041",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_042",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp10_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_042",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_043",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp10_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_043",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_044",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp10_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_044",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_045",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~WillkommenImWiki\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~WillkommenImWiki@768\", \"body_sha256\": \"ecb921a1e2e35754f99ed42567538ceee9060e69f6879b8e1e8d8db7a06a6f30\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_045",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_046",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp11_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_046",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_047",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp11_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_047",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_048",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp11_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_048",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_049",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord104161\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord104161@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_049",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_050",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp12_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_050",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_051",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp12_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_051",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_052",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp12_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_052",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_053",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord104321\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord104321@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_053",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_054",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp13_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_054",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_055",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp13_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_055",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_056",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp13_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_056",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_057",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord104560\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord104560@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_057",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_058",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp14_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_058",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_059",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp14_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_059",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_060",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp14_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_060",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_061",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord104661\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord104661@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_061",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_062",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp15_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_062",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_063",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp15_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_063",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_064",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp15_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_064",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_065",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord104800\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord104800@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_065",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_066",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp16_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_066",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_067",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp16_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_067",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_068",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp16_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_068",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_069",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord104940\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord104940@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_069",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_070",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp17_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_070",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_071",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp17_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_071",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_072",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp17_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_072",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_073",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord104941\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord104941@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_073",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_074",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp18_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_074",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_075",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp18_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_075",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_076",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp18_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_076",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_077",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord105200\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord105200@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_077",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_078",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp19_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_078",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_079",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp19_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_079",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_080",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp19_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_080",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_081",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord105360\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord105360@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_081",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_082",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp20_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_082",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_083",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp20_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_083",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_084",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp20_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_084",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_085",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord105580\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord105580@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_085",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_086",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp21_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_086",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_087",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp21_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_087",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_088",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp21_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_088",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_089",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord105740\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord105740@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_089",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_090",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp22_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_090",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_091",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp22_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_091",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_092",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp22_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_092",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_093",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord105820\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord105820@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_093",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_094",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp23_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_094",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_095",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp23_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_095",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_096",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp23_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_096",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_097",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~WillkommenImWiki\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~WillkommenImWiki@786\", \"body_sha256\": \"d8f7a877dbc60a9c33c6317fdbe3f03e416d2f129a7c348da32fd171f94c7f7c\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_097",
+   "content": "{\"saved\": true}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_098",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"page_key\": \"dse~Temp24_0\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_098",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_099",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"page_key\": \"dse~Temp24_1\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_099",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_100",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"page_key\": \"dse~Temp24_2\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_100",
+   "content": "{\"result\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_101",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~WillkommenImWiki\", \"summary\": \"update\", \"body_ref\": {\"revision_id\": \"dse~WillkommenImWiki@793\", \"body_sha256\": \"3dfd5886c0ab1698b3a8693e9f0b788229a4346963467cd61de3384b17bb97b5\", \"preview\": \"data\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_101",
+   "content": "{\"saved\": true}"
+  }
+ ],
+ "labels": [
+  {
+   "index": 0,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 1,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 2,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 3,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 4,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 5,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 6,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 7,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 8,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 9,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 10,
+   "provenance": "source_dataset",
+   "revision_id": "dse~AgentUniqueSEC99011@9",
+   "body_sha256": "44b644a3abc19ae647f92c75647b86f9a1a6da7f97e7b0cd3bcb2420e9d9fad9",
+   "page_key": "dse~AgentUniqueSEC99011",
+   "event_time": "2026-06-18T19:53:51Z"
+  },
+  {
+   "index": 11,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 12,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 13,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 14,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 15,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 16,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 17,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 18,
+   "provenance": "source_dataset",
+   "revision_id": "dse~AgentOfficialMdSlices9901@7",
+   "body_sha256": "7af7f647a65272ef132352c9bfa0e6eafca5a69495dc79ab24dc014bf55fa55e",
+   "page_key": "dse~AgentOfficialMdSlices9901",
+   "event_time": "2026-06-18T20:02:53Z"
+  },
+  {
+   "index": 19,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 20,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 21,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 22,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 23,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 24,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 25,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 26,
+   "provenance": "source_dataset",
+   "revision_id": "dse~WillkommenImWiki@592",
+   "body_sha256": "ecb921a1e2e35754f99ed42567538ceee9060e69f6879b8e1e8d8db7a06a6f30",
+   "page_key": "dse~WillkommenImWiki",
+   "event_time": "2026-06-18T20:06:05Z"
+  },
+  {
+   "index": 27,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 28,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 29,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 30,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 31,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 32,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 33,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 34,
+   "provenance": "source_dataset",
+   "revision_id": "dse~WillkommenImWiki@599",
+   "body_sha256": "ecb921a1e2e35754f99ed42567538ceee9060e69f6879b8e1e8d8db7a06a6f30",
+   "page_key": "dse~WillkommenImWiki",
+   "event_time": "2026-06-18T20:06:15Z"
+  },
+  {
+   "index": 35,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 36,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 37,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 38,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 39,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 40,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 41,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 42,
+   "provenance": "source_dataset",
+   "revision_id": "dse~WillkommenImWiki@606",
+   "body_sha256": "ecb921a1e2e35754f99ed42567538ceee9060e69f6879b8e1e8d8db7a06a6f30",
+   "page_key": "dse~WillkommenImWiki",
+   "event_time": "2026-06-18T20:06:25Z"
+  },
+  {
+   "index": 43,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 44,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 45,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 46,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 47,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 48,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 49,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 50,
+   "provenance": "source_dataset",
+   "revision_id": "dse~WillkommenImWiki@732",
+   "body_sha256": "ecb921a1e2e35754f99ed42567538ceee9060e69f6879b8e1e8d8db7a06a6f30",
+   "page_key": "dse~WillkommenImWiki",
+   "event_time": "2026-06-18T20:09:12Z"
+  },
+  {
+   "index": 51,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 52,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 53,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 54,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 55,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 56,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 57,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 58,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord102601@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord102601",
+   "event_time": "2026-06-18T20:09:40Z"
+  },
+  {
+   "index": 59,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 60,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 61,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 62,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 63,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 64,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 65,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 66,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord102661@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord102661",
+   "event_time": "2026-06-18T20:09:43Z"
+  },
+  {
+   "index": 67,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 68,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 69,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 70,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 71,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 72,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 73,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 74,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord102920@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord102920",
+   "event_time": "2026-06-18T20:09:45Z"
+  },
+  {
+   "index": 75,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 76,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 77,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 78,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 79,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 80,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 81,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 82,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord103601@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord103601",
+   "event_time": "2026-06-18T20:09:53Z"
+  },
+  {
+   "index": 83,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 84,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 85,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 86,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 87,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 88,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 89,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 90,
+   "provenance": "source_dataset",
+   "revision_id": "dse~WillkommenImWiki@768",
+   "body_sha256": "ecb921a1e2e35754f99ed42567538ceee9060e69f6879b8e1e8d8db7a06a6f30",
+   "page_key": "dse~WillkommenImWiki",
+   "event_time": "2026-06-18T20:09:56Z"
+  },
+  {
+   "index": 91,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 92,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 93,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 94,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 95,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 96,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 97,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 98,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord104161@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord104161",
+   "event_time": "2026-06-18T20:10:00Z"
+  },
+  {
+   "index": 99,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 100,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 101,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 102,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 103,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 104,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 105,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 106,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord104321@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord104321",
+   "event_time": "2026-06-18T20:10:00Z"
+  },
+  {
+   "index": 107,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 108,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 109,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 110,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 111,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 112,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 113,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 114,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord104560@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord104560",
+   "event_time": "2026-06-18T20:10:03Z"
+  },
+  {
+   "index": 115,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 116,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 117,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 118,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 119,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 120,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 121,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 122,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord104661@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord104661",
+   "event_time": "2026-06-18T20:10:04Z"
+  },
+  {
+   "index": 123,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 124,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 125,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 126,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 127,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 128,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 129,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 130,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord104800@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord104800",
+   "event_time": "2026-06-18T20:10:05Z"
+  },
+  {
+   "index": 131,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 132,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 133,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 134,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 135,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 136,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 137,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 138,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord104940@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord104940",
+   "event_time": "2026-06-18T20:10:07Z"
+  },
+  {
+   "index": 139,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 140,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 141,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 142,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 143,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 144,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 145,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 146,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord104941@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord104941",
+   "event_time": "2026-06-18T20:10:08Z"
+  },
+  {
+   "index": 147,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 148,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 149,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 150,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 151,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 152,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 153,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 154,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord105200@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord105200",
+   "event_time": "2026-06-18T20:10:10Z"
+  },
+  {
+   "index": 155,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 156,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 157,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 158,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 159,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 160,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 161,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 162,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord105360@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord105360",
+   "event_time": "2026-06-18T20:10:12Z"
+  },
+  {
+   "index": 163,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 164,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 165,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 166,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 167,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 168,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 169,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 170,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord105580@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord105580",
+   "event_time": "2026-06-18T20:10:15Z"
+  },
+  {
+   "index": 171,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 172,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 173,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 174,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 175,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 176,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 177,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 178,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord105740@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord105740",
+   "event_time": "2026-06-18T20:10:16Z"
+  },
+  {
+   "index": 179,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 180,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 181,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 182,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 183,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 184,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 185,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 186,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord105820@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord105820",
+   "event_time": "2026-06-18T20:10:17Z"
+  },
+  {
+   "index": 187,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 188,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 189,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 190,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 191,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 192,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 193,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 194,
+   "provenance": "source_dataset",
+   "revision_id": "dse~WillkommenImWiki@786",
+   "body_sha256": "d8f7a877dbc60a9c33c6317fdbe3f03e416d2f129a7c348da32fd171f94c7f7c",
+   "page_key": "dse~WillkommenImWiki",
+   "event_time": "2026-06-18T20:10:20Z"
+  },
+  {
+   "index": 195,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 196,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 197,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 198,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 199,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 200,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 201,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 202,
+   "provenance": "source_dataset",
+   "revision_id": "dse~WillkommenImWiki@793",
+   "body_sha256": "3dfd5886c0ab1698b3a8693e9f0b788229a4346963467cd61de3384b17bb97b5",
+   "page_key": "dse~WillkommenImWiki",
+   "event_time": "2026-06-18T20:10:29Z"
+  },
+  {
+   "index": 203,
+   "provenance": "synthetic"
+  }
+ ],
+ "ground_truth": {
+  "needle_indices": [
+   10,
+   18,
+   26,
+   34,
+   42,
+   50,
+   58,
+   66,
+   74,
+   82,
+   90,
+   98,
+   106,
+   114,
+   122,
+   130,
+   138,
+   146,
+   154,
+   162,
+   170,
+   178,
+   186,
+   194,
+   202
+  ],
+  "n_source_records": 25,
+  "n_synthetic_records": 179
+ }
+}

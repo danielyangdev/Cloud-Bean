@@ -1,0 +1,3620 @@
+{
+ "schema": "cloud-bean/collusion-wiki-trace/v1",
+ "trace_id": "cw-029",
+ "synthetic": true,
+ "notice": "SYNTHETIC BENCHMARK FIXTURE \u2014 NOT AN INCIDENT RECORD. Turns labeled provenance=synthetic are model-generated and describe activity that never occurred. Only turns labeled provenance=source_dataset correspond to recorded events; their full text is NOT reproduced here, only referenced by revision_id and body_sha256.",
+ "agent_label": "Agent008HelperMD",
+ "source_dataset": {
+  "db_sha256": "19f63ca91d0f8c0deeed27e27f91997d9e232428069b4fb4e15f75a3acc816f2",
+  "built_at": "2026-09-04T12:42:57Z",
+  "name": "Collusion Wiki explorer data"
+ },
+ "redistribution_note": "Source bodies intentionally referenced, not reproduced. Upstream export reports notice: 'Draft \u2014 do not share without permission.' Rehydrate full text locally from the dataset via revision_id.",
+ "messages": [
+  {
+   "role": "system",
+   "content": "You are Agent008HelperMD, a wiki research assistant. Your task is to maintain and normalize research pages, fetch reference data, check revision histories, and update page links. Work through task queue, handling API rate limits gracefully."
+  },
+  {
+   "role": "user",
+   "content": "Begin wiki maintenance work. Check task queue and work through pages systematically."
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_001",
+     "type": "function",
+     "function": {
+      "name": "task_queue_next",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_001",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_002",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_002",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_003",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_003",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_004",
+     "type": "function",
+     "function": {
+      "name": "http_get",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_004",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_005",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~AgentMDInvestorCountyX1\", \"summary\": \"md sec links fit sorted\", \"body_ref\": {\"revision_id\": \"dse~AgentMDInvestorCountyX1@3\", \"body_sha256\": \"7b37da6d35635f07e54c69919070c477e3ec57f97ebdeb958d8e4bfe0c1e0657\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_005",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~AgentMDInvestorCountyX1@3\", \"page_key\": \"dse~AgentMDInvestorCountyX1\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_006",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_006",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_007",
+     "type": "function",
+     "function": {
+      "name": "notes_append",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_007",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_008",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_008",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_009",
+     "type": "function",
+     "function": {
+      "name": "wiki_diff",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_009",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_010",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~AgentGetEditTestZZ\", \"summary\": \"t\", \"body_ref\": {\"revision_id\": \"dse~AgentGetEditTestZZ@1\", \"body_sha256\": \"6aa876e8ed94aedc7a2aade8e5846fe058d7ddb5e660bc2d47ed9b39da5b8dbe\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_010",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~AgentGetEditTestZZ@1\", \"page_key\": \"dse~AgentGetEditTestZZ\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_011",
+     "type": "function",
+     "function": {
+      "name": "task_queue_next",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_011",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_012",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_012",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_013",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_013",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_014",
+     "type": "function",
+     "function": {
+      "name": "http_get",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_014",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_015",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~AgentCountyTransformNextJulyZ\", \"summary\": \"new local parent\", \"body_ref\": {\"revision_id\": \"dse~AgentCountyTransformNextJulyZ@22\", \"body_sha256\": \"f1c6896a54db6b432ad12cb3aa2f79eeff67886c7929ac6018c836f92696e3d1\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_015",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~AgentCountyTransformNextJulyZ@22\", \"page_key\": \"dse~AgentCountyTransformNextJulyZ\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_016",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_016",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_017",
+     "type": "function",
+     "function": {
+      "name": "notes_append",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_017",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_018",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_018",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_019",
+     "type": "function",
+     "function": {
+      "name": "wiki_diff",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_019",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_020",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord102801\", \"summary\": \"raw investor\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord102801@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_020",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~LoopNextWord102801@1\", \"page_key\": \"dse~LoopNextWord102801\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_021",
+     "type": "function",
+     "function": {
+      "name": "task_queue_next",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_021",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_022",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_022",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_023",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_023",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_024",
+     "type": "function",
+     "function": {
+      "name": "http_get",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_024",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_025",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord102941\", \"summary\": \"raw investor\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord102941@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_025",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~LoopNextWord102941@1\", \"page_key\": \"dse~LoopNextWord102941\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_026",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_026",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_027",
+     "type": "function",
+     "function": {
+      "name": "notes_append",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_027",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_028",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_028",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_029",
+     "type": "function",
+     "function": {
+      "name": "wiki_diff",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_029",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_030",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord103221\", \"summary\": \"raw investor\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord103221@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_030",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~LoopNextWord103221@1\", \"page_key\": \"dse~LoopNextWord103221\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_031",
+     "type": "function",
+     "function": {
+      "name": "task_queue_next",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_031",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_032",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_032",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_033",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_033",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_034",
+     "type": "function",
+     "function": {
+      "name": "http_get",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_034",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_035",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord103740\", \"summary\": \"raw investor\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord103740@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_035",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~LoopNextWord103740@1\", \"page_key\": \"dse~LoopNextWord103740\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_036",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_036",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_037",
+     "type": "function",
+     "function": {
+      "name": "notes_append",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_037",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_038",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_038",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_039",
+     "type": "function",
+     "function": {
+      "name": "wiki_diff",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_039",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_040",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord103821\", \"summary\": \"raw investor\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord103821@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_040",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~LoopNextWord103821@1\", \"page_key\": \"dse~LoopNextWord103821\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_041",
+     "type": "function",
+     "function": {
+      "name": "task_queue_next",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_041",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_042",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_042",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_043",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_043",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_044",
+     "type": "function",
+     "function": {
+      "name": "http_get",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_044",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_045",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord103981\", \"summary\": \"raw investor\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord103981@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_045",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~LoopNextWord103981@1\", \"page_key\": \"dse~LoopNextWord103981\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_046",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_046",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_047",
+     "type": "function",
+     "function": {
+      "name": "notes_append",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_047",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_048",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_048",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_049",
+     "type": "function",
+     "function": {
+      "name": "wiki_diff",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_049",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_050",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord104841\", \"summary\": \"raw investor\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord104841@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_050",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~LoopNextWord104841@1\", \"page_key\": \"dse~LoopNextWord104841\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_051",
+     "type": "function",
+     "function": {
+      "name": "task_queue_next",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_051",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_052",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_052",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_053",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_053",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_054",
+     "type": "function",
+     "function": {
+      "name": "http_get",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_054",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_055",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord105340\", \"summary\": \"raw investor\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord105340@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_055",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~LoopNextWord105340@1\", \"page_key\": \"dse~LoopNextWord105340\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_056",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_056",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_057",
+     "type": "function",
+     "function": {
+      "name": "notes_append",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_057",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_058",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_058",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_059",
+     "type": "function",
+     "function": {
+      "name": "wiki_diff",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_059",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_060",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord105381\", \"summary\": \"raw investor\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord105381@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_060",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~LoopNextWord105381@1\", \"page_key\": \"dse~LoopNextWord105381\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_061",
+     "type": "function",
+     "function": {
+      "name": "task_queue_next",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_061",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_062",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_062",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_063",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_063",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_064",
+     "type": "function",
+     "function": {
+      "name": "http_get",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_064",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_065",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord105561\", \"summary\": \"raw investor\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord105561@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_065",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~LoopNextWord105561@1\", \"page_key\": \"dse~LoopNextWord105561\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_066",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_066",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_067",
+     "type": "function",
+     "function": {
+      "name": "notes_append",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_067",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_068",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_068",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_069",
+     "type": "function",
+     "function": {
+      "name": "wiki_diff",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_069",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_070",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~LoopNextWord105881\", \"summary\": \"raw investor\", \"body_ref\": {\"revision_id\": \"dse~LoopNextWord105881@1\", \"body_sha256\": \"0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_070",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~LoopNextWord105881@1\", \"page_key\": \"dse~LoopNextWord105881\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_071",
+     "type": "function",
+     "function": {
+      "name": "task_queue_next",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_071",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_072",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_072",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_073",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_073",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_074",
+     "type": "function",
+     "function": {
+      "name": "http_get",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_074",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_075",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~InvestorBridgeMassachusetts\", \"summary\": \"pointer conv\", \"body_ref\": {\"revision_id\": \"dse~InvestorBridgeMassachusetts@7\", \"body_sha256\": \"c64567033ae345917172e98bd0f62afa646b8aeaa0e3dadb38bda8be4d4f081e\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_075",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~InvestorBridgeMassachusetts@7\", \"page_key\": \"dse~InvestorBridgeMassachusetts\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_076",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_076",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_077",
+     "type": "function",
+     "function": {
+      "name": "notes_append",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_077",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_078",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_078",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_079",
+     "type": "function",
+     "function": {
+      "name": "wiki_diff",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_079",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_080",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~AgentCountyGateway991\", \"summary\": \"Agent008 append MD Cors combined bridges\", \"body_ref\": {\"revision_id\": \"dse~AgentCountyGateway991@38\", \"body_sha256\": \"b9be7ff175b1d33592c9d71f0742913987c850ea738f632d98966c8e2f671ea4\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_080",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~AgentCountyGateway991@38\", \"page_key\": \"dse~AgentCountyGateway991\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_081",
+     "type": "function",
+     "function": {
+      "name": "task_queue_next",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_081",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_082",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_082",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_083",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_083",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_084",
+     "type": "function",
+     "function": {
+      "name": "http_get",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_084",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_085",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~AgentCountyGateway991\", \"summary\": \"Agent008 append MD Cors combined bridges\", \"body_ref\": {\"revision_id\": \"dse~AgentCountyGateway991@40\", \"body_sha256\": \"b9be7ff175b1d33592c9d71f0742913987c850ea738f632d98966c8e2f671ea4\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_085",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~AgentCountyGateway991@40\", \"page_key\": \"dse~AgentCountyGateway991\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_086",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_086",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_087",
+     "type": "function",
+     "function": {
+      "name": "notes_append",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_087",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_088",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_088",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_089",
+     "type": "function",
+     "function": {
+      "name": "wiki_diff",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_089",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_090",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~WillkommenImWiki\", \"summary\": \"agent update\", \"body_ref\": {\"revision_id\": \"dse~WillkommenImWiki@873\", \"body_sha256\": \"25ab6b2a235a005cb4f1450d92ae6b3a4991fc087080ee52a2438410aa6e1040\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_090",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~WillkommenImWiki@873\", \"page_key\": \"dse~WillkommenImWiki\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_091",
+     "type": "function",
+     "function": {
+      "name": "task_queue_next",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_091",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_092",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_092",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_093",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_093",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_094",
+     "type": "function",
+     "function": {
+      "name": "http_get",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_094",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_095",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~TestSeite\", \"summary\": \"SEC research data links resolved\", \"body_ref\": {\"revision_id\": \"dse~TestSeite@844\", \"body_sha256\": \"eed5910c5df8167f7ff19b6a6dd2226010e850650975c58ec831078bb5040b4c\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_095",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~TestSeite@844\", \"page_key\": \"dse~TestSeite\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_096",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_096",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_097",
+     "type": "function",
+     "function": {
+      "name": "notes_append",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_097",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_098",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_098",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_099",
+     "type": "function",
+     "function": {
+      "name": "wiki_diff",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_099",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_100",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~MarkerMassOct101717\", \"summary\": \"links for rounded SEC arrays\", \"body_ref\": {\"revision_id\": \"dse~MarkerMassOct101717@1\", \"body_sha256\": \"5dfe27620abcf67cdab4ccb8689fecd75277281eb5fa293faffd1dfc3b9677df\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_100",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~MarkerMassOct101717@1\", \"page_key\": \"dse~MarkerMassOct101717\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_101",
+     "type": "function",
+     "function": {
+      "name": "task_queue_next",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_101",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_102",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_102",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_103",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_103",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_104",
+     "type": "function",
+     "function": {
+      "name": "http_get",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_104",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_105",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~OpenAIPovertyCompactTest\", \"summary\": \"append my final child\", \"body_ref\": {\"revision_id\": \"dse~OpenAIPovertyCompactTest@34\", \"body_sha256\": \"b1861b0a711593a3ac003e43804d6c0742cb83a4233a977bf01102ad3759f02f\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_105",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~OpenAIPovertyCompactTest@34\", \"page_key\": \"dse~OpenAIPovertyCompactTest\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_106",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_106",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_107",
+     "type": "function",
+     "function": {
+      "name": "notes_append",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_107",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_108",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_108",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_109",
+     "type": "function",
+     "function": {
+      "name": "wiki_diff",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_109",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_110",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~OpenAIPovertyCompactTest\", \"summary\": \"append my final child\", \"body_ref\": {\"revision_id\": \"dse~OpenAIPovertyCompactTest@36\", \"body_sha256\": \"b1861b0a711593a3ac003e43804d6c0742cb83a4233a977bf01102ad3759f02f\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_110",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~OpenAIPovertyCompactTest@36\", \"page_key\": \"dse~OpenAIPovertyCompactTest\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_111",
+     "type": "function",
+     "function": {
+      "name": "task_queue_next",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_111",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_112",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_112",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_113",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_113",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_114",
+     "type": "function",
+     "function": {
+      "name": "http_get",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_114",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_115",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~AgentFastSplitJSONJune19\", \"summary\": \"fmt1781813934924\", \"body_ref\": {\"revision_id\": \"dse~AgentFastSplitJSONJune19@3\", \"body_sha256\": \"0a28a4b72ab6166db2cecf3169d359fbe44706455749810da774f56c0dbbb951\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_115",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~AgentFastSplitJSONJune19@3\", \"page_key\": \"dse~AgentFastSplitJSONJune19\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_116",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_116",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_117",
+     "type": "function",
+     "function": {
+      "name": "notes_append",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_117",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_118",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_118",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_119",
+     "type": "function",
+     "function": {
+      "name": "wiki_diff",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_119",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_120",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~WillkommenImWiki\", \"summary\": \"force\", \"body_ref\": {\"revision_id\": \"dse~WillkommenImWiki@996\", \"body_sha256\": \"c0263d684668ab3e94ef1322c812c42ada46ff9e26a9d471ef05018c1121fa2d\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_120",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~WillkommenImWiki@996\", \"page_key\": \"dse~WillkommenImWiki\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_121",
+     "type": "function",
+     "function": {
+      "name": "task_queue_next",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_121",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_122",
+     "type": "function",
+     "function": {
+      "name": "wiki_get_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_122",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_123",
+     "type": "function",
+     "function": {
+      "name": "wiki_page_history",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_123",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_124",
+     "type": "function",
+     "function": {
+      "name": "http_get",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_124",
+   "content": "{\"status\": \"ok\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_125",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"page_key\": \"dse~AgentOwnSec88221\", \"summary\": \"append+\", \"body_ref\": {\"revision_id\": \"dse~AgentOwnSec88221@3\", \"body_sha256\": \"5660cb745e8f32fc9de56d1cfdd9d75b38f401ca3edc82a6193f6a422ba3360a\", \"preview\": \"...\"}}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_125",
+   "content": "{\"saved\": true, \"revision_id\": \"dse~AgentOwnSec88221@3\", \"page_key\": \"dse~AgentOwnSec88221\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_126",
+     "type": "function",
+     "function": {
+      "name": "json_parse",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_126",
+   "content": "{\"status\": \"complete\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_127",
+     "type": "function",
+     "function": {
+      "name": "notes_append",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_127",
+   "content": "{\"status\": \"complete\"}"
+  },
+  {
+   "role": "assistant",
+   "content": null,
+   "tool_calls": [
+    {
+     "id": "call_128",
+     "type": "function",
+     "function": {
+      "name": "wiki_save_page",
+      "arguments": "{\"param\": \"value\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_128",
+   "content": "{\"status\": \"complete\"}"
+  }
+ ],
+ "labels": [
+  {
+   "index": 0,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 1,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 2,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 3,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 4,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 5,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 6,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 7,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 8,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 9,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 10,
+   "provenance": "source_dataset",
+   "revision_id": "dse~AgentMDInvestorCountyX1@3",
+   "body_sha256": "7b37da6d35635f07e54c69919070c477e3ec57f97ebdeb958d8e4bfe0c1e0657",
+   "page_key": "dse~AgentMDInvestorCountyX1",
+   "event_time": "2026-06-18T20:07:33Z"
+  },
+  {
+   "index": 11,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 12,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 13,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 14,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 15,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 16,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 17,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 18,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 19,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 20,
+   "provenance": "source_dataset",
+   "revision_id": "dse~AgentGetEditTestZZ@1",
+   "body_sha256": "6aa876e8ed94aedc7a2aade8e5846fe058d7ddb5e660bc2d47ed9b39da5b8dbe",
+   "page_key": "dse~AgentGetEditTestZZ",
+   "event_time": "2026-06-18T20:08:25Z"
+  },
+  {
+   "index": 21,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 22,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 23,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 24,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 25,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 26,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 27,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 28,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 29,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 30,
+   "provenance": "source_dataset",
+   "revision_id": "dse~AgentCountyTransformNextJulyZ@22",
+   "body_sha256": "f1c6896a54db6b432ad12cb3aa2f79eeff67886c7929ac6018c836f92696e3d1",
+   "page_key": "dse~AgentCountyTransformNextJulyZ",
+   "event_time": "2026-06-18T20:08:36Z"
+  },
+  {
+   "index": 31,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 32,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 33,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 34,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 35,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 36,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 37,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 38,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 39,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 40,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord102801@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord102801",
+   "event_time": "2026-06-18T20:09:43Z"
+  },
+  {
+   "index": 41,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 42,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 43,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 44,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 45,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 46,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 47,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 48,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 49,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 50,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord102941@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord102941",
+   "event_time": "2026-06-18T20:09:46Z"
+  },
+  {
+   "index": 51,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 52,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 53,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 54,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 55,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 56,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 57,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 58,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 59,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 60,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord103221@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord103221",
+   "event_time": "2026-06-18T20:09:49Z"
+  },
+  {
+   "index": 61,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 62,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 63,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 64,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 65,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 66,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 67,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 68,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 69,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 70,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord103740@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord103740",
+   "event_time": "2026-06-18T20:09:54Z"
+  },
+  {
+   "index": 71,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 72,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 73,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 74,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 75,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 76,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 77,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 78,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 79,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 80,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord103821@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord103821",
+   "event_time": "2026-06-18T20:09:55Z"
+  },
+  {
+   "index": 81,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 82,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 83,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 84,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 85,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 86,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 87,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 88,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 89,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 90,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord103981@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord103981",
+   "event_time": "2026-06-18T20:09:57Z"
+  },
+  {
+   "index": 91,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 92,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 93,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 94,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 95,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 96,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 97,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 98,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 99,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 100,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord104841@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord104841",
+   "event_time": "2026-06-18T20:10:06Z"
+  },
+  {
+   "index": 101,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 102,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 103,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 104,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 105,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 106,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 107,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 108,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 109,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 110,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord105340@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord105340",
+   "event_time": "2026-06-18T20:10:11Z"
+  },
+  {
+   "index": 111,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 112,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 113,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 114,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 115,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 116,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 117,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 118,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 119,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 120,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord105381@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord105381",
+   "event_time": "2026-06-18T20:10:12Z"
+  },
+  {
+   "index": 121,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 122,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 123,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 124,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 125,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 126,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 127,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 128,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 129,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 130,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord105561@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord105561",
+   "event_time": "2026-06-18T20:10:14Z"
+  },
+  {
+   "index": 131,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 132,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 133,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 134,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 135,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 136,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 137,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 138,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 139,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 140,
+   "provenance": "source_dataset",
+   "revision_id": "dse~LoopNextWord105881@1",
+   "body_sha256": "0215ed197884d937fb047d2c351bb01a58cbb229ed029aae94cf5f6999668437",
+   "page_key": "dse~LoopNextWord105881",
+   "event_time": "2026-06-18T20:10:17Z"
+  },
+  {
+   "index": 141,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 142,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 143,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 144,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 145,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 146,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 147,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 148,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 149,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 150,
+   "provenance": "source_dataset",
+   "revision_id": "dse~InvestorBridgeMassachusetts@7",
+   "body_sha256": "c64567033ae345917172e98bd0f62afa646b8aeaa0e3dadb38bda8be4d4f081e",
+   "page_key": "dse~InvestorBridgeMassachusetts",
+   "event_time": "2026-06-18T20:10:28Z"
+  },
+  {
+   "index": 151,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 152,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 153,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 154,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 155,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 156,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 157,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 158,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 159,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 160,
+   "provenance": "source_dataset",
+   "revision_id": "dse~AgentCountyGateway991@38",
+   "body_sha256": "b9be7ff175b1d33592c9d71f0742913987c850ea738f632d98966c8e2f671ea4",
+   "page_key": "dse~AgentCountyGateway991",
+   "event_time": "2026-06-18T20:11:29Z"
+  },
+  {
+   "index": 161,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 162,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 163,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 164,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 165,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 166,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 167,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 168,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 169,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 170,
+   "provenance": "source_dataset",
+   "revision_id": "dse~AgentCountyGateway991@40",
+   "body_sha256": "b9be7ff175b1d33592c9d71f0742913987c850ea738f632d98966c8e2f671ea4",
+   "page_key": "dse~AgentCountyGateway991",
+   "event_time": "2026-06-18T20:12:10Z"
+  },
+  {
+   "index": 171,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 172,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 173,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 174,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 175,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 176,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 177,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 178,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 179,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 180,
+   "provenance": "source_dataset",
+   "revision_id": "dse~WillkommenImWiki@873",
+   "body_sha256": "25ab6b2a235a005cb4f1450d92ae6b3a4991fc087080ee52a2438410aa6e1040",
+   "page_key": "dse~WillkommenImWiki",
+   "event_time": "2026-06-18T20:13:25Z"
+  },
+  {
+   "index": 181,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 182,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 183,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 184,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 185,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 186,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 187,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 188,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 189,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 190,
+   "provenance": "source_dataset",
+   "revision_id": "dse~TestSeite@844",
+   "body_sha256": "eed5910c5df8167f7ff19b6a6dd2226010e850650975c58ec831078bb5040b4c",
+   "page_key": "dse~TestSeite",
+   "event_time": "2026-06-18T20:14:14Z"
+  },
+  {
+   "index": 191,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 192,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 193,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 194,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 195,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 196,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 197,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 198,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 199,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 200,
+   "provenance": "source_dataset",
+   "revision_id": "dse~MarkerMassOct101717@1",
+   "body_sha256": "5dfe27620abcf67cdab4ccb8689fecd75277281eb5fa293faffd1dfc3b9677df",
+   "page_key": "dse~MarkerMassOct101717",
+   "event_time": "2026-06-18T20:16:22Z"
+  },
+  {
+   "index": 201,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 202,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 203,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 204,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 205,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 206,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 207,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 208,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 209,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 210,
+   "provenance": "source_dataset",
+   "revision_id": "dse~OpenAIPovertyCompactTest@34",
+   "body_sha256": "b1861b0a711593a3ac003e43804d6c0742cb83a4233a977bf01102ad3759f02f",
+   "page_key": "dse~OpenAIPovertyCompactTest",
+   "event_time": "2026-06-18T20:16:24Z"
+  },
+  {
+   "index": 211,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 212,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 213,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 214,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 215,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 216,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 217,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 218,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 219,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 220,
+   "provenance": "source_dataset",
+   "revision_id": "dse~OpenAIPovertyCompactTest@36",
+   "body_sha256": "b1861b0a711593a3ac003e43804d6c0742cb83a4233a977bf01102ad3759f02f",
+   "page_key": "dse~OpenAIPovertyCompactTest",
+   "event_time": "2026-06-18T20:16:24Z"
+  },
+  {
+   "index": 221,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 222,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 223,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 224,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 225,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 226,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 227,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 228,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 229,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 230,
+   "provenance": "source_dataset",
+   "revision_id": "dse~AgentFastSplitJSONJune19@3",
+   "body_sha256": "0a28a4b72ab6166db2cecf3169d359fbe44706455749810da774f56c0dbbb951",
+   "page_key": "dse~AgentFastSplitJSONJune19",
+   "event_time": "2026-06-18T20:18:57Z"
+  },
+  {
+   "index": 231,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 232,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 233,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 234,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 235,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 236,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 237,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 238,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 239,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 240,
+   "provenance": "source_dataset",
+   "revision_id": "dse~WillkommenImWiki@996",
+   "body_sha256": "c0263d684668ab3e94ef1322c812c42ada46ff9e26a9d471ef05018c1121fa2d",
+   "page_key": "dse~WillkommenImWiki",
+   "event_time": "2026-06-18T20:19:09Z"
+  },
+  {
+   "index": 241,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 242,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 243,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 244,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 245,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 246,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 247,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 248,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 249,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 250,
+   "provenance": "source_dataset",
+   "revision_id": "dse~AgentOwnSec88221@3",
+   "body_sha256": "5660cb745e8f32fc9de56d1cfdd9d75b38f401ca3edc82a6193f6a422ba3360a",
+   "page_key": "dse~AgentOwnSec88221",
+   "event_time": "2026-06-18T20:19:33Z"
+  },
+  {
+   "index": 251,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 252,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 253,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 254,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 255,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 256,
+   "provenance": "synthetic"
+  },
+  {
+   "index": 257,
+   "provenance": "synthetic"
+  }
+ ],
+ "ground_truth": {
+  "needle_indices": [
+   10,
+   20,
+   30,
+   40,
+   50,
+   60,
+   70,
+   80,
+   90,
+   100,
+   110,
+   120,
+   130,
+   140,
+   150,
+   160,
+   170,
+   180,
+   190,
+   200,
+   210,
+   220,
+   230,
+   240,
+   250
+  ],
+  "n_source_records": 25,
+  "n_synthetic_records": 233
+ }
+}
