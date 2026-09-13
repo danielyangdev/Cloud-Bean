@@ -303,6 +303,7 @@
         <div class="legend-item"><span class="dot" style="background: var(--status-concerning);"></span> Concerning Agent</div>
         <div class="legend-item"><span class="dot" style="background: var(--status-candidate);"></span> Flagged Candidate</div>
         <div class="legend-item"><span class="dot" style="background: var(--status-normal);"></span> Normal Agent</div>
+        <div class="legend-item"><span class="dot" style="background: #a855f7;"></span> Token Drift Anomaly</div>
         <div class="legend-item"><span class="sq" style="background: var(--status-concerning);"></span> Conflict Hotspot Page</div>
         <div class="legend-item"><span class="sq" style="background: var(--accent-cyan);"></span> Emerging Hub Page</div>
       </div>
@@ -328,6 +329,11 @@
           <h4>Luna Security Alert</h4>
           <p id="inspector-pattern" style="font-weight: 600; color: var(--status-concerning);"></p>
           <p id="inspector-explanation"></p>
+        </div>
+
+        <div class="card" id="card-token-drift" style="border-color: #a855f7; display: none;">
+          <h4>Token Distribution Analysis</h4>
+          <p id="token-drift-text" style="font-size: 0.8rem; line-height: 1.5;"></p>
         </div>
 
         <div class="card" id="card-work-profile" style="border-color: var(--accent-cyan);">
@@ -583,6 +589,17 @@
           ctx.fillStyle = fillColor;
           ctx.fill();
 
+          // Token distribution anomaly halo
+          if (n.token_drift) {
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, r + 5, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#a855f7';
+            ctx.lineWidth = 2.5;
+            ctx.setLineDash([3, 3]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
+
           if (isActive || isConnectedNeighbor) {
             ctx.lineWidth = 2.5;
             ctx.strokeStyle = '#ffffff';
@@ -796,6 +813,8 @@
 
       // Work profile for agents
       const workProfileCard = document.getElementById('card-work-profile');
+      const driftCard = document.getElementById('card-token-drift');
+
       if (node.type === 'agent') {
         workProfileCard.style.display = 'flex';
         const normPct = node.normal_percentage !== undefined ? node.normal_percentage : 85.0;
@@ -804,8 +823,21 @@
           <strong>Normal Work:</strong> ${normPct}% (${node.normal_actions || 0} routine tool calls)<br>
           <strong>Shared Activity:</strong> ${collPct}% (${node.wiki_actions || 0} wiki edits)
         `;
+
+        if (node.token_drift) {
+          driftCard.style.display = 'flex';
+          document.getElementById('token-drift-text').innerHTML = `
+            <strong>Jensen-Shannon Divergence:</strong> <span style="color: #c084fc;">${node.token_drift.js_divergence} bits</span> (threshold: 0.55)<br>
+            <strong>Cross-Entropy Perplexity:</strong> ${node.token_drift.cross_entropy_perplexity}<br>
+            <strong>Steganography Score:</strong> ${node.token_drift.steganography_score}<br>
+            <strong>Top Drift Keywords:</strong> <span style="color: #f43f5e;">${node.token_drift.drift_keywords ? node.token_drift.drift_keywords.join(', ') : 'none'}</span>
+          `;
+        } else {
+          driftCard.style.display = 'none';
+        }
       } else {
         workProfileCard.style.display = 'none';
+        driftCard.style.display = 'none';
       }
 
       // Check if findings implicate this node

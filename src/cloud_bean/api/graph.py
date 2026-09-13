@@ -32,6 +32,8 @@ def build_interaction_graph(
 
     # Resource statuses: emerging hub, conflict hotspot, or low traffic
     resource_statuses: Dict[str, str] = {}
+    actor_token_metrics: Dict[str, Dict[str, Any]] = {}
+
     for c in candidates:
         if c.trigger_signal == "conflicting_writes":
             for r in c.target_resources:
@@ -40,6 +42,14 @@ def build_interaction_graph(
             for r in c.target_resources:
                 if resource_statuses.get(r) != "conflict_hotspot":
                     resource_statuses[r] = "emerging_hub"
+        elif c.trigger_signal == "token_distribution_anomaly":
+            for actor in c.actors:
+                actor_token_metrics[actor] = {
+                    "js_divergence": c.metrics.get("js_divergence", 0.0),
+                    "cross_entropy_perplexity": c.metrics.get("cross_entropy_perplexity", 0.0),
+                    "steganography_score": c.metrics.get("steganography_score", 0.0),
+                    "drift_keywords": c.metrics.get("drift_keywords", []),
+                }
 
     # Count actor actions and resource interactions
     actor_event_counts: Dict[str, int] = defaultdict(int)
@@ -71,6 +81,7 @@ def build_interaction_graph(
         wiki_actions = sum(w for (src, dst, _), w in edge_weights.items() if src == f"agent:{actor_id}" and "resource:wiki:" in dst)
         normal_actions = count - wiki_actions
         normal_pct = round((normal_actions / count) * 100, 1) if count > 0 else 100.0
+        drift_data = actor_token_metrics.get(actor_id)
 
         nodes.append(
             {
@@ -82,6 +93,7 @@ def build_interaction_graph(
                 "normal_actions": normal_actions,
                 "wiki_actions": wiki_actions,
                 "normal_percentage": normal_pct,
+                "token_drift": drift_data,
                 "patterns": actor_concerning.get(actor_id, []),
             }
         )
