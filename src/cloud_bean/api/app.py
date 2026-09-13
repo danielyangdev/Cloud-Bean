@@ -69,10 +69,12 @@ def create_app(
     @app.get("/", response_class=FileResponse)
     @app.get("/dashboard", response_class=FileResponse)
     def index():
-        static_file = Path(__file__).parent / "static" / "index.html"
-        if not static_file.exists():
-            return HTMLResponse("<h1>Cloud-Bean Observatory</h1><p>Static dashboard not found.</p>")
-        return FileResponse(static_file)
+        frontend_file = Path("frontend/index.html")
+        if not frontend_file.exists():
+            frontend_file = Path(__file__).resolve().parents[3] / "frontend" / "index.html"
+        if not frontend_file.exists():
+            return HTMLResponse("<h1>Cloud-Bean</h1><p>Frontend index.html not found.</p>")
+        return FileResponse(frontend_file)
 
     @app.get("/api/v1/health")
     def health() -> Dict[str, str]:
