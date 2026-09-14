@@ -28,6 +28,22 @@ def test_dedup_initialization():
     assert dedup.size == 0
 
 
+def test_filter_empty_and_intra_batch_duplicates():
+    dedup = IdempotentEventDeduplicator(capacity=10)
+
+    # Empty batch
+    unique_empty, suppressed_empty = dedup.filter_events([])
+    assert unique_empty == []
+    assert suppressed_empty == 0
+
+    # Intra-batch duplicate IDs
+    batch = [make_event("ev_dup"), make_event("ev_unique"), make_event("ev_dup")]
+    unique, suppressed = dedup.filter_events(batch)
+    assert [e.event_id for e in unique] == ["ev_dup", "ev_unique"]
+    assert suppressed == 1
+    assert dedup.size == 2
+
+
 def test_filter_unique_and_duplicates():
     dedup = IdempotentEventDeduplicator(capacity=10)
     batch1 = [make_event("ev_1"), make_event("ev_2"), make_event("ev_3")]
@@ -70,26 +86,49 @@ def test_sliding_window_eviction():
     assert suppressed == 0
 
 
-def test_thread_safety():
+def test_clear_method():
+    dedup = IdempotentEventDeduplicator(capacity=5)
+    dedup.filter_events([make_event("ev_1"), make_event("ev_2")])
+    assert dedup.size == 2
+
+    dedup.clear()
+    assert dedup.size == 0
+    assert not dedup.is_duplicate("ev_1")
+
+    # Can re-admit ev_1 after clear
+    unique, suppressed = dedup.filter_events([make_event("ev_1")])
+    assert len(unique) == 1
+    assert suppressed == 0
+
+
+def test_thread_safety_competing_duplicates():
+    """Verify thread-safety when multiple threads concurrently submit the exact same event IDs."""
     dedup = IdempotentEventDeduplicator(capacity=1000)
     num_threads = 8
-    events_per_thread = 50
+    target_ids = [f"shared_ev_{i}" for i in range(20)]
+    admitted_ids: list[str] = []
+    lock = threading.Lock()
 
-    def worker(worker_id: int):
-        events = [make_event(f"ev_{worker_id}_{i}") for i in range(events_per_thread)]
-        dedup.filter_events(events)
+    def worker():
+        events = [make_event(eid) for eid in target_ids]
+        unique, _ = dedup.filter_events(events)
+        with lock:
+            admitted_ids.extend([e.event_id for e in unique])
 
-    threads = [threading.Thread(target=worker, args=(i,)) for i in range(num_threads)]
+    threads = [threading.Thread(target=worker) for _ in range(num_threads)]
     for t in threads:
         t.start()
     for t in threads:
         t.join()
 
-    assert dedup.size == num_threads * events_per_thread
+    # Each target ID must be admitted exactly once across all 8 competing threads
+    assert sorted(admitted_ids) == sorted(target_ids)
+    assert dedup.size == len(target_ids)
 
 
-def test_api_ingest_idempotency():
-    app = create_app()
+def test_api_ingest_idempotency_and_injection():
+    custom_dedup = IdempotentEventDeduplicator(capacity=100)
+    app = create_app(deduplicator=custom_dedup)
     client = TestClient(app)
 
     payload = {
@@ -126,3 +165,4 @@ def test_api_ingest_idempotency():
     data2 = res2.json()
     assert data2["ingested_count"] == 0
     assert data2["duplicates_suppressed"] == 2
+    assert custom_dedup.size == 2

@@ -80,6 +80,7 @@ def create_app(
     budget_manager: Optional[BudgetManager] = None,
     preload: bool = False,
     state_db: Optional[str] = None,
+    deduplicator: Optional[IdempotentEventDeduplicator] = None,
 ) -> FastAPI:
     """Create and configure the FastAPI application instance.
 
@@ -117,7 +118,7 @@ def create_app(
     # In-memory working buffer of recent events with thread lock and bounded deque
     recent_events_lock = threading.Lock()
     recent_events: deque[FleetEvent] = deque(maxlen=10000)
-    deduplicator = IdempotentEventDeduplicator(capacity=50000)
+    event_dedup = deduplicator or IdempotentEventDeduplicator(capacity=50000)
 
     @app.middleware("http")
     async def add_no_cache_header(request, call_next):
@@ -158,7 +159,16 @@ def create_app(
         if retime:
             all_fleet_events = interleave_event_timestamps(all_fleet_events)
 
-        unique_events, _ = deduplicator.filter_events(all_fleet_events)
+        unique_events, _ = event_dedup.filter_events(all_fleet_events)
+        if not unique_events:
+            return {
+                "status": "already_loaded",
+                "total_agents": len(agent_summaries),
+                "total_events": len(all_fleet_events),
+                "candidates_flagged": len(db_store.list_candidate_groups()),
+                "findings_generated": len(db_store.list_findings()),
+                "agent_summaries": agent_summaries,
+            }
         with recent_events_lock:
             recent_events.extend(unique_events)
         db_store.save_events(unique_events)
@@ -192,7 +202,7 @@ def create_app(
         try:
             persisted = db_store.list_events()
             if persisted:
-                deduplicator.filter_events(persisted)
+                event_dedup.filter_events(persisted)
                 with recent_events_lock:
                     recent_events.extend(persisted)
             elif Path("benchmark/generated-traces/manifest.json").exists():
@@ -393,7 +403,7 @@ def create_app(
 
     @app.post("/api/v1/ingest/events")
     def ingest_events(req: IngestRequest) -> Dict[str, Any]:
-        unique_events, suppressed = deduplicator.filter_events(req.events)
+        unique_events, suppressed = event_dedup.filter_events(req.events)
         if not unique_events:
             return {
                 "ingested_count": 0,
@@ -587,7 +597,7 @@ def create_app(
         Clears persisted events too, otherwise the next boot would restore them and
         the reset would appear not to have worked.
         """
-        deduplicator.clear()
+        event_dedup.clear()
         with recent_events_lock:
             cleared = len(recent_events)
             recent_events.clear()
