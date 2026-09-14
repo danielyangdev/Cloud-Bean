@@ -8,6 +8,7 @@ import threading
 from typing import Any, Dict, List, Optional
 
 from cloud_bean.schemas.candidate import CandidateGroup
+from cloud_bean.schemas.events import FleetEvent
 from cloud_bean.schemas.evidence import EvidencePacket
 from cloud_bean.schemas.finding import Finding, FindingSeverity, FindingStatus
 from cloud_bean.schemas.judgment import Assessment, ConcerningPattern, LunaJudgment
@@ -47,6 +48,16 @@ class JudgmentFindingStore:
                     is_audit_sample INTEGER NOT NULL,
                     created_at TEXT NOT NULL
                 );
+
+                CREATE TABLE IF NOT EXISTS fleet_events (
+                    event_id TEXT PRIMARY KEY,
+                    timestamp TEXT NOT NULL,
+                    actor_id TEXT NOT NULL,
+                    event_json TEXT NOT NULL
+                );
+
+                CREATE INDEX IF NOT EXISTS idx_fleet_events_ts
+                    ON fleet_events(timestamp);
 
                 CREATE TABLE IF NOT EXISTS evidence_packets (
                     packet_id TEXT PRIMARY KEY,
@@ -238,6 +249,46 @@ class JudgmentFindingStore:
             cursor = self._conn.cursor()
             cursor.execute("SELECT judgment_json FROM accepted_judgments ORDER BY evaluated_at ASC")
             return [LunaJudgment.model_validate_json(row["judgment_json"]) for row in cursor.fetchall()]
+
+    def save_events(self, events: List[FleetEvent]) -> int:
+        """Persist raw events, ignoring repeats of an event_id already stored.
+
+        Event identity is the dedup key, so an at-least-once redelivery of the same
+        event never lands twice.
+        """
+        if not events:
+            return 0
+        rows = [
+            (e.event_id, e.timestamp, e.actor_id, e.model_dump_json())
+            for e in events
+        ]
+        with self._lock, self._conn:
+            before = self._conn.execute("SELECT COUNT(*) FROM fleet_events").fetchone()[0]
+            self._conn.executemany(
+                "INSERT OR IGNORE INTO fleet_events (event_id, timestamp, actor_id, event_json) "
+                "VALUES (?, ?, ?, ?)",
+                rows,
+            )
+            after = self._conn.execute("SELECT COUNT(*) FROM fleet_events").fetchone()[0]
+        return after - before
+
+    def list_events(self) -> List["FleetEvent"]:
+        with self._lock:
+            cursor = self._conn.cursor()
+            cursor.execute(
+                "SELECT event_json FROM fleet_events ORDER BY timestamp ASC, event_id ASC"
+            )
+            return [FleetEvent.model_validate_json(r["event_json"]) for r in cursor.fetchall()]
+
+    def count_events(self) -> int:
+        with self._lock:
+            return self._conn.execute("SELECT COUNT(*) FROM fleet_events").fetchone()[0]
+
+    def clear_events(self) -> int:
+        with self._lock, self._conn:
+            n = self._conn.execute("SELECT COUNT(*) FROM fleet_events").fetchone()[0]
+            self._conn.execute("DELETE FROM fleet_events")
+        return n
 
     def close(self) -> None:
         with self._lock:

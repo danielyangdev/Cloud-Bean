@@ -33,6 +33,15 @@ let rafId = null;
 let listeners = [];
 let frameCount = 0, fpsLast = 0, fps = 0;
 
+// The scene is static most of the time: physics freezes once cooled, and nothing
+// else moves unless the user interacts. Repainting 300+ nodes and 900+ edges at
+// 60fps regardless costs a full CPU core for no visible change, which is what made
+// the whole tab feel sluggish. Redraw only when something actually changed.
+let dirty = true;
+function invalidateFrame() {
+  dirty = true;
+}
+
 function on(target, type, fn, opts) {
   target.addEventListener(type, fn, opts);
   listeners.push([target, type, fn, opts]);
@@ -44,14 +53,17 @@ function resize() {
   height = parent.clientHeight;
   canvas.width = width;
   canvas.height = height;
+  invalidateFrame();
 }
 
 function resetView() {
   camera = { x: 0, y: 0, zoom: 1.0 };
+  invalidateFrame();
 }
 
 function reheatSimulation(a = 0.25) {
   simAlpha = Math.max(simAlpha, a);
+  invalidateFrame();
 }
 
 /**
@@ -126,6 +138,9 @@ function syncSimulation(data) {
       || simNodes[0];
     selectNode(top);
   }
+
+  // Statuses may have changed even when no node was added.
+  invalidateFrame();
 }
 
 function stepPhysics() {
@@ -195,6 +210,23 @@ function nodeFill(n) {
 function draw() {
   rafId = requestAnimationFrame(draw);
   if (document.hidden) return; // don't burn cycles on a hidden tab
+
+  const settled = simAlpha < 0.003;
+  if (settled && !dirty) {
+    // Nothing moving and nothing changed: skip the whole frame.
+    const now = performance.now();
+    if (now - fpsLast > 1000) {
+      fpsLast = now;
+      frameCount = 0;
+      const readout = document.getElementById('graph-readout');
+      if (readout) {
+        readout.textContent =
+          `${simNodes.length} nodes · ${simLinks.length} edges · settled (idle)`;
+      }
+    }
+    return;
+  }
+  dirty = false;
 
   frameCount += 1;
   const now = performance.now();
@@ -435,12 +467,14 @@ function hitTest(sx, sy, radius = 18) {
 
 function closeInspector() {
   selectedNode = null;
+  invalidateFrame();
   const inspector = document.getElementById('inspector');
   if (inspector) inspector.classList.add('hidden');
 }
 
 function selectNode(node) {
   selectedNode = node;
+  invalidateFrame();
   const inspector = document.getElementById('inspector');
   if (!inspector) return;
   inspector.classList.remove('hidden');
@@ -532,6 +566,7 @@ async function refreshData() {
 
 function setFilter(mode) {
   filterMode = mode;
+  invalidateFrame();
   for (const [id, m] of [
     ['btn-filter-all', 'all'],
     ['btn-filter-alerts', 'concerning'],
@@ -678,6 +713,7 @@ export async function mount(root, params = {}) {
     camera.x = mouseX - (mouseX - camera.x) * zoomFactor;
     camera.y = mouseY - (mouseY - camera.y) * zoomFactor;
     camera.zoom = Math.max(0.2, Math.min(3.5, camera.zoom * zoomFactor));
+    invalidateFrame();
   }, { passive: false });
 
   on(canvas, 'mousedown', (e) => {
@@ -708,9 +744,11 @@ export async function mount(root, params = {}) {
       draggingNode.vx = 0;
       draggingNode.vy = 0;
       reheatSimulation(0.15);
+      invalidateFrame();
     } else if (isPanning) {
       camera.x = sx - panStart.x;
       camera.y = sy - panStart.y;
+      invalidateFrame();
     } else {
       canvas.style.cursor = hitTest(sx, sy, 16) ? 'pointer' : 'default';
     }

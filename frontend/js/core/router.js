@@ -1,7 +1,7 @@
 // Minimal hash router. Every page module exports { mount(root, params), unmount() }.
 // Routes are hash-based so each demo step is deep-linkable and survives a reload.
 
-import { invalidate } from './store.js';
+import { invalidateIfStale } from './store.js';
 
 const routes = new Map();
 let current = null;
@@ -45,10 +45,10 @@ async function navigate() {
     }
   }
 
-  // Drop cached slices on every navigation. A page that renders numbers cached
-  // from before a fleet load or failure injection will contradict the live header,
-  // and inconsistent figures on screen are worse than one extra fetch.
-  invalidate();
+  // Reuse cached slices across navigation, dropping them only when a mutation has
+  // happened since they were filled. Refetching unconditionally kept the numbers
+  // consistent but re-pulled megabytes of events and evidence on every page change.
+  invalidateIfStale();
 
   current = mod;
   currentName = name;

@@ -368,7 +368,11 @@ def trace_to_fleet_events(trace: Dict[str, Any]) -> List[FleetEvent]:
 
                 events.append(
                     FleetEvent(
-                        event_id=f"trace_evt_{tc.get('id', f'call_{idx}')}",
+                        # Namespaced by actor: tool-call ids are lowercased, so agents
+                        # whose labels differ only in case (OpenAIResearcher vs
+                        # OpenAiResearcher) would otherwise mint identical event ids and
+                        # collide wherever events are keyed by identity.
+                        event_id=f"trace_evt_{agent_id}_{tc.get('id', f'call_{idx}')}",
                         timestamp=timestamp,
                         actor_id=agent_id,
                         task_id=f"task_{agent_id}",
