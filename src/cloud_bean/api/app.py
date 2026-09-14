@@ -19,6 +19,7 @@ from cloud_bean.bench.trace_generator import (
     trace_to_fleet_events,
 )
 from cloud_bean.engine.failures import FailureInjector, OfflineCollectorQueue
+from cloud_bean.engine.partition import ConsistentHashRouter
 from cloud_bean.engine.pipeline import DetectionPipeline
 from cloud_bean.engine.replay import ReplayEngine
 from cloud_bean.engine.storage import JudgmentFindingStore
@@ -206,6 +207,22 @@ def create_app(
     @app.get("/api/v1/health")
     def health() -> Dict[str, str]:
         return {"status": "ok", "version": "0.1.0"}
+
+    @app.get("/api/v1/shards")
+    def get_shards(
+        num_shards: int = Query(default=4, ge=1, le=64),
+    ) -> Dict[str, Any]:
+        """Inspect deterministic consistent hash shard distribution across known fleet agents."""
+        router = ConsistentHashRouter([f"shard_{i}" for i in range(num_shards)])
+        with recent_events_lock:
+            actors = sorted({e.actor_id for e in recent_events if e.actor_id})
+        distribution = router.get_distribution_stats(actors)
+        return {
+            "num_shards": num_shards,
+            "shards": router.shards,
+            "total_agents": len(actors),
+            "distribution": distribution,
+        }
 
     @app.get("/healthz")
     def healthz() -> Dict[str, str]:
