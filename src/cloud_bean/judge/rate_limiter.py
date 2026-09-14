@@ -78,6 +78,8 @@ class TokenBucketRateLimiter:
         """
         if tokens < 0:
             raise ValueError("tokens must be non-negative")
+        if float(tokens) > self.max_tokens:
+            return False
 
         deadline = time.monotonic() + timeout
 
@@ -101,8 +103,7 @@ class TokenBucketRateLimiter:
                 return False
 
             sleep_duration = min(wait_needed, remaining_timeout)
-            if sleep_duration > 0.001:
-                time.sleep(sleep_duration)
+            time.sleep(max(0.001, sleep_duration))
 
     def stats(self) -> Dict[str, Any]:
         """Return snapshot statistics of the current bucket state."""

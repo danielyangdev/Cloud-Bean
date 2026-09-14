@@ -103,15 +103,16 @@ class BudgetManager:
         timeout: float = 0.0,
     ) -> ReservationResult:
         """Atomically reserve estimated cost and check rate/budget limits before dispatch."""
-        with self._lock:
-            # 1. Check rate limits (RPM / TPM token bucket)
-            if self.rate_limiter and not self.rate_limiter.acquire(tokens=estimated_tokens, timeout=timeout):
-                return ReservationResult(
-                    success=False,
-                    status=ReservationStatus.RATE_LIMITED,
-                    estimated_cost_usd=estimated_cost_usd,
-                )
+        # 1. Check rate limits (RPM / TPM token bucket) outside the global lock
+        # to avoid holding the BudgetManager lock during rate-limit sleeps.
+        if self.rate_limiter and not self.rate_limiter.acquire(tokens=estimated_tokens, timeout=timeout):
+            return ReservationResult(
+                success=False,
+                status=ReservationStatus.RATE_LIMITED,
+                estimated_cost_usd=estimated_cost_usd,
+            )
 
+        with self._lock:
             # 2. Check concurrency
             if (
                 self._ledger.rate_limits.active_requests
