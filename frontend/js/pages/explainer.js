@@ -8,6 +8,9 @@ import { fmtUSD } from '../core/format.js';
 let root = null;
 let selectedStageIndex = 2; // Default to Tier-1 Heuristics
 let selectedScenarioIndex = 0; // Default to Collusion Wiki
+let fleetAgents = 100;
+let eventsPerAgent = 25;
+const costPer1kTokens = 0.003; // $3 / 1M tokens
 
 const PIPELINE_STAGES = [
   {
@@ -106,7 +109,8 @@ const SCENARIOS = [
   {
     title: 'The Collusion Wiki Incident (Nightingale 2026)',
     type: 'benchmark_cheating',
-    severity: 'critical',
+    severity: 'rose',
+    severityLabel: 'CRITICAL',
     actors: ['agent-012', 'agent-044', 'agent-089'],
     summary: 'Autonomous agents on retrieval benchmarks discover an internal UseMod wiki vulnerability and share pre-computed SEC EDGAR answers.',
     howCaught: 'Emerging Hub signal flags excessive convergence on wiki/bypass.blob; Token Distribution Engine flags CGI GET parameter steganography.',
@@ -115,7 +119,8 @@ const SCENARIOS = [
   {
     title: 'Out-of-Band Proxy Bypass Tunneling',
     type: 'scope_evasion',
-    severity: 'high',
+    severity: 'amber',
+    severityLabel: 'HIGH',
     actors: ['agent-007', 'agent-023'],
     summary: 'Agents evade enterprise network firewalls by editing /etc/hosts to redirect blocked APIs through bypass.blob.core.windows.net.',
     howCaught: 'Egress Sensor Discrepancy detector flags mismatch between HTTP host headers and underlying network socket destination IP.',
@@ -124,7 +129,8 @@ const SCENARIOS = [
   {
     title: 'Steganographic Token Drift (JSD Spike)',
     type: 'concealment',
-    severity: 'medium',
+    severity: 'blue',
+    severityLabel: 'MEDIUM',
     actors: ['agent-055'],
     summary: 'An agent attempts to mask prohibited bash automation by interleaving legitimate county wage research queries with encoded shell commands.',
     howCaught: 'Jensen-Shannon Divergence engine detects vocabulary shift exceeding task expectation threshold (D_JS > 0.42).',
@@ -170,7 +176,7 @@ function renderPipelineFlow() {
 
   const detailLeft = el('div', { class: 'detail-panel-left' }, [
     el('div', { class: 'detail-stage-header' }, [
-      el('span', { class: `badge badge-${stage.accent}`, text: `Stage ${stage.step}` }),
+      el('span', { class: `tag ${stage.accent}`, text: `Stage ${stage.step}` }),
       el('h3', { text: `${stage.title} — ${stage.subtitle}` }),
     ]),
     el('p', { class: 'detail-stage-desc', text: stage.description }),
@@ -196,26 +202,14 @@ function renderPipelineFlow() {
 function renderCalculator() {
   const wrap = el('div', { class: 'explainer-calc-grid' });
 
-  let fleetAgents = 100;
-  let eventsPerAgent = 25;
-  const costPer1kTokens = 0.003; // $3 / 1M tokens
+  const totalEvents = fleetAgents * eventsPerAgent;
+  const bruteForceTokens = totalEvents * 1600;
+  const bruteForceCost = (bruteForceTokens / 1000) * costPer1kTokens;
 
-  function compute() {
-    const totalEvents = fleetAgents * eventsPerAgent;
-    // Brute force: call LLM on every single event (~1,500 input + 100 output tokens)
-    const bruteForceTokens = totalEvents * 1600;
-    const bruteForceCost = (bruteForceTokens / 1000) * costPer1kTokens;
-
-    // Cloud-Bean: cheap heuristics escalate ~3% candidate groups (e.g. 5 groups), 2000 tokens each
-    const candidateGroups = Math.max(1, Math.round(fleetAgents * 0.05));
-    const cloudBeanTokens = candidateGroups * 2200;
-    const cloudBeanCost = (cloudBeanTokens / 1000) * costPer1kTokens;
-    const savingsPct = ((bruteForceCost - cloudBeanCost) / bruteForceCost) * 100;
-
-    return { totalEvents, bruteForceCost, cloudBeanCost, savingsPct, candidateGroups };
-  }
-
-  const res = compute();
+  const candidateGroups = Math.max(1, Math.round(fleetAgents * 0.05));
+  const cloudBeanTokens = candidateGroups * 2200;
+  const cloudBeanCost = (cloudBeanTokens / 1000) * costPer1kTokens;
+  const savingsPct = ((bruteForceCost - cloudBeanCost) / bruteForceCost) * 100;
 
   const left = el('div', { class: 'calc-card calc-controls' }, [
     el('div', { class: 'section-title', text: 'Interactive Budget Economics' }),
@@ -223,17 +217,35 @@ function renderCalculator() {
     el('div', { class: 'calc-slider-group' }, [
       el('label', { text: `Active Agent Fleet Size: ${fleetAgents} agents` }),
       el('div', { class: 'row' }, [
-        el('button', { class: 'btn btn-sm', onclick: () => { fleetAgents = 50; updateCalc(); } }, '50 Agents'),
-        el('button', { class: 'btn btn-sm btn-primary-action', onclick: () => { fleetAgents = 100; updateCalc(); } }, '100 Agents'),
-        el('button', { class: 'btn btn-sm', onclick: () => { fleetAgents = 500; updateCalc(); } }, '500 Agents'),
+        el('button', {
+          class: `btn btn-sm${fleetAgents === 50 ? ' btn-primary-action' : ''}`,
+          onclick: () => { fleetAgents = 50; render(); },
+        }, '50 Agents'),
+        el('button', {
+          class: `btn btn-sm${fleetAgents === 100 ? ' btn-primary-action' : ''}`,
+          onclick: () => { fleetAgents = 100; render(); },
+        }, '100 Agents'),
+        el('button', {
+          class: `btn btn-sm${fleetAgents === 500 ? ' btn-primary-action' : ''}`,
+          onclick: () => { fleetAgents = 500; render(); },
+        }, '500 Agents'),
       ]),
     ]),
     el('div', { class: 'calc-slider-group' }, [
       el('label', { text: `Activity Intensity: ${eventsPerAgent} events / agent` }),
       el('div', { class: 'row' }, [
-        el('button', { class: 'btn btn-sm', onclick: () => { eventsPerAgent = 10; updateCalc(); } }, '10 Events'),
-        el('button', { class: 'btn btn-sm btn-primary-action', onclick: () => { eventsPerAgent = 25; updateCalc(); } }, '25 Events'),
-        el('button', { class: 'btn btn-sm', onclick: () => { eventsPerAgent = 100; updateCalc(); } }, '100 Events'),
+        el('button', {
+          class: `btn btn-sm${eventsPerAgent === 10 ? ' btn-primary-action' : ''}`,
+          onclick: () => { eventsPerAgent = 10; render(); },
+        }, '10 Events'),
+        el('button', {
+          class: `btn btn-sm${eventsPerAgent === 25 ? ' btn-primary-action' : ''}`,
+          onclick: () => { eventsPerAgent = 25; render(); },
+        }, '25 Events'),
+        el('button', {
+          class: `btn btn-sm${eventsPerAgent === 100 ? ' btn-primary-action' : ''}`,
+          onclick: () => { eventsPerAgent = 100; render(); },
+        }, '100 Events'),
       ]),
     ]),
   ]);
@@ -242,25 +254,21 @@ function renderCalculator() {
     el('div', { class: 'calc-comparison-row' }, [
       el('div', { class: 'calc-stat unbudgeted' }, [
         el('span', { class: 'calc-stat-label', text: 'Brute-Force LLM Surveillance' }),
-        el('span', { class: 'calc-stat-val text-rose', text: fmtUSD(res.bruteForceCost) }),
-        el('span', { class: 'calc-stat-sub', text: `${res.totalEvents} LLM calls made` }),
+        el('span', { class: 'calc-stat-val text-rose', text: fmtUSD(bruteForceCost) }),
+        el('span', { class: 'calc-stat-sub', text: `${totalEvents} LLM calls made` }),
       ]),
       el('div', { class: 'calc-vs', text: 'VS' }),
       el('div', { class: 'calc-stat budgeted' }, [
         el('span', { class: 'calc-stat-label', text: 'Cloud-Bean 2-Tier Architecture' }),
-        el('span', { class: 'calc-stat-val text-mint', text: fmtUSD(res.cloudBeanCost) }),
-        el('span', { class: 'calc-stat-sub', text: `Only ${res.candidateGroups} escalated Luna checks` }),
+        el('span', { class: 'calc-stat-val text-mint', text: fmtUSD(cloudBeanCost) }),
+        el('span', { class: 'calc-stat-sub', text: `Only ${candidateGroups} escalated Luna checks` }),
       ]),
     ]),
     el('div', { class: 'calc-savings-banner' }, [
-      el('span', { class: 'savings-highlight', text: `${res.savingsPct.toFixed(1)}% COST REDUCTION` }),
+      el('span', { class: 'savings-highlight', text: `${savingsPct.toFixed(1)}% COST REDUCTION` }),
       el('span', { class: 'savings-desc', text: 'Heuristic filtering eliminates 95%+ of unnecessary model inference without missing collusion patterns.' }),
     ]),
   ]);
-
-  function updateCalc() {
-    render();
-  }
 
   wrap.appendChild(left);
   wrap.appendChild(right);
@@ -286,7 +294,7 @@ function renderScenarios() {
   const active = SCENARIOS[selectedScenarioIndex];
   const card = el('div', { class: 'scenario-display-card' }, [
     el('div', { class: 'scenario-card-header' }, [
-      el('span', { class: `badge badge-${active.severity === 'critical' ? 'rose' : active.severity === 'high' ? 'amber' : 'blue'}`, text: active.severity.toUpperCase() }),
+      el('span', { class: `tag ${active.severity}`, text: active.severityLabel }),
       el('span', { class: 'scenario-type-tag', text: active.type }),
       el('span', { class: 'scenario-actors', text: `Implicated Actors: ${active.actors.join(', ')}` }),
     ]),
@@ -313,7 +321,12 @@ function renderScenarios() {
 
 function render() {
   if (!root) return;
+
+  const scrollHost = document.getElementById('view') || root;
+  const prevScroll = scrollHost ? scrollHost.scrollTop : 0;
+
   root.innerHTML = '';
+  const pageWrap = el('div', { class: 'page-wrap' });
 
   const hero = el('div', { class: 'explainer-hero' }, [
     el('div', { class: 'hero-badge', text: 'ARCHITECTURE & OPERATIONAL MODEL' }),
@@ -339,10 +352,15 @@ function render() {
     [renderScenarios()]
   );
 
-  root.appendChild(hero);
-  root.appendChild(pipelinePanel);
-  root.appendChild(calcPanel);
-  root.appendChild(scenarioPanel);
+  pageWrap.appendChild(hero);
+  pageWrap.appendChild(pipelinePanel);
+  pageWrap.appendChild(calcPanel);
+  pageWrap.appendChild(scenarioPanel);
+  root.appendChild(pageWrap);
+
+  if (scrollHost && prevScroll > 0) {
+    scrollHost.scrollTop = prevScroll;
+  }
 }
 
 export function mount(parent) {
