@@ -115,6 +115,15 @@ def create_app(
     recent_events_lock = threading.Lock()
     recent_events: deque[FleetEvent] = deque(maxlen=10000)
 
+    @app.middleware("http")
+    async def add_no_cache_header(request, call_next):
+        response = await call_next(request)
+        if request.url.path.startswith("/static") or request.url.path in ("/", "/dashboard"):
+            response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+            response.headers["Pragma"] = "no-cache"
+            response.headers["Expires"] = "0"
+        return response
+
     def _load_fleet_into_state(
         limit_agents: int = 100, events_per_agent: int = 25, retime: bool = True
     ) -> Dict[str, Any]:

@@ -16,7 +16,7 @@ function parseHash() {
   const raw = (location.hash || '').replace(/^#\/?/, '');
   const [path, query] = raw.split('?');
   const params = Object.fromEntries(new URLSearchParams(query || ''));
-  return { name: path || 'overview', params };
+  return { name: path || 'graph', params };
 }
 
 function syncNav(name) {
@@ -31,7 +31,7 @@ async function navigate() {
   const { name, params } = parseHash();
   const mod = routes.get(name);
   if (!mod) {
-    location.hash = '#/overview';
+    location.hash = '#/graph';
     return;
   }
 
