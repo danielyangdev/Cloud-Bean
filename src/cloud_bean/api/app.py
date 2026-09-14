@@ -550,9 +550,13 @@ def create_app(
     # Mounted last so it never shadows an API route.
     frontend_dir = _frontend_dir()
     if frontend_dir.is_dir():
-        app.mount(
-            "/static", StaticFiles(directory=str(frontend_dir)), name="static"
-        )
+        app.mount("/static", StaticFiles(directory=str(frontend_dir)), name="static")
+        if (frontend_dir / "css").is_dir():
+            app.mount("/css", StaticFiles(directory=str(frontend_dir / "css")), name="css")
+        if (frontend_dir / "js").is_dir():
+            app.mount("/js", StaticFiles(directory=str(frontend_dir / "js")), name="js")
+        if (frontend_dir / "fonts").is_dir():
+            app.mount("/fonts", StaticFiles(directory=str(frontend_dir / "fonts")), name="fonts")
 
     return app
 
