@@ -1,6 +1,11 @@
 """Prometheus exposition metrics generator for Cloud-Bean."""
 
-from typing import Any, Dict
+from typing import Dict
+
+
+def _escape_label_value(val: str) -> str:
+    """Escape label values according to Prometheus text exposition format (0.0.4)."""
+    return val.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
 
 
 def format_prometheus_metrics(
@@ -14,7 +19,7 @@ def format_prometheus_metrics(
     findings_by_pattern: Dict[str, int],
     candidates_by_signal: Dict[str, int],
 ) -> str:
-    """Format operational telemetry into standard Prometheus text exposition format (RFC 0004)."""
+    """Format operational telemetry into standard Prometheus text exposition format (0.0.4)."""
     lines = [
         "# HELP cloud_bean_events_total Total number of fleet events processed.",
         "# TYPE cloud_bean_events_total counter",
@@ -43,22 +48,27 @@ def format_prometheus_metrics(
         "# HELP cloud_bean_budget_max_usd Configured maximum LLM judge budget cap in USD.",
         "# TYPE cloud_bean_budget_max_usd gauge",
         f"cloud_bean_budget_max_usd {max_budget_usd:.4f}",
-        "",
-        "# HELP cloud_bean_findings_by_pattern Findings partitioned by detected pattern.",
-        "# TYPE cloud_bean_findings_by_pattern counter",
     ]
-    for pattern, count in sorted(findings_by_pattern.items()):
-        escaped_pattern = pattern.replace('"', '\\"')
-        lines.append(f'cloud_bean_findings_by_pattern{{pattern="{escaped_pattern}"}} {count}')
 
-    lines.extend([
-        "",
-        "# HELP cloud_bean_candidates_by_signal Candidate groups partitioned by triggering signal.",
-        "# TYPE cloud_bean_candidates_by_signal counter",
-    ])
-    for signal, count in sorted(candidates_by_signal.items()):
-        escaped_signal = signal.replace('"', '\\"')
-        lines.append(f'cloud_bean_candidates_by_signal{{signal="{escaped_signal}"}} {count}')
+    if findings_by_pattern:
+        lines.extend([
+            "",
+            "# HELP cloud_bean_findings_by_pattern_total Findings partitioned by detected pattern.",
+            "# TYPE cloud_bean_findings_by_pattern_total counter",
+        ])
+        for pattern, count in sorted(findings_by_pattern.items()):
+            escaped_pattern = _escape_label_value(pattern)
+            lines.append(f'cloud_bean_findings_by_pattern_total{{pattern="{escaped_pattern}"}} {count}')
+
+    if candidates_by_signal:
+        lines.extend([
+            "",
+            "# HELP cloud_bean_candidates_by_signal_total Candidate groups partitioned by triggering signal.",
+            "# TYPE cloud_bean_candidates_by_signal_total counter",
+        ])
+        for signal, count in sorted(candidates_by_signal.items()):
+            escaped_signal = _escape_label_value(signal)
+            lines.append(f'cloud_bean_candidates_by_signal_total{{signal="{escaped_signal}"}} {count}')
 
     lines.append("")
     return "\n".join(lines)

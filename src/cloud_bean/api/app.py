@@ -216,7 +216,8 @@ def create_app(
     def readyz() -> Dict[str, str]:
         """Kubernetes/Cloud readiness probe: checks backing store connectivity."""
         try:
-            db_store.list_candidate_groups()
+            if not db_store.ping():
+                raise RuntimeError("Database ping returned false")
             return {"status": "ready"}
         except Exception as exc:
             raise HTTPException(status_code=503, detail=f"Store not ready: {exc}")
@@ -226,26 +227,20 @@ def create_app(
         """Prometheus OpenMetrics exposition endpoint for cloud scrapers."""
         with recent_events_lock:
             events_count = len(recent_events)
-        candidates = db_store.list_candidate_groups()
-        findings = db_store.list_findings()
-        judgments = db_store.list_accepted_judgments()
+        total_events = db_store.count_events() or events_count
+        total_candidates = db_store.count_candidate_groups()
+        total_findings = db_store.count_findings()
+        total_judgments = db_store.count_accepted_judgments()
         ledger = b_manager.get_ledger()
 
-        findings_by_pattern: Dict[str, int] = {}
-        for f in findings:
-            findings_by_pattern[f.pattern] = findings_by_pattern.get(f.pattern, 0) + 1
-
-        candidates_by_signal: Dict[str, int] = {}
-        for c in candidates:
-            candidates_by_signal[c.trigger_signal] = (
-                candidates_by_signal.get(c.trigger_signal, 0) + 1
-            )
+        findings_by_pattern = db_store.count_findings_by_pattern()
+        candidates_by_signal = db_store.count_candidates_by_signal()
 
         content = format_prometheus_metrics(
-            total_events=len(db_store.list_events()) or events_count,
-            total_candidates=len(candidates),
-            total_findings=len(findings),
-            total_judgments=len(judgments),
+            total_events=total_events,
+            total_candidates=total_candidates,
+            total_findings=total_findings,
+            total_judgments=total_judgments,
             buffered_events=events_count,
             spent_usd=ledger.spent_usd,
             max_budget_usd=ledger.max_budget_usd,
