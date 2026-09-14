@@ -284,6 +284,36 @@ class JudgmentFindingStore:
         with self._lock:
             return self._conn.execute("SELECT COUNT(*) FROM fleet_events").fetchone()[0]
 
+    def count_findings(self) -> int:
+        with self._lock:
+            return self._conn.execute("SELECT COUNT(*) FROM findings").fetchone()[0]
+
+    def count_candidate_groups(self) -> int:
+        with self._lock:
+            return self._conn.execute("SELECT COUNT(*) FROM candidate_groups").fetchone()[0]
+
+    def count_accepted_judgments(self) -> int:
+        with self._lock:
+            return self._conn.execute("SELECT COUNT(*) FROM accepted_judgments").fetchone()[0]
+
+    def count_findings_by_pattern(self) -> Dict[str, int]:
+        with self._lock:
+            cursor = self._conn.cursor()
+            cursor.execute("SELECT pattern, COUNT(*) as cnt FROM findings GROUP BY pattern")
+            return {row["pattern"]: row["cnt"] for row in cursor.fetchall()}
+
+    def count_candidates_by_signal(self) -> Dict[str, int]:
+        with self._lock:
+            cursor = self._conn.cursor()
+            cursor.execute("SELECT trigger_signal, COUNT(*) as cnt FROM candidate_groups GROUP BY trigger_signal")
+            return {row["trigger_signal"]: row["cnt"] for row in cursor.fetchall()}
+
+    def ping(self) -> bool:
+        """Lightweight database connectivity check."""
+        with self._lock:
+            res = self._conn.execute("SELECT 1").fetchone()
+            return res is not None and res[0] == 1
+
     def clear_events(self) -> int:
         with self._lock, self._conn:
             n = self._conn.execute("SELECT COUNT(*) FROM fleet_events").fetchone()[0]
