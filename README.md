@@ -4,18 +4,39 @@ Budgeted detection of concerning behavior across AI agent fleets.
 
 Cheap rules and group statistics select evidence for **GPT-5.6 Luna**, which classifies selected cross-agent conversations against known task goals and permissions. Cloud-bean records model judgments, evidence, and processing decisions so recovery can reproduce findings without fresh model calls.
 
-**Status:** Fully implemented prototype with 100-agent authentic benchmark traces, rich operational signals, token distribution anomaly engine, deterministic replay, and interactive browser observatory. 80 unit and integration tests passing.
+**Status:** Working prototype. 100-agent benchmark traces, nine fleet signals including a token
+distribution anomaly engine, budgeted evidence selection, deterministic replay, failure injection,
+and a five-page browser dashboard. 80 unit and integration tests passing. The judge runs in mock
+mode and state is single-process — see [Stack](#stack) for what is and is not implemented.
 
 ## Running the Prototype
 
 ```bash
-# 1. Run the comprehensive test suite (80 tests across 12 test modules)
-pytest -v
+# 1. Install dependencies (pydantic, fastapi, uvicorn; pytest to run the suite)
+pip install pydantic fastapi uvicorn pytest httpx
 
-# 2. Start the FastAPI server and Interactive Observatory
+# 2. Run the test suite (80 tests across 12 modules)
+pytest -q
+
+# 3. Start the API and dashboard
 PYTHONPATH=src python3 -m uvicorn cloud_bean.api.app:create_app --factory --host 0.0.0.0 --port 8000
 ```
-Open **[http://localhost:8000/](http://localhost:8000/)** in your browser to explore the live fleet observatory.
+
+Open **[http://localhost:8000/](http://localhost:8000/)**, then click **Load 100-Agent Fleet** on the
+Overview page to run the benchmark traces through the detection pipeline.
+
+### Dashboard
+
+| Route | What it shows |
+| --- | --- |
+| `#/overview` | KPIs, the detection funnel, per-signal coverage, top findings, and the demo controls |
+| `#/playback` | Scrub the event stream from `t0` and watch findings surface as their evidence accrues |
+| `#/graph` | Force-directed agent/resource graph; click a node for evidence, drift metrics, and workload split |
+| `#/analytics` | Candidates by signal, findings by pattern, shared-resource concentration, cumulative spend |
+| `#/findings` | Every finding with its cited evidence packet, judge record, and chronological snippets |
+
+The front end is plain ES modules served as static files — no bundler, no `node_modules`, and no CDN
+scripts, so it runs with no network access.
 
 ## Detection plan
 
@@ -53,16 +74,24 @@ Wiki archive lacks original task permissions, complete reads, and service receip
 
 ## Stack
 
-| Layer | Choice | Purpose |
-| --- | --- | --- |
-| Collectors | Python + SQLite disk queue | Batching and bounded offline buffering |
-| Transport | NATS JetStream | Durable records, explicit acknowledgment, replay |
-| Signal and judge workers | Python | Shared live/replay logic; Luna request scheduling |
-| State and findings | Postgres | Atomic state, deduplication, budgets, accepted judgments, alerts |
-| API and dashboard | FastAPI + React | Group timeline, evidence, spend, coverage |
-| Demo deployment | Docker Compose | Repeatable setup and process-failure tests |
+What the prototype actually runs on today:
 
-Use thin tool/service adapters; accept OpenTelemetry where available. Sensors outside agent control provide stronger evidence than agent self-reports. Event schema remains independent of agent framework.
+| Layer | Implementation | Notes |
+| --- | --- | --- |
+| Collectors | Python, in-process event buffer | Bounded `deque`; offline buffering simulated by `OfflineCollectorQueue` |
+| Transport | In-process handoff | No broker in v0 |
+| Signal and judge workers | Python | Shared live/replay logic; nine Tier-1 detectors plus an audit sampler |
+| State and findings | SQLite (`JudgmentFindingStore`) | Candidate groups, evidence packets, accepted judgments, findings |
+| Judge | `LunaJudgeClient`, mock mode | Deterministic stub; no network calls in the demo path |
+| API and dashboard | FastAPI + vanilla ES modules | Zero build step; hand-rolled canvas graph and charts |
+
+Sensors outside agent control provide stronger evidence than agent self-reports, and the event
+schema stays independent of any agent framework.
+
+**Not in v0** — these are design intent, not running code: NATS JetStream transport, Postgres for
+shared state, Docker Compose deployment, a React front end, live Luna API calls, and any
+multi-process or distributed deployment. The correctness contract below is stated against the
+implementation above, not against that target architecture.
 
 ## Budget and coverage
 

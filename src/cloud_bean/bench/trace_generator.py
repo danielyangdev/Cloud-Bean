@@ -382,3 +382,45 @@ def trace_to_fleet_events(trace: Dict[str, Any]) -> List[FleetEvent]:
                 )
 
     return events
+
+
+def interleave_event_timestamps(events: List[FleetEvent]) -> List[FleetEvent]:
+    """Spread each actor's synthetic tool-call timestamps across its real activity span.
+
+    ``trace_to_fleet_events`` stamps synthetic tool calls from a fixed base time, so every
+    agent's normal work lands on identical seconds while only ``wiki_archive`` events carry
+    authentic times. That makes a fleet timeline show all agents moving in lockstep and
+    flattens inter-arrival variance to nearly zero.
+
+    Here each actor's synthetic events are redistributed evenly between that actor's own
+    first and last real archive timestamp, preserving their original relative order. Events
+    sourced from the archive are never modified. Actors with fewer than two archive events
+    are left untouched, since there is no span to interpolate across.
+    """
+    by_actor: Dict[str, List[FleetEvent]] = {}
+    for event in events:
+        by_actor.setdefault(event.actor_id, []).append(event)
+
+    for actor_events in by_actor.values():
+        anchors = [
+            e.timestamp for e in actor_events if e.sensor_source == "wiki_archive"
+        ]
+        if len(anchors) < 2:
+            continue
+
+        start = datetime.fromisoformat(min(anchors).replace("Z", "+00:00"))
+        end = datetime.fromisoformat(max(anchors).replace("Z", "+00:00"))
+        span = (end - start).total_seconds()
+        if span <= 0:
+            continue
+
+        synthetic = [e for e in actor_events if e.sensor_source != "wiki_archive"]
+        if not synthetic:
+            continue
+
+        step = span / (len(synthetic) + 1)
+        for position, event in enumerate(synthetic, start=1):
+            shifted = start + timedelta(seconds=step * position)
+            event.timestamp = shifted.isoformat().replace("+00:00", "Z")
+
+    return events

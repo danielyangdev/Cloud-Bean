@@ -65,6 +65,19 @@ class BudgetManager:
         with self._lock:
             return self._ledger.model_copy(deep=True)
 
+    def set_max_budget(self, max_budget_usd: float) -> float:
+        """Adjust the spend cap and return the previous value.
+
+        Used to demonstrate budget-exhaustion behaviour without restarting the
+        process: lowering the cap to current spend leaves no headroom, so the next
+        reservations are refused and recorded as skipped rather than silently
+        treated as healthy.
+        """
+        with self._lock:
+            previous = self._ledger.max_budget_usd
+            self._ledger.max_budget_usd = max_budget_usd
+            return previous
+
     def estimate_cost(
         self,
         prompt_tokens: int,

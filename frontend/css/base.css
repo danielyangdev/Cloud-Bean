@@ -1,0 +1,98 @@
+/* Base shell, header, nav, and primitives shared by every page. */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-canvas);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* The graph page owns its viewport; every other page scrolls. */
+body.page-graph { overflow: hidden; }
+body:not(.page-graph) #view { overflow-y: auto; }
+
+#view {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Primary navigation */
+nav.main-nav {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  height: var(--nav-h);
+  padding: 0 var(--space-lg);
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+  z-index: 19;
+}
+nav.main-nav a {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color 0.12s ease, border-color 0.12s ease;
+}
+nav.main-nav a:hover { color: var(--text-primary); }
+nav.main-nav a[aria-current="page"] {
+  color: var(--text-primary);
+  border-bottom-color: var(--pastel-blue);
+}
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 5px;
+  border: 2px solid var(--bg-canvas);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+
+/* Typographic primitives */
+.page-wrap {
+  padding: var(--space-lg);
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+}
+.section-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+  letter-spacing: -0.01em;
+}
+.section-sub {
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-md);
+  line-height: 1.5;
+}
+.mono { font-family: var(--font-mono); }
+.muted { color: var(--text-secondary); }
+.dim { color: var(--text-tertiary); }
+
+.empty-state {
+  padding: 48px var(--space-lg);
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+.empty-state strong { color: var(--text-secondary); display: block; margin-bottom: 6px; }
