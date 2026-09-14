@@ -6,6 +6,7 @@ import threading
 import uuid
 from typing import Dict, Optional
 
+from cloud_bean.judge.rate_limiter import TokenBucketRateLimiter
 from cloud_bean.schemas.budget import BudgetLedger, RateLimits
 
 
@@ -13,6 +14,7 @@ class ReservationStatus(str, Enum):
     RESERVED = "reserved"
     BUDGET_EXHAUSTED = "budget_exhausted"
     CONCURRENCY_LIMIT_EXCEEDED = "concurrency_limit_exceeded"
+    RATE_LIMITED = "rate_limited"
     CANCELLED = "cancelled"
 
 
@@ -39,10 +41,15 @@ class BudgetManager:
         max_concurrent_requests: int = 4,
         input_token_price_usd: Optional[float] = None,
         output_token_price_usd: Optional[float] = None,
+        rate_limiter: Optional[TokenBucketRateLimiter] = None,
     ) -> None:
         self._lock = threading.Lock()
         self.input_price = input_token_price_usd or self.DEFAULT_INPUT_TOKEN_PRICE_USD
         self.output_price = output_token_price_usd or self.DEFAULT_OUTPUT_TOKEN_PRICE_USD
+        self.rate_limiter = rate_limiter
+
+        rpm = self.rate_limiter.rpm_limit if self.rate_limiter else None
+        tpm = self.rate_limiter.tpm_limit if self.rate_limiter else None
 
         self._ledger = BudgetLedger(
             max_budget_usd=max_budget_usd,
@@ -55,6 +62,8 @@ class BudgetManager:
             rate_limits=RateLimits(
                 max_concurrent_requests=max_concurrent_requests,
                 active_requests=0,
+                rpm_limit=rpm,
+                tpm_limit=tpm,
             ),
         )
         # Active reservations mapping: reservation_id -> reserved_amount_usd
@@ -87,10 +96,23 @@ class BudgetManager:
         cost = (prompt_tokens * self.input_price) + (output_tokens * self.output_price)
         return max(0.00001, round(cost, 6))
 
-    def reserve(self, estimated_cost_usd: float) -> ReservationResult:
+    def reserve(
+        self,
+        estimated_cost_usd: float,
+        estimated_tokens: int = 2000,
+        timeout: float = 0.0,
+    ) -> ReservationResult:
         """Atomically reserve estimated cost and check rate/budget limits before dispatch."""
         with self._lock:
-            # 1. Check concurrency
+            # 1. Check rate limits (RPM / TPM token bucket)
+            if self.rate_limiter and not self.rate_limiter.acquire(tokens=estimated_tokens, timeout=timeout):
+                return ReservationResult(
+                    success=False,
+                    status=ReservationStatus.RATE_LIMITED,
+                    estimated_cost_usd=estimated_cost_usd,
+                )
+
+            # 2. Check concurrency
             if (
                 self._ledger.rate_limits.active_requests
                 >= self._ledger.rate_limits.max_concurrent_requests

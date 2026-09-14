@@ -1,5 +1,6 @@
 """Budget ledger and rate limit models."""
 
+from typing import Optional
 from pydantic import BaseModel, Field
 
 
@@ -8,6 +9,8 @@ class RateLimits(BaseModel):
 
     max_concurrent_requests: int = Field(default=4, ge=1, description="Maximum concurrent model requests")
     active_requests: int = Field(default=0, ge=0, description="Currently in-flight model requests")
+    rpm_limit: Optional[float] = Field(default=None, description="Requests per minute limit")
+    tpm_limit: Optional[float] = Field(default=None, description="Tokens per minute limit")
 
 
 class BudgetLedger(BaseModel):
