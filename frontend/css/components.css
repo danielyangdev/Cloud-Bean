@@ -182,9 +182,43 @@ header {
   padding-top: 8px;
   border-top: 1px solid var(--border-subtle);
 }
+.legend-title {
+  font-size: 0.64rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  margin-bottom: 2px;
+}
 .legend-item { display: flex; align-items: center; gap: 8px; }
-.dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.dot-alert {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--pastel-rose);
+  box-shadow: 0 0 0 2px rgba(251, 113, 133, 0.4);
+  display: inline-block;
+  flex-shrink: 0;
+}
+.dot-candidate {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--pastel-amber);
+  outline: 1.5px dashed var(--pastel-amber);
+  outline-offset: 1px;
+  display: inline-block;
+  flex-shrink: 0;
+}
 .sq { width: 7px; height: 7px; border-radius: 2px; display: inline-block; }
+.pebble {
+  width: 15px;
+  height: 10px;
+  border-radius: 4px;
+  display: inline-block;
+  flex-shrink: 0;
+}
 
 .canvas-hint {
   position: absolute;

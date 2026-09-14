@@ -51,9 +51,38 @@ function resize() {
   const parent = canvas.parentElement;
   width = parent.clientWidth;
   height = parent.clientHeight;
-  canvas.width = width;
-  canvas.height = height;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.round(width * dpr);
+  canvas.height = Math.round(height * dpr);
+  canvas.style.width = width + 'px';
+  canvas.style.height = height + 'px';
   invalidateFrame();
+}
+
+function worldToScreen(wx, wy) {
+  return { x: wx * camera.zoom + camera.x, y: wy * camera.zoom + camera.y };
+}
+
+function screenToWorld(sx, sy) {
+  return { x: (sx - camera.x) / camera.zoom, y: (sy - camera.y) / camera.zoom };
+}
+
+function hitTest(sx, sy) {
+  const w = screenToWorld(sx, sy);
+  for (const n of simNodes) {
+    if (n.type === 'agent') {
+      const hitR = n.status === 'concerning' ? 18 : (n.status === 'candidate' ? 15 : 12);
+      const dx = n.x - w.x;
+      const dy = n.y - w.y;
+      if (Math.sqrt(dx * dx + dy * dy) < hitR) return n;
+    } else {
+      // Pebble hit test (18x12 box with hit padding)
+      const hw = 15;
+      const hh = 12;
+      if (Math.abs(w.x - n.x) < hw && Math.abs(w.y - n.y) < hh) return n;
+    }
+  }
+  return null;
 }
 
 function resetView() {
@@ -242,6 +271,10 @@ function draw() {
     }
   }
 
+  const dpr = window.devicePixelRatio || 1;
+  ctx.save();
+  ctx.scale(dpr, dpr);
+
   ctx.clearRect(0, 0, width, height);
   stepPhysics();
 
@@ -305,72 +338,185 @@ function draw() {
     const fillColor = nodeFill(n);
 
     if (n.type === 'agent') {
-      const r = isSelected ? 16 : (isConnectedNeighbor ? 9 : 7);
+      const isConcerning = n.status === 'concerning';
+      const isCandidate = n.status === 'candidate';
 
-      // Translucent outer cell membrane (organic feel)
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, r + 3.5, 0, 2 * Math.PI);
-      ctx.fillStyle = alpha(fillColor, 0.16);
-      ctx.fill();
+      if (isConcerning) {
+        // Flagged / Concerning: Distinctly larger (r=11), bold terracotta double-ring alert cell
+        const r = isSelected ? 16 : (isConnectedNeighbor ? 13 : 11);
 
-      // Work-allocation ring: how much of this agent's activity is routine.
-      if (isSelected) {
-        const normPct = n.normal_percentage !== undefined ? n.normal_percentage : 84.8;
-        const normAngle = (normPct / 100) * 2 * Math.PI;
+        // Outer warning perimeter ring
         ctx.beginPath();
-        ctx.arc(n.x, n.y, r + 4, -Math.PI / 2, -Math.PI / 2 + normAngle);
-        ctx.strokeStyle = PALETTE.mint;
-        ctx.lineWidth = 2.5;
+        ctx.arc(n.x, n.y, r + 4, 0, 2 * Math.PI);
+        ctx.strokeStyle = alpha(PALETTE.rose, isSelected ? 0.95 : 0.7);
+        ctx.lineWidth = 1.8;
         ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, r + 4, -Math.PI / 2 + normAngle, 3 * Math.PI / 2);
-        ctx.strokeStyle = n.status === 'concerning' ? PALETTE.rose : PALETTE.amber;
-        ctx.lineWidth = 2.5;
-        ctx.stroke();
-      }
 
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, r, 0, 2 * Math.PI);
-      ctx.fillStyle = fillColor;
-      ctx.fill();
-
-      if (n.token_drift) {
+        // Translucent alert halo
         ctx.beginPath();
-        ctx.arc(n.x, n.y, r + 4.5, 0, 2 * Math.PI);
-        ctx.strokeStyle = PALETTE.violet;
+        ctx.arc(n.x, n.y, r + 2.5, 0, 2 * Math.PI);
+        ctx.fillStyle = alpha(PALETTE.rose, 0.2);
+        ctx.fill();
+
+        // Core nucleus
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, r, 0, 2 * Math.PI);
+        ctx.fillStyle = PALETTE.rose;
+        ctx.fill();
+
+        // High contrast center dot
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, 3, 0, 2 * Math.PI);
+        ctx.fillStyle = PALETTE.bgCanvas;
+        ctx.fill();
+
+        // Work-allocation ring if selected
+        if (isSelected) {
+          const normPct = n.normal_percentage !== undefined ? n.normal_percentage : 84.8;
+          const normAngle = (normPct / 100) * 2 * Math.PI;
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, r + 7, -Math.PI / 2, -Math.PI / 2 + normAngle);
+          ctx.strokeStyle = PALETTE.mint;
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, r + 7, -Math.PI / 2 + normAngle, 3 * Math.PI / 2);
+          ctx.strokeStyle = PALETTE.rose;
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+        }
+
+        if (n.token_drift) {
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, r + (isSelected ? 10 : 7), 0, 2 * Math.PI);
+          ctx.strokeStyle = PALETTE.violet;
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([2.5, 2.5]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        if (isSelected || isConnectedNeighbor) {
+          ctx.lineWidth = 1.6;
+          ctx.strokeStyle = PALETTE.textPrimary;
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, r + 4, 0, 2 * Math.PI);
+          ctx.stroke();
+        }
+      } else if (isCandidate) {
+        // Candidate Agent: Warm amber with dashed perimeter ring (r=9)
+        const r = isSelected ? 14 : (isConnectedNeighbor ? 11 : 9);
+
+        // Dashed perimeter ring
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, r + 3.5, 0, 2 * Math.PI);
+        ctx.strokeStyle = PALETTE.amber;
         ctx.lineWidth = 1.5;
-        ctx.setLineDash([2, 2]);
+        ctx.setLineDash([3, 2.5]);
         ctx.stroke();
         ctx.setLineDash([]);
-      }
 
-      if (isSelected || isConnectedNeighbor) {
-        ctx.lineWidth = 1.5;
-        ctx.strokeStyle = PALETTE.textPrimary;
+        // Translucent aura
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, r + 2, 0, 2 * Math.PI);
+        ctx.fillStyle = alpha(PALETTE.amber, 0.15);
+        ctx.fill();
+
+        // Nucleus
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, r, 0, 2 * Math.PI);
+        ctx.fillStyle = PALETTE.amber;
+        ctx.fill();
+
+        if (isSelected) {
+          const normPct = n.normal_percentage !== undefined ? n.normal_percentage : 84.8;
+          const normAngle = (normPct / 100) * 2 * Math.PI;
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, r + 6, -Math.PI / 2, -Math.PI / 2 + normAngle);
+          ctx.strokeStyle = PALETTE.mint;
+          ctx.lineWidth = 2.2;
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, r + 6, -Math.PI / 2 + normAngle, 3 * Math.PI / 2);
+          ctx.strokeStyle = PALETTE.amber;
+          ctx.lineWidth = 2.2;
+          ctx.stroke();
+        }
+
+        if (n.token_drift) {
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, r + (isSelected ? 9 : 6), 0, 2 * Math.PI);
+          ctx.strokeStyle = PALETTE.violet;
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([2, 2]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        if (isSelected || isConnectedNeighbor) {
+          ctx.lineWidth = 1.5;
+          ctx.strokeStyle = PALETTE.textPrimary;
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, r + 3.5, 0, 2 * Math.PI);
+          ctx.stroke();
+        }
+      } else {
+        // Normal Agent: Small calm circular cell (r=6), delicate sage/mint stroke (#5eead4), quiet nucleus
+        const r = isSelected ? 12 : (isConnectedNeighbor ? 8 : 6);
+
+        // Faint outer membrane halo
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, r + 2.5, 0, 2 * Math.PI);
+        ctx.fillStyle = alpha(PALETTE.mint, 0.12);
+        ctx.fill();
+
+        // Nucleus
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, r, 0, 2 * Math.PI);
+        ctx.fillStyle = PALETTE.mint;
+        ctx.fill();
+
+        // Delicate stroke
+        ctx.strokeStyle = alpha(PALETTE.mint, 0.6);
+        ctx.lineWidth = 1.0;
         ctx.stroke();
+
+        if (isSelected || isConnectedNeighbor) {
+          ctx.lineWidth = 1.5;
+          ctx.strokeStyle = PALETTE.textPrimary;
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, r + 2.5, 0, 2 * Math.PI);
+          ctx.stroke();
+        }
       }
     } else {
-      // Resource Node: Smooth river pebble contour (organic feel)
-      const sz = isSelected ? 22 : (isConnectedNeighbor ? 14 : 10);
-      const pr = Math.floor(sz * 0.35);
+      // Tools & Resources: Smooth river pebble rounded rectangle (width=18, height=12, borderRadius=5) in glacier blue (#7dd3fc)
+      const isHotspot = n.status === 'conflict_hotspot';
+      const isHub = n.status === 'emerging_hub';
+      const pw = isSelected ? 24 : (isConnectedNeighbor ? 20 : 18);
+      const ph = isSelected ? 16 : (isConnectedNeighbor ? 13 : 12);
+      const pr = 5;
 
-      // Translucent outer pebble aura
+      const resColor = isHotspot ? PALETTE.rose : (isHub ? PALETTE.amber : PALETTE.blue);
+
+      // Translucent river pebble aura
       ctx.beginPath();
-      ctx.roundRect(n.x - (sz + 4) / 2, n.y - (sz + 4) / 2, sz + 4, sz + 4, pr + 1);
-      ctx.fillStyle = alpha(fillColor, 0.14);
+      ctx.roundRect(n.x - (pw + 4) / 2, n.y - (ph + 4) / 2, pw + 4, ph + 4, pr + 1.5);
+      ctx.fillStyle = alpha(resColor, 0.14);
       ctx.fill();
 
       // Pebble body
       ctx.beginPath();
-      ctx.roundRect(n.x - sz / 2, n.y - sz / 2, sz, sz, pr);
-      ctx.fillStyle = fillColor;
+      ctx.roundRect(n.x - pw / 2, n.y - ph / 2, pw, ph, pr);
+      ctx.fillStyle = resColor;
       ctx.fill();
 
-      if (isSelected || isConnectedNeighbor) {
-        ctx.lineWidth = 1.5;
-        ctx.strokeStyle = PALETTE.textPrimary;
-        ctx.stroke();
-      }
+      // Boundary stroke
+      ctx.strokeStyle = (isSelected || isConnectedNeighbor)
+        ? PALETTE.textPrimary
+        : alpha(resColor, 0.5);
+      ctx.lineWidth = (isSelected || isConnectedNeighbor) ? 1.5 : 1.0;
+      ctx.stroke();
     }
 
     // Labels only for the selection and its direct neighbours.
@@ -402,9 +548,11 @@ function draw() {
     ctx.restore();
   }
 
+  ctx.restore(); // camera transform
+
   if (selectedNode) drawInCanvasCard(selectedNode, connectedNodeIds);
 
-  ctx.restore();
+  ctx.restore(); // dpr transform
 }
 
 function drawInCanvasCard(n, connectedNodeIds) {
@@ -470,20 +618,6 @@ function drawInCanvasCard(n, connectedNodeIds) {
     );
   }
   ctx.restore();
-}
-
-function screenToWorld(sx, sy) {
-  return { x: (sx - camera.x) / camera.zoom, y: (sy - camera.y) / camera.zoom };
-}
-
-function hitTest(sx, sy, radius = 18) {
-  const w = screenToWorld(sx, sy);
-  for (const n of simNodes) {
-    const dx = n.x - w.x;
-    const dy = n.y - w.y;
-    if (Math.sqrt(dx * dx + dy * dy) < radius) return n;
-  }
-  return null;
 }
 
 function closeInspector() {
@@ -694,34 +828,46 @@ export async function mount(root, params = {}) {
   resize();
   on(window, 'resize', resize);
 
-  document.getElementById('btn-filter-all').onclick = () => setFilter('all');
-  document.getElementById('btn-filter-alerts').onclick = () => setFilter('concerning');
-  document.getElementById('btn-filter-hubs').onclick = () => setFilter('hubs');
-  document.getElementById('btn-close-inspector').onclick = closeInspector;
-  document.getElementById('btn-reset-view').onclick = resetView;
-  document.getElementById('btn-refresh').onclick = () => refreshData();
+  const allBtn = document.getElementById('btn-filter-all');
+  if (allBtn) allBtn.onclick = () => setFilter('all');
+  const alertsBtn = document.getElementById('btn-filter-alerts');
+  if (alertsBtn) alertsBtn.onclick = () => setFilter('concerning');
+  const hubsBtn = document.getElementById('btn-filter-hubs');
+  if (hubsBtn) hubsBtn.onclick = () => setFilter('hubs');
+  const closeBtn = document.getElementById('btn-close-inspector');
+  if (closeBtn) closeBtn.onclick = closeInspector;
+  const resetBtn = document.getElementById('btn-reset-view');
+  if (resetBtn) resetBtn.onclick = resetView;
+  const refreshBtn = document.getElementById('btn-refresh');
+  if (refreshBtn) refreshBtn.onclick = () => refreshData();
 
-  document.getElementById('btn-load-fleet').onclick = async () => {
-    setStatus('<span class="status-indicator"></span><span>Loading 100 benchmark agent traces…</span>');
-    try {
-      const data = await api.loadFleet({ agents: 100, eventsPerAgent: 25 });
-      setStatus(`<span class="status-indicator"></span><span>Fleet loaded: ${data.total_agents} agents, ${data.total_events} events, ${data.findings_generated} findings.</span>`);
-      await refreshData();
-    } catch (e) {
-      setStatus(`<span class="status-indicator" style="background:var(--pastel-rose);"></span><span>Load failed: ${e.message}</span>`);
-    }
-  };
+  const loadFleetBtn = document.getElementById('btn-load-fleet');
+  if (loadFleetBtn) {
+    loadFleetBtn.onclick = async () => {
+      setStatus('<span class="status-indicator"></span><span>Loading 100 benchmark agent traces…</span>');
+      try {
+        const data = await api.loadFleet({ agents: 100, eventsPerAgent: 25 });
+        setStatus(`<span class="status-indicator"></span><span>Fleet loaded: ${data.total_agents} agents, ${data.total_events} events, ${data.findings_generated} findings.</span>`);
+        await refreshData();
+      } catch (e) {
+        setStatus(`<span class="status-indicator" style="background:var(--pastel-rose);"></span><span>Load failed: ${e.message}</span>`);
+      }
+    };
+  }
 
-  document.getElementById('btn-replay').onclick = async () => {
-    setStatus('<span class="status-indicator"></span><span>Executing deterministic replay verification…</span>');
-    try {
-      const data = await api.replay();
-      setStatus(`<span class="status-indicator"></span><span>Replay verified: ${data.replayed_findings_count} findings confirmed with ${data.llm_calls_made} fresh LLM calls.</span>`);
-      toast(`Replay reproduced ${data.replayed_findings_count} findings with 0 model calls`, 'ok');
-    } catch (e) {
-      setStatus(`<span class="status-indicator" style="background:var(--pastel-rose);"></span><span>Replay failed: ${e.message}</span>`);
-    }
-  };
+  const replayBtn = document.getElementById('btn-replay');
+  if (replayBtn) {
+    replayBtn.onclick = async () => {
+      setStatus('<span class="status-indicator"></span><span>Executing deterministic replay verification…</span>');
+      try {
+        const data = await api.replay();
+        setStatus(`<span class="status-indicator"></span><span>Replay verified: ${data.replayed_findings_count} findings confirmed with ${data.llm_calls_made} fresh LLM calls.</span>`);
+        toast(`Replay reproduced ${data.replayed_findings_count} findings with 0 model calls`, 'ok');
+      } catch (e) {
+        setStatus(`<span class="status-indicator" style="background:var(--pastel-rose);"></span><span>Replay failed: ${e.message}</span>`);
+      }
+    };
+  }
 
   setFilter(filterMode);
 
@@ -791,7 +937,21 @@ export async function mount(root, params = {}) {
 
   await refreshData();
   if (graphData.nodes.length === 0) {
-    await document.getElementById('btn-load-fleet').onclick();
+    try {
+      await api.loadFleet({ agents: 100, eventsPerAgent: 25 });
+      await refreshData();
+    } catch (_) {}
+  }
+
+  const focusTarget = params.focus || params.node;
+  if (focusTarget) {
+    const match = simNodes.find((n) => n.id === focusTarget || n.label === focusTarget);
+    if (match) {
+      selectNode(match);
+      camera.x = width / 2 - match.x * camera.zoom;
+      camera.y = height / 2 - match.y * camera.zoom;
+      invalidateFrame();
+    }
   }
 
   rafId = requestAnimationFrame(draw);

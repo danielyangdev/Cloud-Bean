@@ -366,3 +366,317 @@ export function heatStrip(host, { height = 64 } = {}) {
     },
   };
 }
+
+/**
+ * Scatter / distribution plot for two continuous metrics (e.g. JS Divergence vs Perplexity).
+ * points: [{ x: number, y: number, label: string, color?: string, sub?: string }]
+ */
+export function scatterPlot(host, points, {
+  height = 250,
+  xLabel = 'Jensen-Shannon Divergence (bits)',
+  yLabel = 'Cross-Entropy Perplexity',
+  xMin = 0,
+  xMax = 1.0,
+  yMin = 0,
+  yMax = 10000,
+  xThreshold = 0.55,
+  xThresholdLabel = 'JSD Alert (0.55)',
+  yThreshold = 1500,
+  yThresholdLabel = 'Perplexity Alert (1,500)',
+  xFormat = (v) => v.toFixed(2),
+  yFormat = (v) => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(Math.round(v))),
+  logY = false,
+} = {}) {
+  const { box, canvas, tip } = mkBox(host, height);
+  let hot = -1;
+
+  function render() {
+    const { ctx, w, h } = setup(canvas, height);
+    ctx.clearRect(0, 0, w, h);
+
+    const padL = 52, padR = 24, padT = 16, padB = 34;
+    const plotW = w - padL - padR;
+    const plotH = h - padT - padB;
+
+    if (!points.length || plotW <= 0 || plotH <= 0) {
+      ctx.font = '500 11px Inter, sans-serif';
+      ctx.fillStyle = PALETTE.textTertiary;
+      ctx.textAlign = 'center';
+      ctx.fillText('No data available', w / 2, h / 2);
+      return;
+    }
+
+    const mapX = (x) => padL + (Math.max(xMin, Math.min(xMax, x)) - xMin) / (xMax - xMin || 1) * plotW;
+    const mapY = (y) => {
+      if (logY) {
+        const logMax = Math.log10(Math.max(10, yMax));
+        const logMin = Math.log10(Math.max(1, yMin || 1));
+        const val = Math.log10(Math.max(1, y));
+        return padT + plotH - ((val - logMin) / (logMax - logMin || 1)) * plotH;
+      }
+      return padT + plotH - (Math.max(yMin, Math.min(yMax, y)) - yMin) / (yMax - yMin || 1) * plotH;
+    };
+
+    // Gridlines & Axis rules
+    ctx.strokeStyle = alpha(PALETTE.borderSubtle, 0.7);
+    ctx.lineWidth = 1;
+
+    // X-grid (4 intervals)
+    ctx.font = '500 10px JetBrains Mono, monospace';
+    ctx.fillStyle = PALETTE.textTertiary;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    for (let i = 0; i <= 4; i++) {
+      const v = xMin + ((xMax - xMin) / 4) * i;
+      const x = mapX(v);
+      ctx.beginPath();
+      ctx.moveTo(x, padT);
+      ctx.lineTo(x, padT + plotH);
+      ctx.stroke();
+      ctx.fillText(xFormat(v), x, padT + plotH + 5);
+    }
+
+    // Y-grid (4 intervals)
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    for (let i = 0; i <= 4; i++) {
+      let v;
+      if (logY) {
+        v = Math.pow(10, 1 + (Math.log10(yMax) - 1) * (i / 4));
+      } else {
+        v = yMin + ((yMax - yMin) / 4) * i;
+      }
+      const y = mapY(v);
+      ctx.beginPath();
+      ctx.moveTo(padL, y);
+      ctx.lineTo(padL + plotW, y);
+      ctx.stroke();
+      ctx.fillText(yFormat(v), padL - 6, y);
+    }
+
+    // Axes titles
+    ctx.font = '500 10px Inter, sans-serif';
+    ctx.fillStyle = PALETTE.textSecondary;
+    ctx.textAlign = 'center';
+    ctx.fillText(xLabel, padL + plotW / 2, h - 12);
+
+    // Threshold lines
+    if (xThreshold != null && xThreshold >= xMin && xThreshold <= xMax) {
+      const tx = mapX(xThreshold);
+      ctx.save();
+      ctx.strokeStyle = PALETTE.rose;
+      ctx.lineWidth = 1.2;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(tx, padT);
+      ctx.lineTo(tx, padT + plotH);
+      ctx.stroke();
+      ctx.restore();
+
+      if (xThresholdLabel) {
+        ctx.font = '600 9px JetBrains Mono, monospace';
+        ctx.fillStyle = PALETTE.rose;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText(xThresholdLabel, tx + 5, padT + 2);
+      }
+    }
+
+    if (yThreshold != null) {
+      const ty = mapY(yThreshold);
+      ctx.save();
+      ctx.strokeStyle = PALETTE.amber;
+      ctx.lineWidth = 1.2;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(padL, ty);
+      ctx.lineTo(padL + plotW, ty);
+      ctx.stroke();
+      ctx.restore();
+
+      if (yThresholdLabel) {
+        ctx.font = '600 9px JetBrains Mono, monospace';
+        ctx.fillStyle = PALETTE.amber;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(yThresholdLabel, padL + 6, ty - 3);
+      }
+    }
+
+    // Plot points
+    points.forEach((p, i) => {
+      const px = mapX(p.x);
+      const py = mapY(p.y);
+      const color = p.color || (p.x > (xThreshold || 0.55) ? PALETTE.rose : PALETTE.mint);
+      const isHot = i === hot;
+      const r = isHot ? 6 : (p.x > (xThreshold || 0.55) ? 4.5 : 3.5);
+
+      // Outer aura
+      ctx.beginPath();
+      ctx.arc(px, py, r + 2, 0, Math.PI * 2);
+      ctx.fillStyle = alpha(color, isHot ? 0.35 : 0.15);
+      ctx.fill();
+
+      // Point core
+      ctx.beginPath();
+      ctx.arc(px, py, r, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+
+      if (isHot) {
+        ctx.strokeStyle = PALETTE.textPrimary;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+    });
+  }
+
+  function onMove(e) {
+    const rect = canvas.getBoundingClientRect();
+    const sx = e.clientX - rect.left;
+    const sy = e.clientY - rect.top;
+
+    const padL = 52, padR = 24, padT = 16, padB = 34;
+    const plotW = rect.width - padL - padR;
+    const plotH = rect.height - padT - padB;
+    if (plotW <= 0 || plotH <= 0 || !points.length) return;
+
+    const mapX = (x) => padL + (Math.max(xMin, Math.min(xMax, x)) - xMin) / (xMax - xMin || 1) * plotW;
+    const mapY = (y) => {
+      if (logY) {
+        const logMax = Math.log10(Math.max(10, yMax));
+        const logMin = Math.log10(Math.max(1, yMin || 1));
+        const val = Math.log10(Math.max(1, y));
+        return padT + plotH - ((val - logMin) / (logMax - logMin || 1)) * plotH;
+      }
+      return padT + plotH - (Math.max(yMin, Math.min(yMax, y)) - yMin) / (yMax - yMin || 1) * plotH;
+    };
+
+    let closest = -1;
+    let minDist = 16; // hit-test radius px
+
+    points.forEach((p, i) => {
+      const px = mapX(p.x);
+      const py = mapY(p.y);
+      const d = Math.hypot(px - sx, py - sy);
+      if (d < minDist) {
+        minDist = d;
+        closest = i;
+      }
+    });
+
+    if (closest !== hot) {
+      hot = closest;
+      render();
+    }
+
+    if (hot >= 0) {
+      const p = points[hot];
+      const tipText = `${p.label} · JSD: ${p.x.toFixed(3)} bits · PPL: ${Math.round(p.y)}${p.sub ? ` (${p.sub})` : ''}`;
+      showTip(tip, box, sx, sy, tipText);
+    } else {
+      hideTip(tip);
+    }
+  }
+
+  function onLeave() {
+    hot = -1;
+    hideTip(tip);
+    render();
+  }
+
+  canvas.addEventListener('mousemove', onMove);
+  canvas.addEventListener('mouseleave', onLeave);
+  const stopObserving = observeWidth(box, render);
+  render();
+
+  return {
+    destroy() {
+      canvas.removeEventListener('mousemove', onMove);
+      canvas.removeEventListener('mouseleave', onLeave);
+      stopObserving();
+    },
+  };
+}
+
+/**
+ * Two-tier cost efficiency bar comparing naive full inspection vs budgeted filtering.
+ */
+export function twoTierComparison(host, {
+  actualSpend = 0.0796,
+  unbudgetedCost = 14.20,
+  savedAmount = 14.12,
+  conservationPct = 99.4,
+  height = 110,
+} = {}) {
+  const { box, canvas, tip } = mkBox(host, height);
+
+  function render() {
+    const { ctx, w, h } = setup(canvas, height);
+    ctx.clearRect(0, 0, w, h);
+
+    const padL = 16, padR = 16;
+    const plotW = w - padL - padR;
+    if (plotW <= 0) return;
+
+    const rowH = 22;
+    const y1 = 28;
+    const y2 = 68;
+
+    // Row 1: Unbudgeted Naive Full Inspection ($14.20)
+    ctx.font = '500 11px Inter, sans-serif';
+    ctx.fillStyle = PALETTE.textSecondary;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText('Unbudgeted Full Evaluation (2,500 raw events to LLM)', padL, y1 - 4);
+
+    ctx.font = '600 11px JetBrains Mono, monospace';
+    ctx.fillStyle = PALETTE.rose;
+    ctx.textAlign = 'right';
+    ctx.fillText(`$${unbudgetedCost.toFixed(2)}`, w - padR, y1 - 4);
+
+    // Track 1
+    ctx.fillStyle = alpha(PALETTE.rose, 0.22);
+    ctx.fillRect(padL, y1, plotW, rowH);
+    ctx.strokeStyle = PALETTE.rose;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(padL, y1, plotW, rowH);
+
+    // Row 2: Cloud-Bean Two-Tier Architecture ($0.08)
+    ctx.font = '500 11px Inter, sans-serif';
+    ctx.fillStyle = PALETTE.textSecondary;
+    ctx.textAlign = 'left';
+    ctx.fillText('Cloud-Bean Two-Tier Filtered Pipeline', padL, y2 - 4);
+
+    ctx.font = '600 11px JetBrains Mono, monospace';
+    ctx.fillStyle = PALETTE.mint;
+    ctx.textAlign = 'right';
+    ctx.fillText(`$${actualSpend.toFixed(4)}`, w - padR, y2 - 4);
+
+    // Track 2 background
+    ctx.fillStyle = alpha(PALETTE.borderSubtle, 0.4);
+    ctx.fillRect(padL, y2, plotW, rowH);
+
+    // Spend sliver
+    const spendRatio = Math.max(0.015, actualSpend / unbudgetedCost);
+    const spendW = Math.max(16, plotW * spendRatio);
+    ctx.fillStyle = PALETTE.mint;
+    ctx.fillRect(padL, y2, spendW, rowH);
+
+    // Savings bracket / callout on track 2
+    ctx.font = '600 10px Inter, sans-serif';
+    ctx.fillStyle = PALETTE.mint;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`+${conservationPct.toFixed(1)}% Capital Conserved ($${savedAmount.toFixed(2)} saved · 178× efficiency)`, padL + spendW + 12, y2 + rowH / 2);
+  }
+
+  const stopObserving = observeWidth(box, render);
+  render();
+
+  return {
+    destroy() {
+      stopObserving();
+    },
+  };
+}
