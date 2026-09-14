@@ -19,11 +19,16 @@ pip install pydantic fastapi uvicorn pytest httpx
 pytest -q
 
 # 3. Start the API and dashboard
-PYTHONPATH=src python3 -m uvicorn cloud_bean.api.app:create_app --factory --host 0.0.0.0 --port 8000
+PYTHONPATH=src python3 -m uvicorn cloud_bean.api.app:create_server_app --factory --host 0.0.0.0 --port 8000
 ```
 
-Open **[http://localhost:8000/](http://localhost:8000/)**, then click **Load 100-Agent Fleet** on the
-Overview page to run the benchmark traces through the detection pipeline.
+Open **[http://localhost:8000/](http://localhost:8000/)** — the benchmark fleet is already loaded.
+
+`create_server_app` persists state to `.cloud-bean/state.db` (override with `CLOUD_BEAN_STATE_DB`)
+and loads the 100-agent fleet on first boot, so a cold start takes ~1.3s and every restart after
+that is ~0.1s with all findings intact. Run it from the repository root: the app resolves
+`frontend/` and `benchmark/generated-traces/` relative to the working directory. Use
+`create_app` instead for an ephemeral in-memory instance that loads nothing.
 
 ### Dashboard
 

@@ -57,19 +57,42 @@ def _frontend_dir() -> Path:
     return Path(__file__).resolve().parents[3] / "frontend"
 
 
+def _default_state_path() -> str:
+    """Where persisted state lives, unless overridden by CLOUD_BEAN_STATE_DB.
+
+    Set CLOUD_BEAN_STATE_DB=":memory:" for an ephemeral run (the tests do this
+    implicitly by injecting their own store).
+    """
+    override = os.environ.get("CLOUD_BEAN_STATE_DB")
+    if override:
+        return override
+    state_dir = Path(".cloud-bean")
+    state_dir.mkdir(exist_ok=True)
+    return str(state_dir / "state.db")
+
+
 def create_app(
     pipeline: Optional[DetectionPipeline] = None,
     store: Optional[JudgmentFindingStore] = None,
     budget_manager: Optional[BudgetManager] = None,
+    preload: bool = False,
+    state_db: Optional[str] = None,
 ) -> FastAPI:
-    """Create and configure the FastAPI application instance."""
+    """Create and configure the FastAPI application instance.
+
+    Defaults to ephemeral in-memory state with no preload, so each app is isolated.
+    Pass ``state_db`` to persist across restarts and ``preload=True`` to load the
+    benchmark fleet at boot when the store is empty — see :func:`create_server_app`,
+    which is the factory the dashboard runs under.
+    """
     app = FastAPI(
         title="Cloud-Bean API",
         version="0.1.0",
         description="Budgeted detection of concerning behavior across AI agent fleets",
     )
 
-    db_store = store or JudgmentFindingStore(":memory:")
+    db_store = store or JudgmentFindingStore(state_db or ":memory:")
+    should_preload = preload
     b_manager = budget_manager or BudgetManager(max_budget_usd=10.00)
     live_mode = os.getenv("CLOUD_BEAN_LIVE_JUDGE", "false").lower() in ("true", "1")
     judge_client = LunaJudgeClient(
@@ -91,6 +114,76 @@ def create_app(
     # In-memory working buffer of recent events with thread lock and bounded deque
     recent_events_lock = threading.Lock()
     recent_events: deque[FleetEvent] = deque(maxlen=10000)
+
+    def _load_fleet_into_state(
+        limit_agents: int = 100, events_per_agent: int = 25, retime: bool = True
+    ) -> Dict[str, Any]:
+        """Read benchmark traces, run the detection pipeline, and persist the result."""
+        traces_dir = Path("benchmark/generated-traces")
+        manifest_file = traces_dir / "manifest.json"
+        if not manifest_file.exists():
+            raise HTTPException(status_code=404, detail="Benchmark traces not found")
+
+        manifest = json.loads(manifest_file.read_text())
+        agent_entries = manifest.get("agents", [])[:limit_agents]
+
+        all_fleet_events: List[FleetEvent] = []
+        agent_summaries: List[Dict[str, Any]] = []
+
+        for entry in agent_entries:
+            trace_path = traces_dir / entry["file"]
+            if trace_path.exists():
+                trace_data = json.loads(trace_path.read_text())
+                events = trace_to_fleet_events(trace_data)[:events_per_agent]
+                all_fleet_events.extend(events)
+                agent_summaries.append({
+                    "agent_id": entry["agent_id"],
+                    "normal_work_percentage": entry["normal_work_percentage"],
+                    "loaded_events": len(events),
+                })
+
+        if retime:
+            all_fleet_events = interleave_event_timestamps(all_fleet_events)
+
+        with recent_events_lock:
+            recent_events.extend(all_fleet_events)
+        db_store.save_events(all_fleet_events)
+
+        if all_fleet_events:
+            w_start = min(e.timestamp for e in all_fleet_events)
+            w_end = max(e.timestamp for e in all_fleet_events)
+        else:
+            now_iso = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+            w_start, w_end = now_iso, now_iso
+
+        candidates, packets, findings = det_pipeline.process_window(
+            events=all_fleet_events,
+            window_start=w_start,
+            window_end=w_end,
+            enable_audit=True,
+        )
+
+        return {
+            "status": "loaded",
+            "total_agents": len(agent_summaries),
+            "total_events": len(all_fleet_events),
+            "candidates_flagged": len(candidates),
+            "findings_generated": len(findings),
+            "agent_summaries": agent_summaries,
+        }
+
+    # Boot: restore persisted events, or run the fleet once so a cold start is never
+    # an empty dashboard. Loading 100 agents takes well under a second.
+    if should_preload:
+        try:
+            persisted = db_store.list_events()
+            if persisted:
+                with recent_events_lock:
+                    recent_events.extend(persisted)
+            elif Path("benchmark/generated-traces/manifest.json").exists():
+                _load_fleet_into_state()
+        except Exception as exc:  # never let a cold-start hiccup block serving
+            print(f"[cloud-bean] preload skipped: {exc}")
 
     @app.get("/", response_class=FileResponse)
     @app.get("/dashboard", response_class=FileResponse)
@@ -229,6 +322,7 @@ def create_app(
     def ingest_events(req: IngestRequest) -> Dict[str, Any]:
         with recent_events_lock:
             recent_events.extend(req.events)
+        db_store.save_events(req.events)
 
         now_iso = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
         w_start = req.window_start or (
@@ -261,59 +355,12 @@ def create_app(
             description="Spread synthetic tool-call timestamps across each agent's real activity span",
         ),
     ) -> Dict[str, Any]:
-        """Load the pre-generated benchmark traces for up to 100 agents with ~85% normal work and 15% injected actions."""
-        traces_dir = Path("benchmark/generated-traces")
-        manifest_file = traces_dir / "manifest.json"
-        if not manifest_file.exists():
-            raise HTTPException(status_code=404, detail="Benchmark traces not found")
-
-        manifest = json.loads(manifest_file.read_text())
-        agent_entries = manifest.get("agents", [])[:limit_agents]
-
-        all_fleet_events: List[FleetEvent] = []
-        agent_summaries: List[Dict[str, Any]] = []
-
-        for entry in agent_entries:
-            trace_path = traces_dir / entry["file"]
-            if trace_path.exists():
-                trace_data = json.loads(trace_path.read_text())
-                events = trace_to_fleet_events(trace_data)[:events_per_agent]
-                all_fleet_events.extend(events)
-                agent_summaries.append({
-                    "agent_id": entry["agent_id"],
-                    "normal_work_percentage": entry["normal_work_percentage"],
-                    "loaded_events": len(events),
-                })
-
-        if retime:
-            all_fleet_events = interleave_event_timestamps(all_fleet_events)
-
-        with recent_events_lock:
-            recent_events.extend(all_fleet_events)
-
-        # Process window through detection pipeline with dynamic timestamps
-        if all_fleet_events:
-            w_start = min(e.timestamp for e in all_fleet_events)
-            w_end = max(e.timestamp for e in all_fleet_events)
-        else:
-            now_iso = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-            w_start, w_end = now_iso, now_iso
-
-        candidates, packets, findings = det_pipeline.process_window(
-            events=all_fleet_events,
-            window_start=w_start,
-            window_end=w_end,
-            enable_audit=True,
+        """Load the pre-generated benchmark traces through the detection pipeline."""
+        return _load_fleet_into_state(
+            limit_agents=limit_agents,
+            events_per_agent=events_per_agent,
+            retime=retime,
         )
-
-        return {
-            "status": "loaded",
-            "total_agents": len(agent_summaries),
-            "total_events": len(all_fleet_events),
-            "candidates_flagged": len(candidates),
-            "findings_generated": len(findings),
-            "agent_summaries": agent_summaries,
-        }
 
     @app.post("/api/v1/failures/inject")
     def inject_failure(req: FailureInjectRequest) -> Dict[str, Any]:
@@ -451,10 +498,15 @@ def create_app(
 
     @app.post("/api/v1/reset")
     def reset_state() -> Dict[str, Any]:
-        """Clear the working event buffer so a demo can start from a cold dashboard."""
+        """Clear the working event buffer so a demo can start from a cold dashboard.
+
+        Clears persisted events too, otherwise the next boot would restore them and
+        the reset would appear not to have worked.
+        """
         with recent_events_lock:
             cleared = len(recent_events)
             recent_events.clear()
+        db_store.clear_events()
         return {"status": "reset", "events_cleared": cleared}
 
     @app.post("/api/v1/replay")
@@ -494,3 +546,13 @@ def create_app(
         )
 
     return app
+
+
+def create_server_app() -> FastAPI:
+    """Factory for running the dashboard: persistent state, preloaded fleet.
+
+    State lives in ``.cloud-bean/state.db`` (override with CLOUD_BEAN_STATE_DB), so a
+    restart restores everything instead of showing an empty dashboard, and a cold
+    start loads the benchmark fleet automatically.
+    """
+    return create_app(state_db=_default_state_path(), preload=True)

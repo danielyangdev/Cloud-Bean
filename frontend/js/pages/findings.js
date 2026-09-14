@@ -118,16 +118,25 @@ async function renderDetail() {
   }
 
   // Full evidence packet: the chronological record the judge actually read.
-  const packetId = (f.evidence_ids || [])[0];
+  // A finding cites evidence IDs (ev_01), not packet IDs — the judgment for the same
+  // check_key is what carries packet_id, so resolve through it rather than guessing.
+  const packetId = j && j.packet_id ? j.packet_id : null;
   const packetPanel = panel('Cited evidence packet', null, el('div', { class: 'dim', text: 'Loading…' }));
   host.appendChild(packetPanel);
 
-  const packets = snapshot().evidence || [];
-  let packet = packets.find((p) => (p.chronological_events || []).some((e) => (f.evidence_ids || []).includes(e.evidence_id)));
-  if (!packet && packetId) {
+  // Resolve the packet lazily. The full packet list is ~1.4MB, so it is fetched
+  // once only if the direct lookup misses, and then reused from the store.
+  let packet = null;
+  if (packetId) {
     try {
       packet = await api.evidencePacket(packetId);
-    } catch (_) { /* packet ids are evidence ids, not packet ids, in some rows */ }
+    } catch (_) { /* finding cites evidence IDs, which are not packet IDs */ }
+  }
+  if (!packet) {
+    await load(['evidence']);
+    const packets = snapshot().evidence || [];
+    packet = packets.find((p) =>
+      (p.chronological_events || []).some((e) => (f.evidence_ids || []).includes(e.evidence_id)));
   }
 
   packetPanel.innerHTML = '';
@@ -206,7 +215,7 @@ export async function mount(el_, params = {}) {
   root.innerHTML = '<div class="page-wrap"><div id="fd-host"></div></div>';
   const host = root.querySelector('#fd-host');
 
-  await load(['findings', 'judgments', 'evidence']);
+  await load(['findings', 'judgments']);
   const s = snapshot();
   findings = s.findings || [];
   judgments = s.judgments || [];

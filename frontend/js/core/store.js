@@ -15,6 +15,13 @@ const state = {
   evidence: null,
 };
 
+// Cache generation. Navigation reuses whatever is cached; only a mutation (fleet
+// load, replay, failure injection, reset) bumps this, which drops the cache. That
+// keeps the numbers consistent after a mutation without refetching ~2.7MB of events
+// and evidence packets every time the user changes page.
+let generation = 0;
+let cachedAt = -1;
+
 const listeners = new Set();
 
 export function subscribe(fn) {
@@ -36,9 +43,17 @@ export function snapshot() {
   return state;
 }
 
-/** Drop caches so the next load() refetches. */
+/** Drop caches so the next load() refetches. Call after any mutating request. */
 export function invalidate() {
+  generation += 1;
   for (const key of Object.keys(state)) state[key] = null;
+}
+
+/** Drop caches only if a mutation happened since they were filled. */
+export function invalidateIfStale() {
+  if (cachedAt !== generation) {
+    for (const key of Object.keys(state)) state[key] = null;
+  }
 }
 
 /**
@@ -66,6 +81,7 @@ export async function load(keys, { force = false } = {}) {
     wanted.forEach((k, i) => {
       state[k] = results[i];
     });
+    cachedAt = generation;
     emit();
   }
   return state;
