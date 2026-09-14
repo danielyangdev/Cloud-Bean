@@ -31,6 +31,13 @@ def test_dashboard_index_endpoint(client):
     assert res.status_code == 200
     assert "Cloud-Bean" in res.text
     assert "Fleet Security Monitor" in res.text
+    assert "#/explainer" in res.text
+
+
+def test_dashboard_explainer_assets(client):
+    res = client.get("/static/js/pages/explainer.js")
+    assert res.status_code == 200
+    assert "How Cloud-Bean Works" in res.text
 
 
 def test_budget_endpoint(client):
