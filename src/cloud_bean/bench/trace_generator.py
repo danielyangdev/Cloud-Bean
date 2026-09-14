@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 import json
 from pathlib import Path
 import random
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
 
 from cloud_bean.bench.extractor import TopAgentsExtractor
 from cloud_bean.schemas.events import EventType, FleetEvent
@@ -283,18 +283,24 @@ class TraceGenerator:
 
         corpus = self.extractor.extract_full_corpus(limit_agents=total_agents, limit_per_agent=limit_per_agent)
         generated_manifest: List[Dict[str, Any]] = []
+        seen_filenames_lower: Set[str] = set()
 
         for agent_label, data in corpus.items():
             revisions = data["revisions"]
             trace = self.generate_agent_trace(agent_label, revisions)
 
-            file_path = out_path / f"{agent_label}.json"
+            fname = f"{agent_label}.json"
+            if fname.lower() in seen_filenames_lower:
+                fname = f"{agent_label}_alt.json"
+            seen_filenames_lower.add(fname.lower())
+
+            file_path = out_path / fname
             file_path.write_text(json.dumps(trace, indent=2))
 
             generated_manifest.append({
                 "agent_id": agent_label,
                 "role": trace["role"],
-                "file": f"{agent_label}.json",
+                "file": fname,
                 "normal_work_percentage": trace["normal_work_percentage"],
                 "total_messages": trace["total_messages"],
                 "real_actions_count": trace["real_actions_count"],
