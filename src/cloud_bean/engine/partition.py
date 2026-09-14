@@ -97,9 +97,10 @@ class ConsistentHashRouter:
         self, events: List[FleetEvent], partition_by: str = "actor_id"
     ) -> Dict[str, List[FleetEvent]]:
         """Partition a list of events by shard while preserving causal order within each shard."""
-        partitioned: Dict[str, List[FleetEvent]] = {s: [] for s in self.shards}
         if not self._shards:
             raise RuntimeError("Cannot partition events: no shards registered on hash ring")
+
+        partitioned: Dict[str, List[FleetEvent]] = {s: [] for s in self.shards}
 
         for ev in events:
             shard = self.route_event(ev, partition_by=partition_by)
