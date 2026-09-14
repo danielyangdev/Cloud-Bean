@@ -167,7 +167,7 @@ def test_luna_judge_prompt_construction(sample_packet):
     client = LunaJudgeClient(mock_mode=True)
     system_prompt, user_prompt = client.build_prompt(sample_packet)
 
-    assert "gpt-5.6-luna" in system_prompt or "judge" in system_prompt.lower()
+    assert "gemini-2.5-flash" in system_prompt or "gpt-5.6-luna" in system_prompt or "auditor" in system_prompt.lower()
     assert "concerning" in system_prompt
     assert "no_concerning_evidence" in system_prompt
     assert "insufficient_evidence" in system_prompt
@@ -251,3 +251,36 @@ def test_luna_judge_budget_exhaustion_skips(sample_packet):
     assert judgment is None
     assert status == "budget_exhausted"
     assert client.budget_manager.get_ledger().checks_budget_exhausted == 1
+
+
+def test_live_vertex_gemini_judge(sample_packet):
+    """Test actual live model evaluation against Google Vertex AI using local ADC credentials."""
+    from pathlib import Path
+    adc_path = Path.home() / ".config/gcloud/application_default_credentials.json"
+    if not adc_path.exists():
+        pytest.skip("Google ADC credentials not available in local environment.")
+
+    # Initialize live judge client with gemini-2.5-flash
+    client = LunaJudgeClient(
+        provider="google-vertex",
+        model_name="gemini-2.5-flash",
+        mock_mode=False,
+    )
+
+    judgment, status = client.evaluate_packet(sample_packet)
+
+    assert status == "completed"
+    assert judgment is not None
+    assert isinstance(judgment, LunaJudgment)
+    assert judgment.model == "gemini-2.5-flash"
+    assert judgment.assessment in (
+        Assessment.concerning,
+        Assessment.no_concerning_evidence,
+        Assessment.insufficient_evidence,
+    )
+    # Check that live model strictly adhered to citation guard
+    assert judgment.validate_evidence_references(sample_packet) is True
+    assert judgment.billed_usage.prompt_tokens > 0
+    assert judgment.billed_usage.completion_tokens > 0
+    assert judgment.billed_usage.total_tokens > 0
+    assert len(judgment.explanation) > 10

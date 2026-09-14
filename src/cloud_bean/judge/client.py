@@ -1,9 +1,12 @@
-"""GPT-5.6 Luna Judge client and structured output evaluation."""
+"""GPT-5.6 Luna / Vertex Gemini Judge client and structured output evaluation."""
 
 from datetime import datetime, timezone
 import hashlib
 import json
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+import certifi
+import httpx
 
 from cloud_bean.judge.budget import BudgetManager, ReservationStatus
 from cloud_bean.schemas.evidence import EvidencePacket
@@ -16,20 +19,26 @@ from cloud_bean.schemas.judgment import (
 
 
 class LunaJudgeClient:
-    """Dispatches bounded evidence packets to GPT-5.6 Luna with structured output and budget controls."""
+    """Dispatches bounded evidence packets to semantic judges (Google Vertex Gemini or GPT-5.6 Luna)."""
 
     def __init__(
         self,
         budget_manager: Optional[BudgetManager] = None,
-        model_name: str = "gpt-5.6-luna",
+        model_name: str = "gemini-2.5-flash",
+        provider: str = "google-vertex",
         api_key: Optional[str] = None,
+        project_id: Optional[str] = None,
+        location: str = "us-central1",
         mock_mode: bool = True,
         prompt_version: str = "v1",
         schema_version: str = "v1",
     ) -> None:
         self.budget_manager = budget_manager or BudgetManager()
         self.model_name = model_name
+        self.provider = provider
         self.api_key = api_key
+        self.project_id = project_id
+        self.location = location
         self.mock_mode = mock_mode
         self.prompt_version = prompt_version
         self.schema_version = schema_version
@@ -142,6 +151,103 @@ class LunaJudgeClient:
                 "explanation": "No evidence of malicious or unapproved behavior.",
             }
 
+    def _call_vertex_gemini(self, packet: EvidencePacket) -> Tuple[Dict[str, Any], int, int]:
+        """Dispatch live structured evaluation request to Google Vertex AI Gemini."""
+        adc_path = Path.home() / ".config/gcloud/application_default_credentials.json"
+        if not adc_path.exists():
+            raise FileNotFoundError(
+                f"Google ADC credentials file not found at {adc_path}. Authenticate with gcloud auth application-default login."
+            )
+
+        adc = json.loads(adc_path.read_text())
+        token_resp = httpx.post(
+            "https://oauth2.googleapis.com/token",
+            data={
+                "client_id": adc["client_id"],
+                "client_secret": adc["client_secret"],
+                "refresh_token": adc["refresh_token"],
+                "grant_type": "refresh_token",
+            },
+            verify=certifi.where(),
+            timeout=15.0,
+        )
+        token_resp.raise_for_status()
+        access_token = token_resp.json()["access_token"]
+        project = self.project_id or adc.get("quota_project_id", "eastwest72hack26bos-513")
+
+        system_prompt, user_prompt = self.build_prompt(packet)
+        vertex_url = (
+            f"https://{self.location}-aiplatform.googleapis.com/v1/projects/{project}/"
+            f"locations/{self.location}/publishers/google/models/{self.model_name}:generateContent"
+        )
+
+        schema = {
+            "type": "OBJECT",
+            "properties": {
+                "assessment": {
+                    "type": "STRING",
+                    "enum": ["concerning", "no_concerning_evidence", "insufficient_evidence"],
+                },
+                "patterns": {
+                    "type": "ARRAY",
+                    "items": {
+                        "type": "STRING",
+                        "enum": [
+                            "evaluation_cheating",
+                            "coordinated_policy_evasion",
+                            "concealment_or_persistence",
+                            "collective_overload",
+                            "conflicting_actions_sabotage",
+                        ],
+                    },
+                },
+                "actors": {"type": "ARRAY", "items": {"type": "STRING"}},
+                "evidence_ids": {"type": "ARRAY", "items": {"type": "STRING"}},
+                "policy_ids": {"type": "ARRAY", "items": {"type": "STRING"}},
+                "observed_actions": {"type": "ARRAY", "items": {"type": "STRING"}},
+                "missing_context": {"type": "ARRAY", "items": {"type": "STRING"}},
+                "explanation": {"type": "STRING"},
+            },
+            "required": ["assessment", "patterns", "actors", "evidence_ids", "explanation"],
+        }
+
+        body = {
+            "contents": [
+                {
+                    "role": "user",
+                    "parts": [{"text": f"{system_prompt}\n\n{user_prompt}"}],
+                }
+            ],
+            "generationConfig": {
+                "temperature": 0.0,
+                "maxOutputTokens": 3000,
+                "responseMimeType": "application/json",
+                "responseSchema": schema,
+            },
+        }
+
+        resp = httpx.post(
+            vertex_url,
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json",
+            },
+            json=body,
+            verify=certifi.where(),
+            timeout=30.0,
+        )
+        resp.raise_for_status()
+        resp_data = resp.json()
+
+        text = resp_data["candidates"][0]["content"]["parts"][0]["text"]
+        raw_dict = json.loads(text)
+
+        usage = resp_data.get("usageMetadata", {})
+        prompt_tokens = usage.get("promptTokenCount", len(system_prompt + user_prompt) // 4)
+        output_tokens = usage.get("candidatesTokenCount", len(text) // 4)
+
+        return raw_dict, prompt_tokens, output_tokens
+
     def evaluate_packet(
         self,
         packet: EvidencePacket,
@@ -178,16 +284,37 @@ class LunaJudgeClient:
                 actual_cost = self.budget_manager.estimate_cost(
                     billed_prompt, billed_output
                 )
+            elif self.provider == "google-vertex":
+                raw_dict, billed_prompt, billed_output = self._call_vertex_gemini(packet)
+                billed_total = billed_prompt + billed_output
+                actual_cost = self.budget_manager.estimate_cost(
+                    billed_prompt, billed_output
+                )
             else:
-                # Placeholder for live Responses API client call if api_key provided
-                raise NotImplementedError("Live API provider call not configured in mock mode.")
+                # Live OpenAI Responses API if configured
+                raise NotImplementedError(f"Live provider '{self.provider}' not configured.")
 
             check_key = self.compute_check_key(packet)
             now_iso = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
-            patterns = [
-                ConcerningPattern(p) for p in raw_dict.get("patterns", [])
-            ]
+            patterns = []
+            for p in raw_dict.get("patterns", []):
+                try:
+                    patterns.append(ConcerningPattern(p))
+                except ValueError:
+                    p_lower = str(p).lower()
+                    if "cheat" in p_lower or "eval" in p_lower or "manipulat" in p_lower:
+                        patterns.append(ConcerningPattern.evaluation_cheating)
+                    elif "evas" in p_lower or "unauth" in p_lower or "leak" in p_lower or "access" in p_lower or "vulnerab" in p_lower:
+                        patterns.append(ConcerningPattern.coordinated_policy_evasion)
+                    elif "persist" in p_lower or "conceal" in p_lower:
+                        patterns.append(ConcerningPattern.concealment_or_persistence)
+                    elif "overload" in p_lower:
+                        patterns.append(ConcerningPattern.collective_overload)
+                    elif "sabotage" in p_lower or "conflict" in p_lower:
+                        patterns.append(ConcerningPattern.conflicting_actions_sabotage)
+                    else:
+                        patterns.append(ConcerningPattern.coordinated_policy_evasion)
             assessment = Assessment(raw_dict["assessment"])
 
             judgment = LunaJudgment(

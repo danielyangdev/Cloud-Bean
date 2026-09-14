@@ -94,7 +94,13 @@ def create_app(
     db_store = store or JudgmentFindingStore(state_db or ":memory:")
     should_preload = preload
     b_manager = budget_manager or BudgetManager(max_budget_usd=10.00)
-    judge_client = LunaJudgeClient(budget_manager=b_manager, mock_mode=True)
+    live_mode = os.getenv("CLOUD_BEAN_LIVE_JUDGE", "false").lower() in ("true", "1")
+    judge_client = LunaJudgeClient(
+        budget_manager=b_manager,
+        provider="google-vertex",
+        model_name="gemini-2.5-flash",
+        mock_mode=not live_mode,
+    )
     signal_engine = FleetSignalEngine()
     selector = EvidenceSelector()
 
