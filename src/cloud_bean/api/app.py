@@ -8,11 +8,12 @@ from pathlib import Path
 import threading
 from typing import Any, Dict, List, Optional
 from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from cloud_bean.api.graph import build_interaction_graph
+from cloud_bean.api.metrics import format_prometheus_metrics
 from cloud_bean.bench.trace_generator import (
     interleave_event_timestamps,
     trace_to_fleet_events,
@@ -205,6 +206,53 @@ def create_app(
     @app.get("/api/v1/health")
     def health() -> Dict[str, str]:
         return {"status": "ok", "version": "0.1.0"}
+
+    @app.get("/healthz")
+    def healthz() -> Dict[str, str]:
+        """Kubernetes/Cloud liveness probe."""
+        return {"status": "ok"}
+
+    @app.get("/readyz")
+    def readyz() -> Dict[str, str]:
+        """Kubernetes/Cloud readiness probe: checks backing store connectivity."""
+        try:
+            db_store.list_candidate_groups()
+            return {"status": "ready"}
+        except Exception as exc:
+            raise HTTPException(status_code=503, detail=f"Store not ready: {exc}")
+
+    @app.get("/metrics", response_class=PlainTextResponse)
+    def prometheus_metrics() -> PlainTextResponse:
+        """Prometheus OpenMetrics exposition endpoint for cloud scrapers."""
+        with recent_events_lock:
+            events_count = len(recent_events)
+        candidates = db_store.list_candidate_groups()
+        findings = db_store.list_findings()
+        judgments = db_store.list_accepted_judgments()
+        ledger = b_manager.get_ledger()
+
+        findings_by_pattern: Dict[str, int] = {}
+        for f in findings:
+            findings_by_pattern[f.pattern] = findings_by_pattern.get(f.pattern, 0) + 1
+
+        candidates_by_signal: Dict[str, int] = {}
+        for c in candidates:
+            candidates_by_signal[c.trigger_signal] = (
+                candidates_by_signal.get(c.trigger_signal, 0) + 1
+            )
+
+        content = format_prometheus_metrics(
+            total_events=len(db_store.list_events()) or events_count,
+            total_candidates=len(candidates),
+            total_findings=len(findings),
+            total_judgments=len(judgments),
+            buffered_events=events_count,
+            spent_usd=ledger.spent_usd,
+            max_budget_usd=ledger.max_budget_usd,
+            findings_by_pattern=findings_by_pattern,
+            candidates_by_signal=candidates_by_signal,
+        )
+        return PlainTextResponse(content=content, media_type="text/plain; version=0.0.4")
 
     @app.get("/api/v1/graph")
     def get_graph(
