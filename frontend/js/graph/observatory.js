@@ -268,6 +268,8 @@ function draw() {
 
     ctx.save();
     ctx.globalAlpha = isFaded ? 0.02 : (isConnected ? 0.90 : 0.12);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
     ctx.beginPath();
     ctx.moveTo(link.sourceNode.x, link.sourceNode.y);
     ctx.lineTo(link.targetNode.x, link.targetNode.y);
@@ -305,17 +307,23 @@ function draw() {
     if (n.type === 'agent') {
       const r = isSelected ? 16 : (isConnectedNeighbor ? 9 : 7);
 
+      // Translucent outer cell membrane (organic feel)
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, r + 3.5, 0, 2 * Math.PI);
+      ctx.fillStyle = alpha(fillColor, 0.16);
+      ctx.fill();
+
       // Work-allocation ring: how much of this agent's activity is routine.
       if (isSelected) {
         const normPct = n.normal_percentage !== undefined ? n.normal_percentage : 84.8;
         const normAngle = (normPct / 100) * 2 * Math.PI;
         ctx.beginPath();
-        ctx.arc(n.x, n.y, r + 3, -Math.PI / 2, -Math.PI / 2 + normAngle);
+        ctx.arc(n.x, n.y, r + 4, -Math.PI / 2, -Math.PI / 2 + normAngle);
         ctx.strokeStyle = PALETTE.mint;
         ctx.lineWidth = 2.5;
         ctx.stroke();
         ctx.beginPath();
-        ctx.arc(n.x, n.y, r + 3, -Math.PI / 2 + normAngle, 3 * Math.PI / 2);
+        ctx.arc(n.x, n.y, r + 4, -Math.PI / 2 + normAngle, 3 * Math.PI / 2);
         ctx.strokeStyle = n.status === 'concerning' ? PALETTE.rose : PALETTE.amber;
         ctx.lineWidth = 2.5;
         ctx.stroke();
@@ -328,7 +336,7 @@ function draw() {
 
       if (n.token_drift) {
         ctx.beginPath();
-        ctx.arc(n.x, n.y, r + 3.5, 0, 2 * Math.PI);
+        ctx.arc(n.x, n.y, r + 4.5, 0, 2 * Math.PI);
         ctx.strokeStyle = PALETTE.violet;
         ctx.lineWidth = 1.5;
         ctx.setLineDash([2, 2]);
@@ -342,13 +350,26 @@ function draw() {
         ctx.stroke();
       }
     } else {
-      const sz = isSelected ? 20 : (isConnectedNeighbor ? 13 : 10);
+      // Resource Node: Smooth river pebble contour (organic feel)
+      const sz = isSelected ? 22 : (isConnectedNeighbor ? 14 : 10);
+      const pr = Math.floor(sz * 0.35);
+
+      // Translucent outer pebble aura
+      ctx.beginPath();
+      ctx.roundRect(n.x - (sz + 4) / 2, n.y - (sz + 4) / 2, sz + 4, sz + 4, pr + 1);
+      ctx.fillStyle = alpha(fillColor, 0.14);
+      ctx.fill();
+
+      // Pebble body
+      ctx.beginPath();
+      ctx.roundRect(n.x - sz / 2, n.y - sz / 2, sz, sz, pr);
       ctx.fillStyle = fillColor;
-      ctx.fillRect(n.x - sz / 2, n.y - sz / 2, sz, sz);
+      ctx.fill();
+
       if (isSelected || isConnectedNeighbor) {
         ctx.lineWidth = 1.5;
         ctx.strokeStyle = PALETTE.textPrimary;
-        ctx.strokeRect(n.x - sz / 2, n.y - sz / 2, sz, sz);
+        ctx.stroke();
       }
     }
 

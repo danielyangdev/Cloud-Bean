@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path
+import re
 from typing import Any, Dict, List, Optional, Tuple
 import certifi
 import httpx
@@ -16,6 +17,20 @@ from cloud_bean.schemas.judgment import (
     ConcerningPattern,
     LunaJudgment,
 )
+
+
+def _clean_json_str(s: str) -> Dict[str, Any]:
+    """Extract and parse clean JSON object from model output text, handling codeblocks and trailing commas."""
+    s = s.strip()
+    if s.startswith("```"):
+        s = re.sub(r"^```(?:json)?\s*", "", s)
+        s = re.sub(r"\s*```$", "", s)
+    match = re.search(r"\{.*\}", s, re.DOTALL)
+    if match:
+        s = match.group(0)
+    # Clean illegal trailing commas
+    s = re.sub(r",\s*([\]\}])", r"\1", s)
+    return json.loads(s)
 
 
 class LunaJudgeClient:
@@ -240,7 +255,7 @@ class LunaJudgeClient:
         resp_data = resp.json()
 
         text = resp_data["candidates"][0]["content"]["parts"][0]["text"]
-        raw_dict = json.loads(text)
+        raw_dict = _clean_json_str(text)
 
         usage = resp_data.get("usageMetadata", {})
         prompt_tokens = usage.get("promptTokenCount", len(system_prompt + user_prompt) // 4)
