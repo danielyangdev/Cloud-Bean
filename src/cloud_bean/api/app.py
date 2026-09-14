@@ -24,6 +24,7 @@ from cloud_bean.engine.pipeline import DetectionPipeline
 from cloud_bean.engine.replay import ReplayEngine
 from cloud_bean.engine.storage import JudgmentFindingStore
 from cloud_bean.evidence.selector import EvidenceSelector
+from cloud_bean.ingestion.dedup import IdempotentEventDeduplicator
 from cloud_bean.judge.budget import BudgetManager
 from cloud_bean.judge.client import LunaJudgeClient
 from cloud_bean.schemas.events import FleetEvent
@@ -116,6 +117,7 @@ def create_app(
     # In-memory working buffer of recent events with thread lock and bounded deque
     recent_events_lock = threading.Lock()
     recent_events: deque[FleetEvent] = deque(maxlen=10000)
+    deduplicator = IdempotentEventDeduplicator(capacity=50000)
 
     @app.middleware("http")
     async def add_no_cache_header(request, call_next):
@@ -156,19 +158,20 @@ def create_app(
         if retime:
             all_fleet_events = interleave_event_timestamps(all_fleet_events)
 
+        unique_events, _ = deduplicator.filter_events(all_fleet_events)
         with recent_events_lock:
-            recent_events.extend(all_fleet_events)
-        db_store.save_events(all_fleet_events)
+            recent_events.extend(unique_events)
+        db_store.save_events(unique_events)
 
-        if all_fleet_events:
-            w_start = min(e.timestamp for e in all_fleet_events)
-            w_end = max(e.timestamp for e in all_fleet_events)
+        if unique_events:
+            w_start = min(e.timestamp for e in unique_events)
+            w_end = max(e.timestamp for e in unique_events)
         else:
             now_iso = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
             w_start, w_end = now_iso, now_iso
 
         candidates, packets, findings = det_pipeline.process_window(
-            events=all_fleet_events,
+            events=unique_events,
             window_start=w_start,
             window_end=w_end,
             enable_audit=True,
@@ -189,6 +192,7 @@ def create_app(
         try:
             persisted = db_store.list_events()
             if persisted:
+                deduplicator.filter_events(persisted)
                 with recent_events_lock:
                     recent_events.extend(persisted)
             elif Path("benchmark/generated-traces/manifest.json").exists():
@@ -389,27 +393,38 @@ def create_app(
 
     @app.post("/api/v1/ingest/events")
     def ingest_events(req: IngestRequest) -> Dict[str, Any]:
+        unique_events, suppressed = deduplicator.filter_events(req.events)
+        if not unique_events:
+            return {
+                "ingested_count": 0,
+                "duplicates_suppressed": suppressed,
+                "candidates_flagged": 0,
+                "packets_created": 0,
+                "findings_generated": 0,
+            }
+
         with recent_events_lock:
-            recent_events.extend(req.events)
-        db_store.save_events(req.events)
+            recent_events.extend(unique_events)
+        db_store.save_events(unique_events)
 
         now_iso = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
         w_start = req.window_start or (
-            req.events[0].timestamp if req.events else now_iso
+            unique_events[0].timestamp if unique_events else now_iso
         )
         w_end = req.window_end or (
-            req.events[-1].timestamp if req.events else now_iso
+            unique_events[-1].timestamp if unique_events else now_iso
         )
 
         candidates, packets, findings = det_pipeline.process_window(
-            events=req.events,
+            events=unique_events,
             window_start=w_start,
             window_end=w_end,
             enable_audit=req.enable_audit,
         )
 
         return {
-            "ingested_count": len(req.events),
+            "ingested_count": len(unique_events),
+            "duplicates_suppressed": suppressed,
             "candidates_flagged": len(candidates),
             "packets_created": len(packets),
             "findings_generated": len(findings),
@@ -572,6 +587,7 @@ def create_app(
         Clears persisted events too, otherwise the next boot would restore them and
         the reset would appear not to have worked.
         """
+        deduplicator.clear()
         with recent_events_lock:
             cleared = len(recent_events)
             recent_events.clear()
