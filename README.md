@@ -46,7 +46,7 @@ pytest -q
 PYTHONPATH=src python3 -m uvicorn cloud_bean.api.app:create_server_app --factory --host 0.0.0.0 --port 8000
 ```
 
-Open **[http://localhost:8000/](http://localhost:8000/)** in your browser.
+Open **[http://localhost:8000/](https://cloud-bean.vercel.app/)** in your browser.
 
 The server pre-loads the full 200-agent benchmark fleet into `.cloud-bean/state.db` on first boot (~1.5s cold start, ~0.1s on subsequent restarts).
 
