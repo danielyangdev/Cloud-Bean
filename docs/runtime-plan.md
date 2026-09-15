@@ -1,17 +1,17 @@
-# Runtime plan: budgeted Luna monitoring
+# Runtime plan: budgeted semantic monitoring
 
-Decision: 2026-09-12. Use `gpt-5.6-luna` for semantic checks over selected multi-agent evidence. Local classifiers remain future experiments. This plan supersedes earlier metadata-only detection and annotation-only LLM proposals.
+Decision: 2026-09-13. Primary runtime judge is `gemini-2.5-flash` via Google Vertex AI (with `gpt-5.6-luna` supported as an alternative provider). Local classifiers remain future experiments. This plan supersedes earlier metadata-only detection and annotation-only LLM proposals.
 
 ## Data flow
 
-1. Tool/service adapters emit normalized events. Collector assigns stable event IDs using collector identity, boot identity, and sequence; runtime supplies actor/task identity. Agent identity and collector identity are distinct.
-2. Collector stores pending events durably, batches routine counters, and retains bounded detailed evidence. Important transitions and relationship records survive aggregation. Emit gap records on overflow.
-3. JetStream retains published records. Fixed shards group by resource or conversation; one active owner processes each shard. Cross-resource links produce candidates for a second grouping stage. Do not compare every agent pair.
-4. Signal workers maintain counts, novelty, write conflicts, and shared-resource pressure. Transactionally save processed IDs, state, and candidate requests before acknowledging input.
-5. Evidence selector builds bounded packets across related actors. Scheduler reserves budget and dispatches Luna checks.
+1. Tool/service adapters emit normalized events. Collector assigns stable event IDs namespaced by actor; runtime supplies actor/task identity. Agent identity and collector identity are distinct.
+2. Ingestion layer runs an in-memory sliding-window deduplicator (`IdempotentEventDeduplicator`, capacity 50,000) that suppresses duplicate network deliveries before signal processing, preventing false burstiness spikes.
+3. Consistent hash partition router (`ConsistentHashRouter`) maps events onto an Amazon Dynamo-style ring with 128 virtual nodes per shard, preserving strict intra-shard causal sequence ordering.
+4. Signal workers maintain counts, novelty, write conflicts, token distribution drift (JSD), burstiness ($C_v$), and shared-resource pressure. Transactionally save processed IDs, state, and candidate requests before acknowledging input.
+5. Evidence selector builds bounded packets across related actors (capped at 2,000 to 8,000 tokens). Scheduler reserves budget and dispatches Gemini 2.5 Flash checks under RFC 5405 token-bucket rate limits.
 6. Judge worker validates and stores response. Deterministic alert rules turn accepted judgments or explicit measured policy violations into findings. Dashboard shows both findings and inspection gaps.
 
-Use Python collectors/workers, SQLite local queues, NATS JetStream, Postgres, FastAPI, React, and Docker Compose. State ownership is fixed in v0; live shard reassignment is deferred. Postgres is single instance initially. Broker replication alone does not make whole system highly available.
+Use Python collectors/workers, SQLite / Postgres state storage, FastAPI backend, and vanilla ES module dashboard. Vercel serverless deployment is supported via `/tmp` state database redirection and `vercel.json` rewrites.
 
 ## Evidence packet
 

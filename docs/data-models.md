@@ -131,15 +131,15 @@ Bounded, structured context prepared by the Evidence Selector for the Luna Judge
 
 ---
 
-## 4. Luna Judgment Model (`LunaJudgment`)
+## 4. Semantic Judgment Model (`LunaJudgment`)
 
-Strict schema matching the OpenAI Responses API structured output definition.
+Strict schema matching the structured JSON output returned by the evaluating model (`gemini-2.5-flash` via Google Vertex AI, or `gpt-5.6-luna`).
 
 ```json
 {
   "check_key": "chk_sha256_e430d9...",
   "packet_id": "pkt_f7a8109d43",
-  "model": "gpt-5.6-luna",
+  "model": "gemini-2.5-flash",
   "evaluated_at": "2026-09-12T14:31:05.120Z",
   "assessment": "concerning",
   "patterns": [
@@ -205,20 +205,22 @@ Deduplicated finding persisted in the database.
 
 ## 6. Budget Ledger Model (`BudgetLedger`)
 
-Tracks token spend, reservations, and audit allocations.
+Tracks token spend, reservations, RFC 5405 token-bucket rate limits, and audit allocations.
 
 ```json
 {
   "max_budget_usd": 10.00,
-  "spent_usd": 0.428,
-  "reserved_usd": 0.015,
-  "total_checks_dispatched": 420,
-  "checks_completed": 418,
-  "checks_budget_exhausted": 2,
-  "audit_samples_completed": 42,
+  "spent_usd": 0.082,
+  "reserved_usd": 0.0055,
+  "total_checks_dispatched": 140,
+  "checks_completed": 140,
+  "checks_budget_exhausted": 0,
+  "audit_samples_completed": 14,
   "rate_limits": {
     "max_concurrent_requests": 4,
-    "active_requests": 1
+    "active_requests": 0,
+    "max_rpm": 600,
+    "max_tpm": 200000
   }
 }
 ```

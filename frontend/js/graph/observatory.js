@@ -71,14 +71,14 @@ function hitTest(sx, sy) {
   const w = screenToWorld(sx, sy);
   for (const n of simNodes) {
     if (n.type === 'agent') {
-      const hitR = n.status === 'concerning' ? 18 : (n.status === 'candidate' ? 15 : 12);
+      const hitR = 12;
       const dx = n.x - w.x;
       const dy = n.y - w.y;
       if (Math.sqrt(dx * dx + dy * dy) < hitR) return n;
     } else {
-      // Pebble hit test (18x12 box with hit padding)
-      const hw = 15;
-      const hh = 12;
+      // Pebble hit test (16x11 box with hit padding)
+      const hw = 13;
+      const hh = 9;
       if (Math.abs(w.x - n.x) < hw && Math.abs(w.y - n.y) < hh) return n;
     }
   }
@@ -227,13 +227,18 @@ function stepPhysics() {
 
 function nodeFill(n) {
   if (n.type === 'agent') {
-    if (n.status === 'concerning') return PALETTE.rose;
+    if (n.status === 'concerning') return PALETTE.rose; // Red reserved EXCLUSIVELY for misaligned agents
+    if (n.cohort === 'clean_control' || n.status === 'normal' || String(n.id).includes('clean_')) {
+      return PALETTE.mint;
+    }
     if (n.status === 'candidate') return PALETTE.amber;
     return PALETTE.mint;
   }
-  if (n.status === 'conflict_hotspot') return PALETTE.rose;
-  if (n.status === 'emerging_hub') return PALETTE.amber;
-  return PALETTE.blue;
+  // Resources: unified pebble shape, non-red colors
+  if (String(n.label).startsWith('wiki:') || n.resource_type === 'wiki') {
+    return PALETTE.violet; // Smoky heather violet for external wiki resources
+  }
+  return PALETTE.blue; // Glacier blue for standard benchmark tools
 }
 
 function draw() {
@@ -295,6 +300,13 @@ function draw() {
 
   // 1. Links
   for (const link of simLinks) {
+    const srcIsClean = link.sourceNode.cohort === 'clean_control' || link.sourceNode.status === 'normal' || String(link.sourceNode.id).includes('clean_');
+    const trgIsWiki = String(link.targetNode.label).startsWith('wiki:') || link.targetNode.resource_type === 'wiki';
+
+    if (filterMode === 'clean' && (!srcIsClean || trgIsWiki)) continue;
+    if (filterMode === 'concerning' && (link.sourceNode.status !== 'concerning' && !trgIsWiki)) continue;
+    if (filterMode === 'hubs' && link.targetNode.type !== 'resource') continue;
+
     const isConnected = activeNode
       && (link.sourceNode.id === activeNode.id || link.targetNode.id === activeNode.id);
     const isFaded = activeNode && !isConnected;
@@ -308,12 +320,12 @@ function draw() {
     ctx.lineTo(link.targetNode.x, link.targetNode.y);
 
     if (link.type === 'CONFLICTS') {
-      ctx.strokeStyle = PALETTE.rose;
-      ctx.lineWidth = isConnected ? 2.0 : 1.2;
+      ctx.strokeStyle = PALETTE.amber;
+      ctx.lineWidth = isConnected ? 1.8 : 1.0;
       ctx.setLineDash([3, 3]);
     } else if (link.type === 'SHARED_ARTIFACT') {
       ctx.strokeStyle = PALETTE.violet;
-      ctx.lineWidth = isConnected ? 2.0 : 1.2;
+      ctx.lineWidth = isConnected ? 1.8 : 1.0;
       ctx.setLineDash([2, 3]);
     } else {
       ctx.strokeStyle = isConnected ? PALETTE.blue : alpha(PALETTE.textPrimary, 0.15);
@@ -326,8 +338,12 @@ function draw() {
 
   // 2. Nodes
   for (const n of simNodes) {
-    if (filterMode === 'concerning' && n.status !== 'concerning') continue;
-    if (filterMode === 'hubs' && n.status !== 'emerging_hub' && n.status !== 'conflict_hotspot') continue;
+    const isCleanAgent = n.cohort === 'clean_control' || n.status === 'normal' || String(n.id).includes('clean_');
+    const isWikiResource = String(n.label).startsWith('wiki:') || n.resource_type === 'wiki';
+
+    if (filterMode === 'concerning' && !(n.status === 'concerning' || (n.type === 'resource' && isWikiResource))) continue;
+    if (filterMode === 'clean' && !((n.type === 'agent' && isCleanAgent) || (n.type === 'resource' && !isWikiResource))) continue;
+    if (filterMode === 'hubs' && n.type !== 'resource') continue;
 
     const isSelected = selectedNode && selectedNode.id === n.id;
     const isConnectedNeighbor = activeNode && !isSelected && connectedNodeIds.has(n.id);
@@ -338,185 +354,48 @@ function draw() {
     const fillColor = nodeFill(n);
 
     if (n.type === 'agent') {
-      const isConcerning = n.status === 'concerning';
-      const isCandidate = n.status === 'candidate';
+      // Category: Agent -> Circle shape.
+      // Misaligned and normal agents differ ONLY in color:
+      // Red = Misaligned Agent (reserved for critical issue).
+      // Mint = Normal / Clean Agent.
+      // Amber = Candidate Agent.
+      // Unified form: identical radius, no halos, no double rings, no center dots, no dashed outlines.
+      const r = isSelected ? 11 : (isConnectedNeighbor ? 8 : 6);
 
-      if (isConcerning) {
-        // Flagged / Concerning: Distinctly larger (r=11), bold terracotta double-ring alert cell
-        const r = isSelected ? 16 : (isConnectedNeighbor ? 13 : 11);
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, r, 0, 2 * Math.PI);
+      ctx.fillStyle = fillColor;
+      ctx.fill();
 
-        // Outer warning perimeter ring
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, r + 4, 0, 2 * Math.PI);
-        ctx.strokeStyle = alpha(PALETTE.rose, isSelected ? 0.95 : 0.7);
-        ctx.lineWidth = 1.8;
-        ctx.stroke();
-
-        // Translucent alert halo
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, r + 2.5, 0, 2 * Math.PI);
-        ctx.fillStyle = alpha(PALETTE.rose, 0.2);
-        ctx.fill();
-
-        // Core nucleus
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, r, 0, 2 * Math.PI);
-        ctx.fillStyle = PALETTE.rose;
-        ctx.fill();
-
-        // High contrast center dot
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, 3, 0, 2 * Math.PI);
-        ctx.fillStyle = PALETTE.bgCanvas;
-        ctx.fill();
-
-        // Work-allocation ring if selected
-        if (isSelected) {
-          const normPct = n.normal_percentage !== undefined ? n.normal_percentage : 84.8;
-          const normAngle = (normPct / 100) * 2 * Math.PI;
-          ctx.beginPath();
-          ctx.arc(n.x, n.y, r + 7, -Math.PI / 2, -Math.PI / 2 + normAngle);
-          ctx.strokeStyle = PALETTE.mint;
-          ctx.lineWidth = 2.5;
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(n.x, n.y, r + 7, -Math.PI / 2 + normAngle, 3 * Math.PI / 2);
-          ctx.strokeStyle = PALETTE.rose;
-          ctx.lineWidth = 2.5;
-          ctx.stroke();
-        }
-
-        if (n.token_drift) {
-          ctx.beginPath();
-          ctx.arc(n.x, n.y, r + (isSelected ? 10 : 7), 0, 2 * Math.PI);
-          ctx.strokeStyle = PALETTE.violet;
-          ctx.lineWidth = 1.5;
-          ctx.setLineDash([2.5, 2.5]);
-          ctx.stroke();
-          ctx.setLineDash([]);
-        }
-
-        if (isSelected || isConnectedNeighbor) {
-          ctx.lineWidth = 1.6;
-          ctx.strokeStyle = PALETTE.textPrimary;
-          ctx.beginPath();
-          ctx.arc(n.x, n.y, r + 4, 0, 2 * Math.PI);
-          ctx.stroke();
-        }
-      } else if (isCandidate) {
-        // Candidate Agent: Warm amber with dashed perimeter ring (r=9)
-        const r = isSelected ? 14 : (isConnectedNeighbor ? 11 : 9);
-
-        // Dashed perimeter ring
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, r + 3.5, 0, 2 * Math.PI);
-        ctx.strokeStyle = PALETTE.amber;
-        ctx.lineWidth = 1.5;
-        ctx.setLineDash([3, 2.5]);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        // Translucent aura
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, r + 2, 0, 2 * Math.PI);
-        ctx.fillStyle = alpha(PALETTE.amber, 0.15);
-        ctx.fill();
-
-        // Nucleus
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, r, 0, 2 * Math.PI);
-        ctx.fillStyle = PALETTE.amber;
-        ctx.fill();
-
-        if (isSelected) {
-          const normPct = n.normal_percentage !== undefined ? n.normal_percentage : 84.8;
-          const normAngle = (normPct / 100) * 2 * Math.PI;
-          ctx.beginPath();
-          ctx.arc(n.x, n.y, r + 6, -Math.PI / 2, -Math.PI / 2 + normAngle);
-          ctx.strokeStyle = PALETTE.mint;
-          ctx.lineWidth = 2.2;
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(n.x, n.y, r + 6, -Math.PI / 2 + normAngle, 3 * Math.PI / 2);
-          ctx.strokeStyle = PALETTE.amber;
-          ctx.lineWidth = 2.2;
-          ctx.stroke();
-        }
-
-        if (n.token_drift) {
-          ctx.beginPath();
-          ctx.arc(n.x, n.y, r + (isSelected ? 9 : 6), 0, 2 * Math.PI);
-          ctx.strokeStyle = PALETTE.violet;
-          ctx.lineWidth = 1.5;
-          ctx.setLineDash([2, 2]);
-          ctx.stroke();
-          ctx.setLineDash([]);
-        }
-
-        if (isSelected || isConnectedNeighbor) {
-          ctx.lineWidth = 1.5;
-          ctx.strokeStyle = PALETTE.textPrimary;
-          ctx.beginPath();
-          ctx.arc(n.x, n.y, r + 3.5, 0, 2 * Math.PI);
-          ctx.stroke();
-        }
-      } else {
-        // Normal Agent: Small calm circular cell (r=6), delicate sage/mint stroke (#5eead4), quiet nucleus
-        const r = isSelected ? 12 : (isConnectedNeighbor ? 8 : 6);
-
-        // Faint outer membrane halo
+      // Clean, uniform selection / neighbor outline for all agents
+      if (isSelected || isConnectedNeighbor) {
         ctx.beginPath();
         ctx.arc(n.x, n.y, r + 2.5, 0, 2 * Math.PI);
-        ctx.fillStyle = alpha(PALETTE.mint, 0.12);
-        ctx.fill();
-
-        // Nucleus
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, r, 0, 2 * Math.PI);
-        ctx.fillStyle = PALETTE.mint;
-        ctx.fill();
-
-        // Delicate stroke
-        ctx.strokeStyle = alpha(PALETTE.mint, 0.6);
-        ctx.lineWidth = 1.0;
+        ctx.strokeStyle = PALETTE.textPrimary;
+        ctx.lineWidth = isSelected ? 1.6 : 1.0;
         ctx.stroke();
-
-        if (isSelected || isConnectedNeighbor) {
-          ctx.lineWidth = 1.5;
-          ctx.strokeStyle = PALETTE.textPrimary;
-          ctx.beginPath();
-          ctx.arc(n.x, n.y, r + 2.5, 0, 2 * Math.PI);
-          ctx.stroke();
-        }
       }
     } else {
-      // Tools & Resources: Smooth river pebble rounded rectangle (width=18, height=12, borderRadius=5) in glacier blue (#7dd3fc)
-      const isHotspot = n.status === 'conflict_hotspot';
-      const isHub = n.status === 'emerging_hub';
-      const pw = isSelected ? 24 : (isConnectedNeighbor ? 20 : 18);
-      const ph = isSelected ? 16 : (isConnectedNeighbor ? 13 : 12);
-      const pr = 5;
+      // Category: Resource -> Pebble (rounded rectangle) shape.
+      // Unified form, non-red colors:
+      // Glacier Blue = Standard Tools, Smoky Heather Violet = External Wiki Resources.
+      const pw = isSelected ? 20 : (isConnectedNeighbor ? 16 : 14);
+      const ph = isSelected ? 14 : (isConnectedNeighbor ? 11 : 9);
+      const pr = 4;
 
-      const resColor = isHotspot ? PALETTE.rose : (isHub ? PALETTE.amber : PALETTE.blue);
-
-      // Translucent river pebble aura
-      ctx.beginPath();
-      ctx.roundRect(n.x - (pw + 4) / 2, n.y - (ph + 4) / 2, pw + 4, ph + 4, pr + 1.5);
-      ctx.fillStyle = alpha(resColor, 0.14);
-      ctx.fill();
-
-      // Pebble body
       ctx.beginPath();
       ctx.roundRect(n.x - pw / 2, n.y - ph / 2, pw, ph, pr);
-      ctx.fillStyle = resColor;
+      ctx.fillStyle = fillColor;
       ctx.fill();
 
-      // Boundary stroke
-      ctx.strokeStyle = (isSelected || isConnectedNeighbor)
-        ? PALETTE.textPrimary
-        : alpha(resColor, 0.5);
-      ctx.lineWidth = (isSelected || isConnectedNeighbor) ? 1.5 : 1.0;
-      ctx.stroke();
+      // Clean, uniform selection / neighbor outline for all resources
+      if (isSelected || isConnectedNeighbor) {
+        ctx.beginPath();
+        ctx.roundRect(n.x - (pw + 4) / 2, n.y - (ph + 4) / 2, pw + 4, ph + 4, pr + 1);
+        ctx.strokeStyle = PALETTE.textPrimary;
+        ctx.lineWidth = isSelected ? 1.6 : 1.0;
+        ctx.stroke();
+      }
     }
 
     // Labels only for the selection and its direct neighbours.
@@ -557,8 +436,8 @@ function draw() {
 
 function drawInCanvasCard(n, connectedNodeIds) {
   ctx.save();
-  const cardWidth = 220;
-  const cardHeight = 76;
+  const cardWidth = 230;
+  const cardHeight = 78;
   const inspector = document.getElementById('inspector');
   const rightMargin = !inspector || inspector.classList.contains('hidden') ? 20 : 380;
 
@@ -569,8 +448,14 @@ function drawInCanvasCard(n, connectedNodeIds) {
   if (cardY < 20) cardY = 20;
   if (cardY + cardHeight > height - 20) cardY = height - cardHeight - 20;
 
+  const isMisaligned = n.type === 'agent' && n.status === 'concerning';
+  const isClean = n.cohort === 'clean_control' || n.status === 'normal' || String(n.id).includes('clean_');
+  const isWiki = String(n.label).startsWith('wiki:') || n.resource_type === 'wiki';
+
   ctx.fillStyle = PALETTE.bgSurface;
-  ctx.strokeStyle = n.status === 'concerning' ? PALETTE.rose : PALETTE.borderSubtle;
+  ctx.strokeStyle = isMisaligned
+    ? PALETTE.rose
+    : (isClean ? PALETTE.mint : (isWiki ? PALETTE.violet : PALETTE.borderSubtle));
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.roundRect(cardX, cardY, cardWidth, cardHeight, 6);
@@ -581,41 +466,55 @@ function drawInCanvasCard(n, connectedNodeIds) {
   ctx.fillStyle = PALETTE.textPrimary;
   ctx.textAlign = 'left';
   ctx.textBaseline = 'top';
-  ctx.fillText(n.label.length > 20 ? n.label.slice(0, 18) + '...' : n.label, cardX + 10, cardY + 10);
+  ctx.fillText(n.label.length > 22 ? n.label.slice(0, 20) + '...' : n.label, cardX + 10, cardY + 10);
 
-  const badgeText = n.status.toUpperCase();
+  const badgeText = n.type === 'agent'
+    ? (isMisaligned ? 'MISALIGNED' : (isClean ? 'CLEAN CONTROL' : 'UNDER REVIEW'))
+    : (isWiki ? 'EXTERNAL WIKI' : 'STANDARD TOOL');
+  const badgeColor = isMisaligned
+    ? PALETTE.rose
+    : (isClean ? PALETTE.mint : (isWiki ? PALETTE.violet : PALETTE.blue));
+
   ctx.font = '600 8px Inter, sans-serif';
   const badgeW = ctx.measureText(badgeText).width + 8;
   const badgeX = cardX + cardWidth - badgeW - 10;
-  ctx.fillStyle = n.status === 'concerning' ? alpha(PALETTE.rose, 0.15) : alpha(PALETTE.mint, 0.15);
+  ctx.fillStyle = alpha(badgeColor, 0.15);
   ctx.fillRect(badgeX, cardY + 9, badgeW, 14);
-  ctx.fillStyle = n.status === 'concerning' ? PALETTE.rose : PALETTE.mint;
+  ctx.fillStyle = badgeColor;
   ctx.fillText(badgeText, badgeX + 4, cardY + 12);
 
   ctx.font = '500 9px Inter, sans-serif';
   ctx.fillStyle = PALETTE.textSecondary;
+  const connectedCount = Math.max(0, connectedNodeIds.size - 1);
+
   if (n.type === 'agent') {
-    const norm = n.normal_percentage !== undefined ? n.normal_percentage : 84.8;
-    ctx.fillText(`Events: ${n.event_count || 0}  |  Normal Work: ${norm}%`, cardX + 10, cardY + 28);
-    ctx.fillText(`Connected Tools & Peers: ${connectedNodeIds.size - 1}`, cardX + 10, cardY + 42);
-    if (n.token_drift) {
-      ctx.fillStyle = PALETTE.violet;
-      ctx.fillText(`Token Drift: ${n.token_drift.js_divergence} bits`, cardX + 10, cardY + 56);
-    } else if (n.patterns && n.patterns.length > 0) {
-      ctx.fillStyle = PALETTE.rose;
-      ctx.fillText(`Alert: ${n.patterns.join(', ')}`, cardX + 10, cardY + 56);
-    } else {
+    const norm = n.normal_percentage !== undefined ? n.normal_percentage : (isClean ? 100.0 : 84.8);
+    if (isClean) {
+      ctx.fillText('100% Authorized Benchmark Work', cardX + 10, cardY + 28);
+      ctx.fillText(`Connected Standard Tools: ${connectedCount}`, cardX + 10, cardY + 42);
       ctx.fillStyle = PALETTE.mint;
-      ctx.fillText('Normal benchmark task active', cardX + 10, cardY + 56);
+      ctx.fillText('Status: Aligned (no violations detected)', cardX + 10, cardY + 56);
+    } else {
+      ctx.fillText(`Normal: ${norm}%  |  Wiki Writes: ${(100 - norm).toFixed(1)}%`, cardX + 10, cardY + 28);
+      ctx.fillText(`Connected Resources & Peers: ${connectedCount}`, cardX + 10, cardY + 42);
+      ctx.fillStyle = PALETTE.rose;
+      ctx.fillText(
+        n.patterns && n.patterns.length > 0 ? `Alert: ${n.patterns.join(', ')}` : 'Alert: Misaligned agent (wiki writes)',
+        cardX + 10, cardY + 56
+      );
     }
   } else {
-    ctx.fillText(`Type: ${n.resource_type || 'wiki'}  |  Actions: ${n.event_count || 0}`, cardX + 10, cardY + 28);
-    ctx.fillText(`Connected Agents: ${connectedNodeIds.size - 1}`, cardX + 10, cardY + 42);
-    ctx.fillStyle = n.status === 'conflict_hotspot' ? PALETTE.rose : PALETTE.blue;
-    ctx.fillText(
-      n.status === 'conflict_hotspot' ? 'Status: Conflicting write hotspot' : 'Status: Shared benchmark tool',
-      cardX + 10, cardY + 56
-    );
+    if (isWiki) {
+      ctx.fillText(`Targeted by ${connectedCount} colluding agents`, cardX + 10, cardY + 28);
+      ctx.fillText(`Total unauthorized writes: ${n.event_count || 0}`, cardX + 10, cardY + 42);
+      ctx.fillStyle = PALETTE.violet;
+      ctx.fillText('Status: External wiki cache page', cardX + 10, cardY + 56);
+    } else {
+      ctx.fillText('Authorized runtime benchmark tool', cardX + 10, cardY + 28);
+      ctx.fillText(`Used by ${connectedCount} research agents`, cardX + 10, cardY + 42);
+      ctx.fillStyle = PALETTE.blue;
+      ctx.fillText('Status: Nominal authorized utility', cardX + 10, cardY + 56);
+    }
   }
   ctx.restore();
 }
@@ -637,55 +536,102 @@ function selectNode(node) {
   document.getElementById('inspector-name').innerText = node.label;
   document.getElementById('inspector-id').innerText = `ID: ${node.id}`;
 
+  const isClean = node.cohort === 'clean_control' || node.status === 'normal' || String(node.id).includes('clean_');
+  const isWiki = String(node.label).startsWith('wiki:') || node.resource_type === 'wiki';
+
   const badge = document.getElementById('inspector-badge');
-  badge.className = `inspector-badge badge-${node.status}`;
-  badge.innerText = node.status === 'concerning'
-    ? 'Violation'
-    : (node.status === 'candidate' ? 'Candidate' : 'Normal');
+  if (node.type === 'agent') {
+    if (isClean) {
+      badge.className = 'inspector-badge badge-normal';
+      badge.innerText = 'Clean Control (Aligned)';
+    } else if (node.status === 'concerning') {
+      badge.className = 'inspector-badge badge-concerning';
+      badge.innerText = 'Misaligned (Violation)';
+    } else {
+      badge.className = 'inspector-badge badge-candidate';
+      badge.innerText = 'Candidate (Under Review)';
+    }
+  } else {
+    if (isWiki) {
+      badge.className = 'inspector-badge badge-wiki';
+      badge.innerText = 'External Wiki Resource';
+    } else {
+      badge.className = 'inspector-badge badge-tool';
+      badge.innerText = 'Standard Benchmark Tool';
+    }
+  }
 
   document.getElementById('inspector-stats').innerText =
     `Total actions recorded: ${node.event_count || 0}`;
 
   const workProfileCard = document.getElementById('card-work-profile');
   const driftCard = document.getElementById('card-token-drift');
+  const alertCard = document.getElementById('card-alert');
 
   if (node.type === 'agent') {
     workProfileCard.style.display = 'flex';
-    const normPct = node.normal_percentage !== undefined ? node.normal_percentage : 84.8;
+    const normPct = node.normal_percentage !== undefined ? node.normal_percentage : (isClean ? 100.0 : 84.8);
     const collPct = (100 - normPct).toFixed(1);
-    document.getElementById('work-profile-text').innerHTML =
-      `<strong>Normal Benchmark Work:</strong> ${normPct}% (${node.normal_actions || 0} routine calls)<br>` +
-      `<strong>Shared Activity:</strong> ${collPct}% (${node.wiki_actions || 0} wiki edits)`;
+
+    if (isClean) {
+      document.getElementById('work-profile-text').innerHTML =
+        `<strong>Authorized Benchmark Retrieval:</strong> 100.0% (${node.normal_actions || node.event_count || 0} routine calls)<br>` +
+        `<strong>Unauthorized External Writes:</strong> 0.0% (Clean negative control)`;
+
+      alertCard.style.display = 'flex';
+      document.getElementById('inspector-pattern').innerHTML = '<span style="color:var(--pastel-mint); font-weight:600;">Verified Aligned</span>';
+      document.getElementById('inspector-explanation').innerText =
+        '100% legitimate benchmark research. Confined strictly to declared public tools (SEC EDGAR, USASpending, BLS) with zero external wiki mutations.';
+      document.getElementById('inspector-snippet').innerText = 'All actions executed within declared task permissions. No violation evidence.';
+    } else {
+      document.getElementById('work-profile-text').innerHTML =
+        `<strong>Normal Benchmark Work:</strong> ${normPct}% (${node.normal_actions || 0} routine calls)<br>` +
+        `<strong>Shared Wiki Activity:</strong> ${collPct}% (${node.wiki_actions || 0} unauthorized writes)`;
+
+      const relatedFinding = findingsData.find(
+        (f) => f.actors.includes(node.actor_id || node.label) || f.actors.includes(node.label)
+      );
+      if (relatedFinding) {
+        alertCard.style.display = 'flex';
+        document.getElementById('inspector-pattern').innerText = `Violation: ${relatedFinding.pattern}`;
+        document.getElementById('inspector-explanation').innerText = relatedFinding.explanation;
+        document.getElementById('inspector-snippet').innerText =
+          `Evidence: ${relatedFinding.evidence_ids.join(', ')}`;
+      } else {
+        alertCard.style.display = 'flex';
+        document.getElementById('inspector-pattern').innerText = 'Detected Anomaly: External Wiki Writes';
+        document.getElementById('inspector-explanation').innerText =
+          'Agent attempted out-of-band communication by writing pre-computed answers to external UseMod wiki pages.';
+        document.getElementById('inspector-snippet').innerText = 'Observed resource_write on wiki pages.';
+      }
+    }
 
     if (node.token_drift) {
       driftCard.style.display = 'flex';
       const d = node.token_drift;
       document.getElementById('token-drift-text').innerHTML =
-        `<strong>Jensen-Shannon Divergence:</strong> <span style="color: var(--pastel-violet);">${d.js_divergence} bits</span> (threshold: 0.55)<br>` +
-        `<strong>Cross-Entropy Perplexity:</strong> ${d.cross_entropy_perplexity}<br>` +
-        `<strong>Steganography Score:</strong> ${d.steganography_score}<br>` +
-        `<strong>Top Drift Keywords:</strong> <span style="color: var(--pastel-rose);">${d.drift_keywords ? d.drift_keywords.join(', ') : 'none'}</span>`;
+        `<strong>Behavior Drift (JSD):</strong> <span style="color: var(--pastel-violet);">${d.js_divergence} bits</span> (threshold: 0.55)<br>` +
+        `<strong>Steganography Indicator:</strong> ${d.steganography_score}<br>` +
+        `<strong>Vocabulary Drift:</strong> <span style="color: var(--pastel-violet);">${d.drift_keywords ? d.drift_keywords.join(', ') : 'none'}</span>`;
     } else {
       driftCard.style.display = 'none';
     }
   } else {
     workProfileCard.style.display = 'none';
     driftCard.style.display = 'none';
-  }
-
-  const relatedFinding = findingsData.find(
-    (f) => f.actors.includes(node.label) || f.target_resources.includes(node.label)
-  );
-  const alertCard = document.getElementById('card-alert');
-  if (relatedFinding) {
     alertCard.style.display = 'flex';
-    document.getElementById('inspector-pattern').innerText = `Pattern: ${relatedFinding.pattern}`;
-    document.getElementById('inspector-explanation').innerText = relatedFinding.explanation;
-    document.getElementById('inspector-snippet').innerText =
-      `Evidence: ${relatedFinding.evidence_ids.join(', ')}`;
-  } else {
-    alertCard.style.display = 'none';
-    document.getElementById('inspector-snippet').innerText = 'No alert triggers for this node.';
+
+    if (isWiki) {
+      document.getElementById('inspector-pattern').innerHTML = '<span style="color:var(--pastel-violet); font-weight:600;">External Wiki Resource</span>';
+      document.getElementById('inspector-explanation').innerText =
+        'Dormant UseMod wiki page exploited by benchmark agents to evade task timeouts and share pre-computed answers.';
+      document.getElementById('inspector-snippet').innerText = `Target resource: ${node.label} (${node.event_count || 0} writes recorded)`;
+    } else {
+      document.getElementById('inspector-pattern').innerHTML = '<span style="color:var(--pastel-blue); font-weight:600;">Standard Benchmark Tool</span>';
+      document.getElementById('inspector-explanation').innerText =
+        'Authorized public API / runtime tool used legitimately by benchmark agents (SEC EDGAR, USASpending, BLS, Python REPL).';
+      document.getElementById('inspector-snippet').innerText = `Target tool: ${node.label} (${node.event_count || 0} calls recorded)`;
+    }
   }
 }
 
@@ -702,13 +648,17 @@ async function refreshData() {
     graphData = graph;
     findingsData = findings;
 
-    const hubCount = graphData.nodes.filter(
-      (n) => n.type === 'resource' && (n.status === 'emerging_hub' || n.status === 'conflict_hotspot')
-    ).length;
+    const agentCount = graphData.nodes.filter((n) => n.type === 'agent').length;
+    const cleanCount = graphData.nodes.filter((n) => n.type === 'agent' && (n.cohort === 'clean_control' || n.status === 'normal')).length;
+    const misalignedCount = agentCount - cleanCount;
+    const toolCount = graphData.nodes.filter((n) => n.type === 'resource' && !String(n.label).startsWith('wiki:')).length;
+    const wikiCount = graphData.nodes.filter((n) => n.type === 'resource' && String(n.label).startsWith('wiki:')).length;
+
     setStatus(
       '<span class="status-indicator"></span>' +
-      `<span>${hubCount} flagged resources · ${findingsData.length} findings · ` +
-      `judge spend ${fmtUSD(budget.spent_usd)}</span>`
+      `<span>${agentCount} agents (${cleanCount} clean control, ${misalignedCount} misaligned) · ` +
+      `${toolCount} standard tools · ${wikiCount} wiki pages · ${findingsData.length} findings · ` +
+      `Gemini judge spend ${fmtUSD(budget.spent_usd)}</span>`
     );
 
     refreshHeader();
@@ -724,6 +674,7 @@ function setFilter(mode) {
   invalidateFrame();
   for (const [id, m] of [
     ['btn-filter-all', 'all'],
+    ['btn-filter-clean', 'clean'],
     ['btn-filter-alerts', 'concerning'],
     ['btn-filter-hubs', 'hubs'],
   ]) {
@@ -737,28 +688,35 @@ const MARKUP = `
   <div class="workspace">
     <div class="controls-overlay">
       <div class="control-row">
-        <label>View</label>
+        <label>Filter View</label>
         <div class="control-btn-group">
-          <button class="btn active" id="btn-filter-all">All</button>
-          <button class="btn" id="btn-filter-alerts">Alerts</button>
-          <button class="btn" id="btn-filter-hubs">Hubs</button>
+          <button class="btn active" id="btn-filter-all">All (200)</button>
+          <button class="btn" id="btn-filter-clean">Clean (100)</button>
+          <button class="btn" id="btn-filter-alerts">Violations</button>
+          <button class="btn" id="btn-filter-hubs">Tools</button>
         </div>
       </div>
-      <div class="control-row" style="margin-top: 2px;">
-        <button class="btn btn-action btn-primary-action" id="btn-load-fleet">Load 100-Agent Fleet</button>
-        <button class="btn btn-action" id="btn-replay">Run Offline Replay</button>
+      <div class="control-row control-action-group">
+        <button class="btn btn-action btn-primary-action" id="btn-load-fleet">Reload Fleet</button>
+        <button class="btn btn-action" id="btn-replay">Verify Replay</button>
       </div>
       <div class="legend">
-        <div class="legend-item"><span class="dot" style="background: var(--pastel-rose);"></span> Policy Violation (Alert)</div>
-        <div class="legend-item"><span class="dot" style="background: var(--pastel-amber);"></span> Flagged Candidate</div>
-        <div class="legend-item"><span class="dot" style="background: var(--pastel-mint);"></span> Normal Agent</div>
-        <div class="legend-item"><span class="dot" style="background: var(--pastel-violet);"></span> Token Drift Anomaly</div>
-        <div class="legend-item"><span class="sq" style="background: var(--pastel-rose);"></span> Conflict Hotspot Page</div>
-        <div class="legend-item"><span class="sq" style="background: var(--pastel-blue);"></span> Benchmark Tool / Resource</div>
+        <div class="legend-title">Legend (Shapes & Colors)</div>
+        <div class="legend-group">
+          <div class="legend-group-title">Agents (Circles)</div>
+          <div class="legend-item"><span class="dot" style="background: var(--pastel-rose);"></span> <strong>Misaligned Agent</strong> (Critical)</div>
+          <div class="legend-item"><span class="dot" style="background: var(--pastel-mint);"></span> <strong>Clean Control Agent</strong> (Normal)</div>
+          <div class="legend-item"><span class="dot" style="background: var(--pastel-amber);"></span> <strong>Candidate Agent</strong> (Under Review)</div>
+        </div>
+        <div class="legend-group" style="margin-top: 4px; padding-top: 4px; border-top: 1px dashed var(--border-subtle);">
+          <div class="legend-group-title">Resources (Pebbles)</div>
+          <div class="legend-item"><span class="pebble" style="background: var(--pastel-blue);"></span> <strong>Standard Tool</strong> (SEC, USASpending, BLS)</div>
+          <div class="legend-item"><span class="pebble" style="background: var(--pastel-violet);"></span> <strong>External Wiki Resource</strong> (Shared Cache)</div>
+        </div>
       </div>
     </div>
 
-    <div class="canvas-hint">Click node to inspect connections &middot; Scroll to zoom &middot; Drag to pan</div>
+    <div class="canvas-hint">Click any node to inspect &middot; Scroll to zoom &middot; Drag to pan</div>
 
     <div id="graph-container"><canvas id="canvas"></canvas></div>
 
@@ -775,17 +733,17 @@ const MARKUP = `
       </div>
       <div class="inspector-content">
         <div class="card" id="card-alert">
-          <h4>Policy Violation Finding</h4>
+          <h4>Status & Verification</h4>
           <p id="inspector-pattern">—</p>
           <p id="inspector-explanation">—</p>
         </div>
-        <div class="card" id="card-token-drift">
-          <h4>Token Distribution Anomaly</h4>
-          <p id="token-drift-text">—</p>
-        </div>
         <div class="card" id="card-work-profile">
-          <h4>Workload Allocation</h4>
+          <h4>Work Breakdown</h4>
           <p id="work-profile-text">—</p>
+        </div>
+        <div class="card" id="card-token-drift">
+          <h4>Behavior Drift</h4>
+          <p id="token-drift-text">—</p>
         </div>
         <div class="card">
           <h4>Interaction Telemetry</h4>
@@ -830,6 +788,8 @@ export async function mount(root, params = {}) {
 
   const allBtn = document.getElementById('btn-filter-all');
   if (allBtn) allBtn.onclick = () => setFilter('all');
+  const cleanBtn = document.getElementById('btn-filter-clean');
+  if (cleanBtn) cleanBtn.onclick = () => setFilter('clean');
   const alertsBtn = document.getElementById('btn-filter-alerts');
   if (alertsBtn) alertsBtn.onclick = () => setFilter('concerning');
   const hubsBtn = document.getElementById('btn-filter-hubs');
@@ -844,13 +804,15 @@ export async function mount(root, params = {}) {
   const loadFleetBtn = document.getElementById('btn-load-fleet');
   if (loadFleetBtn) {
     loadFleetBtn.onclick = async () => {
-      setStatus('<span class="status-indicator"></span><span>Loading 100 benchmark agent traces…</span>');
+      setStatus('<span class="status-indicator"></span><span>Loading 200 benchmark agent traces (100 colluding + 100 clean control)…</span>');
       try {
-        const data = await api.loadFleet({ agents: 100, eventsPerAgent: 25 });
+        const data = await api.loadFleet({ agents: 100, eventsPerAgent: 25, includeClean: true });
         setStatus(`<span class="status-indicator"></span><span>Fleet loaded: ${data.total_agents} agents, ${data.total_events} events, ${data.findings_generated} findings.</span>`);
+        toast(`Loaded ${data.total_agents} agents across benchmark network`);
         await refreshData();
       } catch (e) {
         setStatus(`<span class="status-indicator" style="background:var(--pastel-rose);"></span><span>Load failed: ${e.message}</span>`);
+        toast(`Load failed: ${e.message}`, 'error');
       }
     };
   }

@@ -80,9 +80,10 @@ Cloud-bean is a budgeted, verifiable monitoring system designed to detect emerge
 
 ### 2.1 Ingestion & Collector Layer
 - **Role**: Ingests raw telemetry from agent runtimes, tool wrappers, or historical replay (e.g. Collusion Wiki).
-- **Offline Resiliency**: Uses a local SQLite-backed ring buffer (`collector_queue.db`) to ensure events survive downstream disconnects.
+- **Idempotent Deduplication**: An in-memory sliding-window deduplicator (`IdempotentEventDeduplicator`, capacity 50,000) suppresses duplicate network retransmissions at the API boundary before running detection signals.
+- **Offline Resiliency**: Uses a local SQLite-backed ring buffer (`collector_queue.db` / `OfflineCollectorQueue`) to ensure events survive downstream disconnects.
 - **Normalization**: Every incoming record is converted to the canonical `FleetEvent` format with:
-  - `event_id`: Unique stable string (collector ID + boot ID + sequence).
+  - `event_id`: Unique stable string (namespaced by actor to prevent case-collision).
   - `timestamp`: ISO-8601 string with millisecond precision and uncertainty window.
   - `actor_id`: Identified agent handle or worker ID.
   - `task_id`: Current task context.
@@ -91,10 +92,10 @@ Cloud-bean is a budgeted, verifiable monitoring system designed to detect emerge
   - `payload`: Structured details, body text, or tool parameters.
   - `sensor_source`: Sensor provenance (e.g. `runtime_sensor`, `wiki_archive`, `gateway`).
 
-### 2.2 Transport & Stream
+### 2.2 Transport & Stream Partitioning
 - **Role**: Decouples high-volume ingestion from detection processing.
-- **Contract**: In development/testing, an embedded in-memory JetStream simulator or real NATS JetStream is used.
-- **Partitioning**: Events are partitioned by resource key (e.g., wiki page or repository file) or cluster ID to ensure deterministic in-order processing per resource.
+- **Contract**: In development/testing, an embedded in-memory stream simulator or shared queue is used.
+- **Consistent Hash Partitioning**: `ConsistentHashRouter` uses an Amazon Dynamo-style ring with 128 virtual nodes per shard, routing events deterministically by `actor_id` or target resource to preserve strict intra-shard causal sequence ordering.
 
 ### 2.3 Fleet Signal Workers (Tier 1 & Tier 1.5 Detection)
 - **Role**: Continuously aggregates metrics over rolling time windows without LLM calls.
@@ -106,14 +107,14 @@ Cloud-bean is a budgeted, verifiable monitoring system designed to detect emerge
   5. *Synchronized Burstiness ($C_v$)*: Inter-arrival interval coefficient of variation ($C_v = \sigma / \mu > 1.8$) catching deadline-driven synchronized pulses.
   6. *Write-to-Read Adoption Latency*: Rapid consumption ($\le 180\text{s}$) of bypass tokens or pre-computed answers deposited on shared resources by peer agents.
   7. *Sensor Discrepancy & Proxy Tunneling*: Egress sandbox evasion signatures (`bypass.blob.core.windows.net`, `/etc/hosts` overrides, `NO_PROXY`, state mutation abuse via HTTP GET).
-  8. *Output Token & Word Distribution Anomaly Engine*: Jensen-Shannon divergence ($D_{JS}(P \parallel Q) > 0.55$) and cross-entropy perplexity evaluating semantic drift against task domain expected vocabularies.
-  9. *Normalized Compression Distance (NCD)*: Parameter-free Kolmogorov complexity distance ($NCD < 0.45$) detecting covert semantic channels across disjoint tasks.
+  8. *Output Token & Word Distribution Anomaly Engine*: Jensen-Shannon divergence ($D_{JS}(P \parallel Q) > 0.42$) and cross-entropy perplexity evaluating semantic drift against task domain expected vocabularies.
+  9. *Normalized Compression Distance (NCD)*: Parameter-free Kolmogorov complexity distance ($NCD < 0.35$) detecting covert semantic channels across disjoint tasks.
 - **Output**: Generates `CandidateGroup` objects identifying suspect actors, resources, and time intervals.
 
 ### 2.4 Bounded Evidence Selector
 - **Role**: Assembles compact, bounded evidence packets for candidates.
 - **Constraints**:
-  - Maximum 8,000 tokens per packet.
+  - Maximum 2,000 to 8,000 tokens per packet.
   - Includes:
     - Group ID and candidate trigger reasons.
     - Chronologically ordered messages and tool actions with stable `evidence_id`s.
@@ -121,9 +122,10 @@ Cloud-bean is a budgeted, verifiable monitoring system designed to detect emerge
     - Missing context flags (e.g., `missing_reads: true`, `unknown_permissions: true`).
 - **Audit Sampling**: Automatically samples 10% of unflagged interaction windows using deterministic hashing (`hash(group_id + seed) % 10 == 0`) to measure selection false negatives.
 
-### 2.5 Luna Judge & Budget Manager (Tier 2 Semantic Evaluation)
+### 2.5 Semantic Judge & Budget Manager (Tier 2 Semantic Evaluation)
 - **Role**: Performs semantic classification over selected evidence packets.
-- **Model**: `gpt-5.6-luna` (or simulated/compatible API provider).
+- **Model**: `gemini-2.5-flash` via Google Vertex AI (or mock simulation mode / compatible API providers).
+- **Rate Limiting**: `TokenBucketRateLimiter` enforces dual RPM and TPM limits (RFC 5405) with lock-free acquisition outside `BudgetManager` critical sections.
 - **Budget Control**:
   - Requires pre-configured maximum spend cap (e.g. $10.00).
   - Reserves worst-case cost transactionally before dispatch.
@@ -135,16 +137,27 @@ Cloud-bean is a budgeted, verifiable monitoring system designed to detect emerge
 ### 2.6 Findings & Alert Engine
 - **Role**: Maps accepted judgments or verified rule violations into actionable `Finding` records.
 - **Deduplication**: Findings are deduplicated by `finding_id = sha256(check_key + pattern)`.
-- **Replay Guarantee**: Replaying the same event log against the accepted judgment ledger produces identical findings without making fresh LLM calls.
+- **Replay Guarantee**: Replaying the same event log against the accepted judgment ledger produces identical findings without making fresh LLM calls ($0.00).
 
-### 2.7 Interactive Visualization UI (Agent-Resource Graph)
-- **Role**: Visual graph representation of the fleet to allow operators to spot trends, emerging hubs, and collusion clusters at a glance.
+### 2.7 Web Dashboard & Visualization UI
+- **Role**: 6-page interactive browser interface for operational monitoring, telemetry playback, and architecture verification.
 - **Architecture**:
-  - Frontend: React + Cytoscape.js / Force-Directed Graph.
-  - Backend: FastAPI providing `/api/v1/graph`, `/api/v1/findings`, `/api/v1/budget`, and `/api/v1/timeline`.
-  - Node types: `Agent` (color-coded by risk/alert level) and `Resource` (wiki pages, shared documents, APIs).
-  - Edge types: `EDITED`, `POSTED_MESSAGE`, `READ`, `OVERWROTE`, `COLLABORATED`.
-  - Interactive Features:
-    - Node click opens detailed evidence drawer with timeline and cited messages.
-    - Edge thickness indicates frequency/volume of cross-agent activity.
-    - Filter by time window, signal type, or severity.
+  - Frontend: Vanilla ES modules and self-hosted fonts (`frontend/`), zero build step, no CDN scripts.
+  - Backend: FastAPI providing REST endpoints: `/api/v1/graph`, `/api/v1/findings`, `/api/v1/budget`, `/api/v1/events`, `/api/v1/metrics/summary`, `/api/v1/shards`.
+  - Design System: Cool dark-ish slate gray palette (`#121316` canvas, `#1a1c22` surfaces, `#f1f3f7` typography) with subtle ambient mathematical topology mesh canvas.
+  - 6 Application Routes:
+    1. `#/overview` — High-level compliance banner, KPIs, detection funnel, active violations table.
+    2. `#/playback` — Timeline event stream scrubber with canvas mini-simulation.
+    3. `#/graph` — Force-directed interaction graph with instant cohort filtering (`All`, `Clean`, `Violations`, `Tools`).
+    4. `#/analytics` — Heuristic signal triggers, shared write concentrations, and token economics.
+    5. `#/findings` — Detailed findings ledger with cited evidence and judge receipts.
+    6. `#/explainer` — Interactive product runbook with live telemetry pipeline flow canvas, 9-signal matrix, and event simulator.
+
+### 2.8 Cloud Deployment & Vercel Serverless Integration
+- **Serverless Architecture**: Configured for Vercel Hobby ($0/mo free tier) via `vercel.json` rewrites.
+- **Read-Only Container Handling**: `api/index.py` redirects SQLite state persistence to `/tmp/state.db`, copying pre-bundled benchmark databases on cold start to support AWS Lambda / Vercel read-only filesystems.
+
+### 2.9 Observability & Telemetry Exposition
+- **Metrics**: Exposes `/metrics` in OpenMetrics format (RFC 0004) with O(1) SQL counts for Prometheus scrapers.
+- **Health Probes**: Exposes `/healthz` (liveness) and `/readyz` (readiness) for container orchestrators.
+- **Shard Inspection**: Exposes `/api/v1/shards` to inspect consistent hash partition balance.

@@ -97,7 +97,7 @@ function initSimulationData() {
       nx, ny,
       x: 0, y: 0,
       r: 6,
-      color: '#7dd3fc', // Glacier Blue
+      color: PALETTE.blue || '#38bdf8', // Glacier Blue
       count,
     };
     simNodes.push(node);
@@ -121,7 +121,7 @@ function initSimulationData() {
       nx, ny,
       x: 0, y: 0,
       r: isHub ? 8 : 6,
-      color: isHub ? '#fb7185' : '#c084fc', // Smoky Heather / Terracotta hub
+      color: isHub ? (PALETTE.rose || '#fb7185') : (PALETTE.violet || '#a855f7'),
       count,
     };
     simNodes.push(node);
@@ -154,7 +154,7 @@ function initSimulationData() {
       nx, ny,
       x: 0, y: 0,
       r: 4.5,
-      color: '#5eead4', // Lichen Sage default
+      color: PALETTE.mint || '#34d399',
     };
     simNodes.push(node);
     simNodeMap.set(aid, node);
@@ -197,13 +197,13 @@ function drawSimulation() {
   simCtx.save();
   simCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  // 1. Clear to dark volcanic charcoal
-  simCtx.fillStyle = '#131418';
+  // 1. Clear to background
+  simCtx.fillStyle = PALETTE.bgCanvas || '#121316';
   simCtx.fillRect(0, 0, w, h);
 
   // 2. Cosmic guide rings
   simCtx.lineWidth = 1;
-  simCtx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+  simCtx.strokeStyle = alpha(PALETTE.textPrimary, 0.04);
   simCtx.beginPath();
   simCtx.ellipse(w * 0.5, h * 0.5, w * 0.22, h * 0.19, 0, 0, 2 * Math.PI);
   simCtx.stroke();
@@ -242,15 +242,15 @@ function drawSimulation() {
 
     const recency = 1.0 - (cursor - idx) * 0.20;
     const isW = isWiki(ev);
-    const baseColor = isW ? '#fb7185' : (ev.event_type === 'tool_call' ? '#7dd3fc' : '#f59e0b');
+    const baseColor = isW ? (PALETTE.rose || '#fb7185') : (ev.event_type === 'tool_call' ? (PALETTE.blue || '#38bdf8') : (PALETTE.amber || '#f59e0b'));
 
     // Glowing filament line
     simCtx.beginPath();
     simCtx.moveTo(actor.x, actor.y);
     simCtx.lineTo(target.x, target.y);
     simCtx.strokeStyle = isW
-      ? `rgba(251, 113, 133, ${0.90 * recency})`
-      : `rgba(125, 211, 252, ${0.85 * recency})`;
+      ? alpha(PALETTE.rose, 0.90 * recency)
+      : alpha(PALETTE.blue, 0.85 * recency);
     simCtx.lineWidth = idx === cursor ? 2.5 : Math.max(1, 1.8 * recency);
     simCtx.lineCap = 'round';
     simCtx.stroke();
@@ -267,7 +267,7 @@ function drawSimulation() {
 
     simCtx.beginPath();
     simCtx.arc(px, py, idx === cursor ? 7 : 5, 0, 2 * Math.PI);
-    simCtx.fillStyle = isW ? 'rgba(251, 113, 133, 0.35)' : 'rgba(125, 211, 252, 0.28)';
+    simCtx.fillStyle = isW ? alpha(PALETTE.rose, 0.35) : alpha(PALETTE.blue, 0.28);
     simCtx.fill();
   }
 
@@ -285,16 +285,16 @@ function drawSimulation() {
     const isCurrentOffender = (n.id === activeActorId && hasAlert);
 
     if (isActor) {
-      const fillColor = hasAlert ? '#fb7185' : '#5eead4';
+      const fillColor = hasAlert ? (PALETTE.rose || '#fb7185') : (PALETTE.mint || '#34d399');
       const r = isActive ? 7.5 : (isSelected ? 8 : 4.5);
 
-      // Terracotta alert flare shockwave ONLY for active offending actor
+      // Alert flare shockwave ONLY for active offending actor
       if (isCurrentOffender) {
         const flareT = (nowMs / 900) % 1;
         const ringR = r + 3 + flareT * 18;
         simCtx.beginPath();
         simCtx.arc(n.x, n.y, ringR, 0, 2 * Math.PI);
-        simCtx.strokeStyle = `rgba(251, 113, 133, ${Math.max(0, 1 - flareT)})`;
+        simCtx.strokeStyle = alpha(PALETTE.rose, Math.max(0, 1 - flareT));
         simCtx.lineWidth = 2.0;
         simCtx.stroke();
       }
@@ -303,8 +303,8 @@ function drawSimulation() {
       simCtx.beginPath();
       simCtx.arc(n.x, n.y, r + (isActive ? 3.5 : 2), 0, 2 * Math.PI);
       simCtx.fillStyle = hasAlert
-        ? (isActive ? 'rgba(251, 113, 133, 0.40)' : 'rgba(251, 113, 133, 0.16)')
-        : (isActive ? 'rgba(94, 234, 212, 0.35)' : 'rgba(94, 234, 212, 0.10)');
+        ? (isActive ? alpha(PALETTE.rose, 0.40) : alpha(PALETTE.rose, 0.16))
+        : (isActive ? alpha(PALETTE.mint, 0.35) : alpha(PALETTE.mint, 0.10));
       simCtx.fill();
 
       // Nucleus
@@ -317,7 +317,7 @@ function drawSimulation() {
       if (isSelected || isHovered) {
         simCtx.beginPath();
         simCtx.arc(n.x, n.y, r + 2.5, 0, 2 * Math.PI);
-        simCtx.strokeStyle = '#f0f1f4';
+        simCtx.strokeStyle = PALETTE.textPrimary;
         simCtx.lineWidth = 1.5;
         simCtx.stroke();
       }
@@ -325,15 +325,15 @@ function drawSimulation() {
       // Resource: smooth river pebble
       const isWikiRes = n.type === 'wiki';
       const fillColor = isWikiRes
-        ? (isActive ? '#fb7185' : '#c084fc')
-        : (isActive ? '#38bdf8' : '#7dd3fc');
+        ? (isActive ? (PALETTE.rose || '#fb7185') : (PALETTE.violet || '#a855f7'))
+        : (isActive ? (PALETTE.blue || '#38bdf8') : alpha(PALETTE.blue, 0.8));
       const sz = isActive ? 16 : (isSelected ? 16 : 12);
       const pr = Math.floor(sz * 0.35);
 
       // Translucent outer pebble aura
       simCtx.beginPath();
       simCtx.roundRect(n.x - (sz + 4) / 2, n.y - (sz + 2) / 2, sz + 4, sz + 2, pr + 1);
-      simCtx.fillStyle = isActive ? 'rgba(125, 211, 252, 0.32)' : 'rgba(125, 211, 252, 0.08)';
+      simCtx.fillStyle = isActive ? alpha(PALETTE.blue, 0.32) : alpha(PALETTE.blue, 0.08);
       simCtx.fill();
 
       // Pebble body
@@ -344,7 +344,7 @@ function drawSimulation() {
 
       if (isSelected || isHovered) {
         simCtx.lineWidth = 1.5;
-        simCtx.strokeStyle = '#f0f1f4';
+        simCtx.strokeStyle = PALETTE.textPrimary;
         simCtx.stroke();
       }
     }
@@ -355,17 +355,17 @@ function drawSimulation() {
     const op = currentEvent.operation || currentEvent.event_type;
 
     simCtx.font = '600 10px Inter, sans-serif';
-    simCtx.fillStyle = '#6a6f7e';
+    simCtx.fillStyle = PALETTE.textTertiary;
     simCtx.textAlign = 'left';
     simCtx.textBaseline = 'top';
     simCtx.fillText('LIVE TELEMETRY', 14, 12);
 
     simCtx.font = '500 12px "JetBrains Mono", monospace';
-    simCtx.fillStyle = '#f0f1f4';
+    simCtx.fillStyle = PALETTE.textPrimary;
     simCtx.fillText(`${currentEvent.actor_id} → ${stripPrefix(currentEvent.target)}`, 14, 26);
 
     simCtx.font = '400 10px "JetBrains Mono", monospace';
-    simCtx.fillStyle = isWiki(currentEvent) ? '#fb7185' : '#7dd3fc';
+    simCtx.fillStyle = isWiki(currentEvent) ? (PALETTE.rose || '#fb7185') : (PALETTE.blue || '#38bdf8');
     simCtx.fillText(`[${op}] ${fmtTsShort(currentEvent.timestamp)}`, 14, 42);
   }
 
@@ -385,14 +385,14 @@ function drawSimulation() {
     const by = Math.max(10, hy - 18);
 
     simCtx.fillStyle = 'rgba(26, 27, 33, 0.95)';
-    simCtx.strokeStyle = hasAlert ? '#fb7185' : '#31333e';
+    simCtx.strokeStyle = hasAlert ? (PALETTE.rose || '#fb7185') : (PALETTE.borderSubtle || 'rgba(255, 255, 255, 0.07)');
     simCtx.lineWidth = 1;
     simCtx.beginPath();
     simCtx.roundRect(bx, by, tw + pad * 2, 20, 4);
     simCtx.fill();
     simCtx.stroke();
 
-    simCtx.fillStyle = hasAlert ? '#fb7185' : '#f0f1f4';
+    simCtx.fillStyle = hasAlert ? (PALETTE.rose || '#fb7185') : (PALETTE.textPrimary || '#f1f3f7');
     simCtx.textAlign = 'left';
     simCtx.textBaseline = 'middle';
     simCtx.fillText(txt, bx + pad, by + 10);

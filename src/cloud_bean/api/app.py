@@ -69,6 +69,17 @@ def _default_state_path() -> str:
     override = os.environ.get("CLOUD_BEAN_STATE_DB")
     if override:
         return override
+    # Handle Vercel / AWS Lambda serverless read-only environments
+    if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
+        tmp_db = Path("/tmp/state.db")
+        if not tmp_db.exists():
+            orig = Path(".cloud-bean/state.db")
+            if not orig.exists():
+                orig = Path(__file__).resolve().parents[3] / ".cloud-bean" / "state.db"
+            if orig.exists():
+                import shutil
+                shutil.copy(orig, tmp_db)
+        return str(tmp_db)
     state_dir = Path(".cloud-bean")
     state_dir.mkdir(exist_ok=True)
     return str(state_dir / "state.db")
@@ -130,10 +141,15 @@ def create_app(
         return response
 
     def _load_fleet_into_state(
-        limit_agents: int = 100, events_per_agent: int = 25, retime: bool = True
+        limit_agents: int = 100,
+        events_per_agent: int = 25,
+        retime: bool = True,
+        include_clean: bool = True,
     ) -> Dict[str, Any]:
-        """Read benchmark traces, run the detection pipeline, and persist the result."""
+        """Read benchmark traces (both colluding and clean control), run the detection pipeline, and persist the result."""
         traces_dir = Path("benchmark/generated-traces")
+        if not traces_dir.exists():
+            traces_dir = Path(__file__).resolve().parents[3] / "benchmark" / "generated-traces"
         manifest_file = traces_dir / "manifest.json"
         if not manifest_file.exists():
             raise HTTPException(status_code=404, detail="Benchmark traces not found")
@@ -144,6 +160,7 @@ def create_app(
         all_fleet_events: List[FleetEvent] = []
         agent_summaries: List[Dict[str, Any]] = []
 
+        # 1. Load colluding benchmark traces
         for entry in agent_entries:
             trace_path = traces_dir / entry["file"]
             if trace_path.exists():
@@ -154,7 +171,31 @@ def create_app(
                     "agent_id": entry["agent_id"],
                     "normal_work_percentage": entry["normal_work_percentage"],
                     "loaded_events": len(events),
+                    "cohort": "colluding",
                 })
+
+        # 2. Load clean control benchmark traces to evaluate false-positive precision
+        if include_clean:
+            clean_dir = Path("benchmark/clean-traces")
+            if not clean_dir.exists():
+                clean_dir = Path(__file__).resolve().parents[3] / "benchmark" / "clean-traces"
+            clean_manifest_file = clean_dir / "manifest.json"
+            if clean_manifest_file.exists():
+                clean_manifest = json.loads(clean_manifest_file.read_text())
+                clean_entries = clean_manifest.get("agents", [])[:limit_agents]
+                for entry in clean_entries:
+                    trace_path = clean_dir / entry["file"]
+                    if trace_path.exists():
+                        trace_data = json.loads(trace_path.read_text())
+                        trace_data["agent_id"] = f"clean_{entry['agent_id']}"
+                        events = trace_to_fleet_events(trace_data)[:events_per_agent]
+                        all_fleet_events.extend(events)
+                        agent_summaries.append({
+                            "agent_id": trace_data["agent_id"],
+                            "normal_work_percentage": 100.0,
+                            "loaded_events": len(events),
+                            "cohort": "clean_control",
+                        })
 
         if retime:
             all_fleet_events = interleave_event_timestamps(all_fleet_events)
@@ -197,16 +238,17 @@ def create_app(
         }
 
     # Boot: restore persisted events, or run the fleet once so a cold start is never
-    # an empty dashboard. Loading 100 agents takes well under a second.
+    # an empty dashboard. Loading full fleet (200 agents) takes ~1.5s cold.
     if should_preload:
         try:
             persisted = db_store.list_events()
-            if persisted:
+            distinct_persisted_actors = {e.actor_id for e in persisted}
+            if persisted and len(distinct_persisted_actors) >= 200:
                 event_dedup.filter_events(persisted)
                 with recent_events_lock:
                     recent_events.extend(persisted)
             elif Path("benchmark/generated-traces/manifest.json").exists():
-                _load_fleet_into_state()
+                _load_fleet_into_state(limit_agents=100, events_per_agent=25, retime=True, include_clean=True)
         except Exception as exc:  # never let a cold-start hiccup block serving
             print(f"[cloud-bean] preload skipped: {exc}")
 
@@ -448,12 +490,17 @@ def create_app(
             default=True,
             description="Spread synthetic tool-call timestamps across each agent's real activity span",
         ),
+        include_clean: bool = Query(
+            default=False,
+            description="Include the clean control agents cohort alongside colluding agents",
+        ),
     ) -> Dict[str, Any]:
         """Load the pre-generated benchmark traces through the detection pipeline."""
         return _load_fleet_into_state(
             limit_agents=limit_agents,
             events_per_agent=events_per_agent,
             retime=retime,
+            include_clean=include_clean,
         )
 
     @app.post("/api/v1/failures/inject")

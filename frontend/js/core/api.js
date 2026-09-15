@@ -36,10 +36,10 @@ export const api = {
   evidenceList: () => req('/api/v1/evidence'),
   evidencePacket: (id) => req(`/api/v1/evidence/${encodeURIComponent(id)}`),
   metricsSummary: () => req('/api/v1/metrics/summary'),
-  loadFleet: ({ agents = 100, eventsPerAgent = 25, retime = true } = {}) =>
+  loadFleet: ({ agents = 100, eventsPerAgent = 25, retime = true, includeClean = true } = {}) =>
     postJSON(
       `/api/v1/load-benchmark-fleet?limit_agents=${agents}` +
-      `&events_per_agent=${eventsPerAgent}&retime=${retime}`
+      `&events_per_agent=${eventsPerAgent}&retime=${retime}&include_clean=${includeClean}`
     ),
   ingest: (events, enableAudit = false) =>
     postJSON('/api/v1/ingest/events', { events, enable_audit: enableAudit }),

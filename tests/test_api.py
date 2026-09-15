@@ -205,3 +205,20 @@ def test_load_benchmark_fleet_endpoint(client):
     # Check normal percentage field exists
     assert "normal_percentage" in agent_nodes[0]
 
+
+def test_load_benchmark_fleet_with_clean_controls(client):
+    res = client.post("/api/v1/load-benchmark-fleet?limit_agents=5&events_per_agent=10&include_clean=true")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] == "loaded"
+    assert data["total_agents"] == 10  # 5 colluding + 5 clean controls
+
+    graph_res = client.get("/api/v1/graph")
+    assert graph_res.status_code == 200
+    graph_data = graph_res.json()
+    agent_nodes = [n for n in graph_data["nodes"] if n["type"] == "agent"]
+    clean_nodes = [n for n in agent_nodes if n.get("cohort") == "clean_control"]
+    assert len(clean_nodes) >= 5
+    assert all(n["status"] == "normal" for n in clean_nodes)
+    assert all("[Clean]" in n["label"] for n in clean_nodes)
+

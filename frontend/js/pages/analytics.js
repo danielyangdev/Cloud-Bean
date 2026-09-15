@@ -333,7 +333,7 @@ export async function mount(el_) {
   // 5. Findings by Misalignment Pattern
   const p5 = panel(
     'Confirmed findings by misalignment pattern',
-    'Semantic judgments classified by Gemini-2.5-Flash / GPT-5.6 Luna with citations from evidence packets.',
+    'Semantic judgments classified by Gemini 2.5 Flash with citations from evidence packets.',
     [],
   );
   grid.appendChild(p5);

@@ -11,8 +11,10 @@ import * as playback from './pages/playback.js';
 import * as analytics from './pages/analytics.js';
 import * as findings from './pages/findings.js';
 import * as explainer from './pages/explainer.js';
+import { initBackgroundMesh } from './core/background.js';
 
 initPalette();
+initBackgroundMesh();
 
 register('overview', overview);
 register('graph', graph);

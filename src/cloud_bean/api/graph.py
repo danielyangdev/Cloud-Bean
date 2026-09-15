@@ -71,23 +71,34 @@ def build_interaction_graph(
 
     # Agent nodes
     for actor_id, count in actor_event_counts.items():
+        wiki_actions = sum(
+            w
+            for (src, dst, _), w in edge_weights.items()
+            if src == f"agent:{actor_id}" and "resource:wiki:" in dst
+        )
+        normal_actions = count - wiki_actions
+        normal_pct = round((normal_actions / count) * 100, 1) if count > 0 else 100.0
+        drift_data = actor_token_metrics.get(actor_id)
+        is_clean_control = actor_id.startswith("clean_") or actor_id.startswith("Clean_")
+
         if actor_id in actor_concerning:
             status = "concerning"
-        elif actor_id in actor_candidate:
+        elif not is_clean_control and (
+            actor_id in actor_candidate and (wiki_actions > 0 or drift_data is not None)
+        ):
             status = "candidate"
         else:
             status = "normal"
 
-        wiki_actions = sum(w for (src, dst, _), w in edge_weights.items() if src == f"agent:{actor_id}" and "resource:wiki:" in dst)
-        normal_actions = count - wiki_actions
-        normal_pct = round((normal_actions / count) * 100, 1) if count > 0 else 100.0
-        drift_data = actor_token_metrics.get(actor_id)
+        display_label = f"[Clean] {actor_id[6:]}" if actor_id.startswith("clean_") else actor_id
 
         nodes.append(
             {
                 "id": f"agent:{actor_id}",
-                "label": actor_id,
+                "label": display_label,
+                "actor_id": actor_id,
                 "type": "agent",
+                "cohort": "clean_control" if is_clean_control else "colluding",
                 "status": status,
                 "event_count": count,
                 "normal_actions": normal_actions,

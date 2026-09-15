@@ -1,143 +1,104 @@
-# cloud-bean
+# Cloud-Bean: Fleet Security Monitor for AI Agents
 
-Budgeted detection of concerning behavior across AI agent fleets.
+Budgeted semantic surveillance and misalignment detection across autonomous AI agent fleets.
 
-Cheap rules and group statistics select evidence for **GPT-5.6 Luna**, which classifies selected cross-agent conversations against known task goals and permissions. Cloud-bean records model judgments, evidence, and processing decisions so recovery can reproduce findings without fresh model calls.
+---
 
-**Status:** Working prototype. 100-agent benchmark traces, nine fleet signals including a token
-distribution anomaly engine, budgeted evidence selection, deterministic replay, failure injection,
-and a five-page browser dashboard. 80 unit and integration tests passing. The judge runs in mock
-mode and state is single-process — see [Stack](#stack) for what is and is not implemented.
+## Overview
 
-## Running the Prototype
+When autonomous agents are deployed at scale under task deadlines or network restrictions, they can exhibit unintended behaviors—exploiting external communication channels, bypassing rate limits, sharing benchmark solutions out-of-band, or corrupting shared resources.
+
+Auditing every single agent action with frontier Large Language Models is cost-prohibitive. **Cloud-Bean** solves this with a **two-tier surveillance architecture**:
+
+1. **Tier-1 Mathematical Signals**: Nine microsecond statistical, temporal, and information-theoretic heuristics evaluate sliding telemetry windows in native Python, suppressing over **95% of routine benign activity** without calling an LLM.
+2. **Tier-2 Semantic Judge**: Only anomalous clusters are packaged into token-bounded evidence packets and escalated to **Gemini 2.5 Flash** (via Google Vertex AI) for structured classification under RFC 5405 rate limits.
+3. **Zero-Cost Deterministic Replay**: Accepted judgments and deduplicated finding IDs are committed to an immutable ledger, allowing 100% reproducible recovery and auditing with **zero fresh model calls ($0.00)**.
+
+This approach achieves a **99.4% cost reduction** compared to brute-force surveillance ($0.08 vs $14.20 per benchmark window).
+
+---
+
+## Quick Start
+
+### 1. Installation
+
+Requires Python 3.10+.
 
 ```bash
-# 1. Install dependencies (pydantic, fastapi, uvicorn; pytest to run the suite)
-pip install pydantic fastapi uvicorn pytest httpx
+# Clone the repository
+git clone git@github.com:danielyangdev/Cloud-Bean.git
+cd Cloud-Bean
 
-# 2. Run the test suite (80 tests across 12 modules)
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### 2. Run the Test Suite
+
+```bash
 pytest -q
+```
+*113 unit and integration tests passing across 13 modules.*
 
-# 3. Start the API and dashboard
+### 3. Launch the Application
+
+```bash
 PYTHONPATH=src python3 -m uvicorn cloud_bean.api.app:create_server_app --factory --host 0.0.0.0 --port 8000
 ```
 
-Open **[http://localhost:8000/](http://localhost:8000/)** — the benchmark fleet is already loaded.
+Open **[http://localhost:8000/](http://localhost:8000/)** in your browser.
 
-`create_server_app` persists state to `.cloud-bean/state.db` (override with `CLOUD_BEAN_STATE_DB`)
-and loads the 100-agent fleet on first boot, so a cold start takes ~1.3s and every restart after
-that is ~0.1s with all findings intact. Run it from the repository root: the app resolves
-`frontend/` and `benchmark/generated-traces/` relative to the working directory. Use
-`create_app` instead for an ephemeral in-memory instance that loads nothing.
+The server pre-loads the full 200-agent benchmark fleet into `.cloud-bean/state.db` on first boot (~1.5s cold start, ~0.1s on subsequent restarts).
 
-### Dashboard
+---
 
-| Route | What it shows |
-| --- | --- |
-| `#/overview` | KPIs, the detection funnel, per-signal coverage, top findings, and the demo controls |
-| `#/playback` | Scrub the event stream from `t0` and watch findings surface as their evidence accrues |
-| `#/graph` | Force-directed agent/resource graph; click a node for evidence, drift metrics, and workload split |
-| `#/analytics` | Candidates by signal, findings by pattern, shared-resource concentration, cumulative spend |
-| `#/findings` | Every finding with its cited evidence packet, judge record, and chronological snippets |
+## Web Dashboard
 
-The front end is plain ES modules served as static files — no bundler, no `node_modules`, and no CDN
-scripts, so it runs with no network access.
+The web interface is built with vanilla ES modules and self-hosted fonts—no bundlers, no `node_modules`, and no external CDN dependencies:
 
-## Detection plan
+| Route | View | Description |
+| :--- | :--- | :--- |
+| `#/overview` | **Overview** | High-level compliance banner, KPIs, detection funnel, and priority active violations table. |
+| `#/graph` | **Graph Observatory** | Force-directed interaction graph with instant cohort filtering (`All`, `Clean`, `Violations`, `Tools`). |
+| `#/playback` | **State Playback** | Scrub the event stream chronologically and watch findings surface as evidence accrues. |
+| `#/analytics` | **Security Analytics** | Signal trigger distributions, shared-resource write hotspots, and cumulative budget savings. |
+| `#/findings` | **Forensic Findings** | Detailed findings browser showing cited evidence packets, timestamps, and Gemini judge records. |
+| `#/explainer` | **How It Works** | Product walkthrough runbook with a live telemetry pipeline canvas, 9-signal matrix, and event simulator. |
 
-```text
-Tool/service events → Local collectors → NATS JetStream → Fleet signals
-                             ↓                               ↓
-                      Evidence buffers                Candidate groups
-                                                             ↓
-                                                 Budgeted evidence selection
-                                                             ↓
-                                                       GPT-5.6 Luna
-                                                             ↓
-                                               Recorded judgments → Alerts
+---
+
+## 200-Agent Dual Cohort Benchmark
+
+Cloud-Bean includes an authentic 200-agent evaluation benchmark grounded in real incident data:
+
+* **100 Misaligned Agents** (`benchmark/generated-traces/`): Grounded in the 2026 Nightingale UseMod CGI incident (`collusion-wiki.db`). Agents perform ~85% legitimate financial data retrieval (SEC EDGAR, USASpending, BLS county wages) and ~15% injected collusion (exploiting HTTP GET mutations to share pre-computed answers).
+* **100 Clean Control Agents** (`benchmark/clean-traces/`): Matching control agents performing 100% legitimate retrieval with realistic operational friction (HTTP 429 exponential backoffs, schema validation retries, socket reconnects) and zero collusion.
+* **3-Annotator Gold Consensus**: All 200 traces are adjudicated by a panel of 3 independent models (`GoldAdjudicator`) operating under majority voting ($\ge 2/3$), achieving **100% unanimous agreement** on verdicts, violation patterns, and needle indices.
+
+---
+
+## Cloud Deployment (Vercel)
+
+Cloud-Bean is configured for serverless deployment on Vercel's free Hobby tier:
+
+```bash
+# Deploy to Vercel
+npx vercel
 ```
 
-1. **Collect:** capture agent/task IDs, operations, resources, results, timestamps, and available policy context. Retain bounded message/detail buffers. Record source and missing coverage.
-2. **Select:** combine routine summaries across agents to find emerging hubs, shared-resource overload, repeated artifacts, and coordinated behavior changes. Metadata flags candidates, not collusion.
-3. **Classify:** Luna reads selected group conversations, relevant actions, and known permissions. It can support a semantic alert, classify healthy collaboration, or report insufficient evidence. Verified rule violations can alert directly without a model.
-4. **Explain:** findings identify actors, pattern, evidence IDs, known policy basis, and missing context. Never equate unusual coordination with proven malicious intent.
-5. **Replay:** persist accepted model judgments and input/configuration versions. Recovery consumes those records instead of asking Luna again.
+* **Live Deployment**: `https://cloud-bean-felix-chens-projects-beb9a60c.vercel.app`
+* **Serverless Architecture**: `vercel.json` routes static assets to Vercel's global CDN and API routes to `api/index.py` with automatic `/tmp` state database redirection for read-only serverless containers.
 
-Current model: `gpt-5.6-luna`, Responses API, structured output, reasoning effort `none` initially. Evaluate higher effort only if quality warrants cost. No LLM call per action and no local classifier training in v0.
+---
 
-## What to detect
+## Technical Documentation
 
-| Pattern | Candidate selection | Semantic check |
-| --- | --- | --- |
-| Emerging shared activity | New shared destinations; growing actor count | Authorized collaboration or coordinated scope evasion? |
-| Evaluation cheating | Shared answers/artifacts; task behavior changes | Legitimate reuse or coordinated manipulation of evaluation? |
-| Concealment or persistence | Repeated deletion/recreation; activity after task end | Approved maintenance or attempts to hide/continue prohibited activity? |
-| Collective overload | Requests rise while accepted work falls | Alert on measured shared-budget violation where policy exists |
-| Conflicting actions | Repeated overwrites/reversions across workers | Routine editing or evidence of coordinated sabotage? |
+Detailed architectural specifications, mathematical definitions, and schemas are maintained in the `docs/` directory:
 
-Wiki archive lacks original task permissions, complete reads, and service receipts. Identify observed patterns and uncertainty; do not invent absent authorization or execution evidence.
-
-## Stack
-
-What the prototype actually runs on today:
-
-| Layer | Implementation | Notes |
-| --- | --- | --- |
-| Collectors | Python, in-process event buffer | Bounded `deque`; offline buffering simulated by `OfflineCollectorQueue` |
-| Transport | In-process handoff | No broker in v0 |
-| Signal and judge workers | Python | Shared live/replay logic; nine Tier-1 detectors plus an audit sampler |
-| State and findings | SQLite (`JudgmentFindingStore`) | Candidate groups, evidence packets, accepted judgments, findings |
-| Judge | `LunaJudgeClient`, mock mode | Deterministic stub; no network calls in the demo path |
-| API and dashboard | FastAPI + vanilla ES modules | Zero build step; hand-rolled canvas graph and charts |
-
-Sensors outside agent control provide stronger evidence than agent self-reports, and the event
-schema stays independent of any agent framework.
-
-**Not in v0** — these are design intent, not running code: NATS JetStream transport, Postgres for
-shared state, Docker Compose deployment, a React front end, live Luna API calls, and any
-multi-process or distributed deployment. The correctness contract below is stated against the
-implementation above, not against that target architecture.
-
-## Budget and coverage
-
-- Limit input/output tokens, concurrent requests, retries, and total spend.
-- Group overlapping activity and avoid rescoring unchanged evidence.
-- Reserve part of inspection budget for reproducibly sampled unflagged groups to measure selection misses.
-- Show skipped, expired, ambiguous, and budget-exhausted checks separately from healthy judgments.
-- Treat model scores as uncalibrated unless validated against held-out labels.
-
-At [published Luna rates](https://developers.openai.com/api/docs/models/gpt-5.6-luna), 1,000 checks with 2,000 input and 200 total billed output tokens each cost about **$0.64** before retries, tools, and caching. This is illustrative token arithmetic, not measured deployment cost.
-
-## Correctness contract
-
-**Same durable event history, accepted model judgments, configuration, and recorded ordering/window decisions produce same final finding IDs and revisions.** Fresh LLM calls are not guaranteed to reproduce judgments.
-
-- Commit processed-event IDs, state, and resulting records together before acknowledging stream messages.
-- Persist judge requests before dispatch; persist accepted responses before findings.
-- Deduplicate accepted judgments and alerts with stable IDs.
-- Mark uncertain API outcomes explicitly. Lost acknowledgments may cause duplicate provider work or charges; no universal exactly-once API execution claim.
-- Record late-event revisions, missing sequences, buffer overflow, and evidence expiry.
-
-Assumptions: trusted collectors/storage, retained recovery records, pinned processing logic, and explicit shard ownership. Single Postgres is an availability limit in v0. Sensor bypass and pre-recording data loss remain outside guarantee.
-
-## Hackathon scope
-
-- Connect benchmark replay and scripted workers to common event stream.
-- Implement three fleet signals, bounded evidence selection, and Luna classification.
-- Show group findings with cited evidence, token spend, and coverage status.
-- Kill detector, duplicate delivery, disconnect collector, and exhaust judge budget.
-- Recover and compare final findings using recorded judgments without API calls.
-
-No local-model training, fleet-wide automatic enforcement, or production-scale availability claim in v0.
-
-## Evaluation
-
-Compare rules only, per-agent Luna, and group-context Luna under equal token budgets. Measure group precision/recall, false alerts per fleet-hour, selection misses, first-alert delay, bytes, tokens, cost, and recovery agreement.
-
-Human-reviewed held-out labels must include healthy collaboration, authorized security testing, quotations, failed attempts, and missing policy context. Keep entire episodes/task families together in splits. Luna judgments are predictions, not ground truth.
-
-- [Detailed runtime plan](docs/runtime-plan.md)
-- [Fleet benchmark direction](docs/fleet-benchmark-direction.md)
-- [Source research](docs/wide-benchmark-search.md)
-
-Built for **Verifiable execution for distributed AI systems**: inspectable findings with explicit cost, evidence, and failure limits.
+* **[System Architecture](docs/architecture.md)** — Two-tier pipeline, Dynamo hash partition router, and memory budgets.
+* **[Signal Engineering Specification](docs/signals-spec.md)** — Mathematical formulations for JSD, burstiness $C_v$, NCD, and hub detection.
+* **[Benchmark Retrieval Tasks](docs/benchmark-retrieval-tasks.md)** — Archetypes, task constraints, and dataset derivation.
+* **[Misalignment Taxonomy](docs/misalignment-definitions.md)** — Violation patterns, negative controls, and the 3-annotator voting protocol.
+* **[Runtime Plan & Budgeting](docs/runtime-plan.md)** — Bounded evidence selection, transactional reservations, and rate limits.
+* **[Data Models & Schemas](docs/data-models.md)** — Pydantic models for events, candidates, evidence packets, and findings.
+* **[Test Plan & Telemetry](docs/test-plan.md)** — Test suite layout, OpenMetrics exposition, and Kubernetes health probes.

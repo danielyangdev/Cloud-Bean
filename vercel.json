@@ -1,0 +1,41 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/metrics",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/healthz",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/readyz",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/static/(.*)",
+      "destination": "/frontend/$1"
+    },
+    {
+      "source": "/css/(.*)",
+      "destination": "/frontend/css/$1"
+    },
+    {
+      "source": "/js/(.*)",
+      "destination": "/frontend/js/$1"
+    },
+    {
+      "source": "/fonts/(.*)",
+      "destination": "/frontend/fonts/$1"
+    },
+    {
+      "source": "/((?!api/|static/|css/|js/|fonts/|metrics|healthz|readyz).*)",
+      "destination": "/frontend/index.html"
+    }
+  ]
+}
